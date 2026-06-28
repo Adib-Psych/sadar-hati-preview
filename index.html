@@ -1746,6 +1746,128 @@
           </div>
         </div>
 
+        <!-- ============== 5b. PWID 7-BULAN TIME-SERIES EVIDENCE ============== -->
+        <h2 class="section-h2" style="margin-top:36px;">📊 PWID Surveillance · 7 Bulan Time-Series Dec 2011 – Jun 2012</h2>
+        <p style="font-size:13px; color:var(--slate); line-height:1.6; margin:8px 0 14px 0;">Hasil ekstraksi <strong>EPISUM.mdb tkegharian10</strong> (28 Juni 2026 via Python <code>access_parser</code>) — surveillance harian Sadar Hati native operation. CSO code <code>35YSH</code> dengan 23 petugas, 2.226 Penasun + 439 Pasangan Penasun ter-track. Data jangka-pendek tapi <strong>granularitas harian</strong> = research-grade evidence base.</p>
+
+        <!-- Dual Hero Stats -->
+        <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 18px 0;">
+          <div style="background: linear-gradient(135deg, var(--clay) 0%, var(--clay-deep) 100%); color:white; border-radius:12px; padding:24px;">
+            <div style="font-size:11px; letter-spacing:1.5px; text-transform:uppercase; opacity:0.85; font-weight:600;">Total Jarum Steril Didistribusi</div>
+            <div style="font-family:'Lora', Georgia, serif; font-size:52px; font-weight:700; line-height:1; margin:8px 0;">5.011</div>
+            <div style="font-size:13px; line-height:1.5; opacity:0.95;">Dec 2011 – Jun 2012 · rata-rata <strong>716 jarum/bulan</strong> · puncak <strong>1.008</strong> di Mei 2012</div>
+          </div>
+          <div style="background: linear-gradient(135deg, var(--sage) 0%, var(--sage-deep) 100%); color:white; border-radius:12px; padding:24px;">
+            <div style="font-size:11px; letter-spacing:1.5px; text-transform:uppercase; opacity:0.85; font-weight:600;">Return Rate Jarum Bekas</div>
+            <div style="font-family:'Lora', Georgia, serif; font-size:52px; font-weight:700; line-height:1; margin:8px 0;">58,6<span style="font-size:32px;">%</span></div>
+            <div style="font-size:13px; line-height:1.5; opacity:0.95;">2.934 jarum kembali · best-practice harm reduction benchmark · puncak <strong>67%</strong> di Mei 2012</div>
+          </div>
+        </div>
+
+        <!-- Time-series Line Chart SVG -->
+        <div style="background:white; border:1px solid var(--clay-tint); border-radius:12px; padding:24px; margin:18px 0;">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:16px;">
+            <h3 style="font-family:'Lora', Georgia, serif; font-size:18px; color:var(--clay-deep); margin:0;">📈 LJASS Trajectory · Distribusi vs Pengembalian Jarum</h3>
+            <div style="display:flex; gap:14px; font-size:11px;">
+              <span style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:3px; background:var(--clay); display:inline-block;"></span> Jarum Keluar</span>
+              <span style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:3px; background:var(--sage); display:inline-block;"></span> Jarum Kembali</span>
+            </div>
+          </div>
+          <svg viewBox="0 0 760 280" style="width:100%; height:auto; display:block;" xmlns="http://www.w3.org/2000/svg">
+            <!-- Y-axis gridlines + labels -->
+            <g font-family="Manrope, sans-serif" font-size="10" fill="#94a3b8">
+              <line x1="50" y1="40" x2="730" y2="40" stroke="#e5e7eb" stroke-width="1"/>
+              <text x="40" y="44" text-anchor="end">1100</text>
+              <line x1="50" y1="92" x2="730" y2="92" stroke="#e5e7eb" stroke-width="1"/>
+              <text x="40" y="96" text-anchor="end">825</text>
+              <line x1="50" y1="144" x2="730" y2="144" stroke="#e5e7eb" stroke-width="1"/>
+              <text x="40" y="148" text-anchor="end">550</text>
+              <line x1="50" y1="196" x2="730" y2="196" stroke="#e5e7eb" stroke-width="1"/>
+              <text x="40" y="200" text-anchor="end">275</text>
+              <line x1="50" y1="240" x2="730" y2="240" stroke="#1f2937" stroke-width="1.5"/>
+              <text x="40" y="244" text-anchor="end">0</text>
+            </g>
+            <!-- X-axis labels (7 bulan) -->
+            <g font-family="Manrope, sans-serif" font-size="11" fill="#475569" font-weight="600">
+              <text x="100" y="262" text-anchor="middle">Des '11</text>
+              <text x="200" y="262" text-anchor="middle">Jan '12</text>
+              <text x="300" y="262" text-anchor="middle">Feb '12</text>
+              <text x="400" y="262" text-anchor="middle">Mar '12</text>
+              <text x="500" y="262" text-anchor="middle">Apr '12</text>
+              <text x="600" y="262" text-anchor="middle">Mei '12</text>
+              <text x="700" y="262" text-anchor="middle">Jun '12</text>
+            </g>
+            <!-- Wine line: Jarum Keluar (764, 635, 484, 640, 721, 1008, 759) -->
+            <!-- Y scale: 0→240(0), 1100→40, range=200/1100 → y = 240 - (val * 200 / 1100) -->
+            <polyline points="100,101 200,125 300,152 400,124 500,109 600,57 700,102"
+                      fill="none" stroke="#a83244" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Wine dots + value labels -->
+            <g font-family="Manrope, sans-serif" font-size="11" font-weight="700" fill="#7a1f30">
+              <circle cx="100" cy="101" r="5" fill="#a83244"/><text x="100" y="92" text-anchor="middle">764</text>
+              <circle cx="200" cy="125" r="5" fill="#a83244"/><text x="200" y="116" text-anchor="middle">635</text>
+              <circle cx="300" cy="152" r="5" fill="#a83244"/><text x="300" y="143" text-anchor="middle">484</text>
+              <circle cx="400" cy="124" r="5" fill="#a83244"/><text x="400" y="115" text-anchor="middle">640</text>
+              <circle cx="500" cy="109" r="5" fill="#a83244"/><text x="500" y="100" text-anchor="middle">721</text>
+              <circle cx="600" cy="57" r="6" fill="#a83244" stroke="#fef7f2" stroke-width="2"/><text x="600" y="48" text-anchor="middle" font-size="13" font-weight="800">1.008</text>
+              <circle cx="700" cy="102" r="5" fill="#a83244"/><text x="700" y="93" text-anchor="middle">759</text>
+            </g>
+            <!-- Sage line: Jarum Kembali (512, 295, 309, 299, 471, 670, 378) -->
+            <polyline points="100,147 200,186 300,184 400,186 500,154 600,118 700,171"
+                      fill="none" stroke="#5b7553" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0"/>
+            <!-- Sage dots + value labels -->
+            <g font-family="Manrope, sans-serif" font-size="10" font-weight="600" fill="#3f5239">
+              <circle cx="100" cy="147" r="4" fill="#5b7553"/><text x="100" y="163" text-anchor="middle">512</text>
+              <circle cx="200" cy="186" r="4" fill="#5b7553"/><text x="200" y="202" text-anchor="middle">295</text>
+              <circle cx="300" cy="184" r="4" fill="#5b7553"/><text x="300" y="200" text-anchor="middle">309</text>
+              <circle cx="400" cy="186" r="4" fill="#5b7553"/><text x="400" y="202" text-anchor="middle">299</text>
+              <circle cx="500" cy="154" r="4" fill="#5b7553"/><text x="500" y="170" text-anchor="middle">471</text>
+              <circle cx="600" cy="118" r="5" fill="#5b7553" stroke="#fef7f2" stroke-width="2"/><text x="600" y="134" text-anchor="middle" font-weight="800">670</text>
+              <circle cx="700" cy="171" r="4" fill="#5b7553"/><text x="700" y="187" text-anchor="middle">378</text>
+            </g>
+            <!-- Peak month annotation -->
+            <g>
+              <rect x="555" y="14" width="90" height="22" rx="4" fill="#d4a017" opacity="0.95"/>
+              <text x="600" y="28" font-family="Manrope, sans-serif" font-size="10" font-weight="700" fill="white" text-anchor="middle">🏆 PUNCAK MEI</text>
+              <line x1="600" y1="36" x2="600" y2="50" stroke="#d4a017" stroke-width="2"/>
+            </g>
+          </svg>
+        </div>
+
+        <!-- 3 Service KPI Cards (HCT, IMS, HIV awareness) -->
+        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin:18px 0;">
+          <div style="background:var(--clay-tint); border:1.5px solid var(--clay); border-radius:10px; padding:18px;">
+            <div style="font-size:10px; letter-spacing:1.3px; text-transform:uppercase; color:var(--clay-deep); font-weight:700; margin-bottom:6px;">🧪 HCT Testing</div>
+            <div style="font-family:'Lora', Georgia, serif; font-size:32px; font-weight:700; color:var(--clay-deep); line-height:1;">431</div>
+            <div style="font-size:11px; color:var(--navy); margin-top:6px; line-height:1.5;">Tes HIV Konseling · puncak <strong>87 di Mei 2012</strong> · rata-rata 62/bulan</div>
+          </div>
+          <div style="background:var(--sage-light); border:1.5px solid var(--sage); border-radius:10px; padding:18px;">
+            <div style="font-size:10px; letter-spacing:1.3px; text-transform:uppercase; color:var(--sage-deep); font-weight:700; margin-bottom:6px;">🩺 Layanan IMS</div>
+            <div style="font-family:'Lora', Georgia, serif; font-size:32px; font-weight:700; color:var(--sage-deep); line-height:1;">266</div>
+            <div style="font-size:11px; color:var(--navy); margin-top:6px; line-height:1.5;">Skrining + treatment infeksi menular seksual · puncak <strong>54 di Jun 2012</strong> · 38/bulan</div>
+          </div>
+          <div style="background:var(--gold-tint); border:1.5px solid #d4a017; border-radius:10px; padding:18px;">
+            <div style="font-size:10px; letter-spacing:1.3px; text-transform:uppercase; color:#8a4d1f; font-weight:700; margin-bottom:6px;">📣 HIV Awareness Reach</div>
+            <div style="font-family:'Lora', Georgia, serif; font-size:32px; font-weight:700; color:#8a4d1f; line-height:1;">1.105</div>
+            <div style="font-size:11px; color:var(--navy); margin-top:6px; line-height:1.5;">Kontak edukasi HIV · puncak <strong>258 di Des 2011</strong> · 158/bulan rata-rata</div>
+          </div>
+        </div>
+
+        <!-- Insight callout: Peak Month + Methodology Story -->
+        <div style="background: linear-gradient(135deg, #fef7f2 0%, #f4efea 100%); border-left:4px solid #d4a017; padding:18px 22px; border-radius:8px; margin:18px 0; font-size:13px; line-height:1.65; color:var(--navy);">
+          <div style="font-family:'Lora', Georgia, serif; font-size:17px; color:var(--clay-deep); font-weight:700; margin-bottom:8px;">🏆 Puncak Operasional: Mei 2012</div>
+          <p style="margin:0 0 8px 0;">Sistem mencapai efisiensi terbaik di Mei 2012 — <strong>1.008 jarum keluar + 670 kembali = 66,5% return rate</strong> · 87 HCT · 51 IMS · 214 HIV awareness kontak. Pola ini bukan kebetulan: pra-Renstra Nov 2012 + 3 TA Provider engagement (Satunama · Penabulu · Surveymeter) sedang on-boarded, sistem M&E EPISUM mencapai stabilitas operasional.</p>
+          <p style="margin:0; font-size:12px; color:var(--slate);"><em>Catatan metodologi: angka harian merefleksikan kegiatan ter-record dalam database (tkegharian10). Beberapa kegiatan offline mungkin belum ter-input ke sistem — angka actual lapangan kemungkinan ≥ angka ter-record.</em></p>
+        </div>
+
+        <!-- Conservative Attribution Banner -->
+        <div style="background:var(--cream-warm); border:1px solid var(--clay-tint); padding:12px 18px; border-radius:6px; margin-top:14px; font-size:12px; line-height:1.6; color:var(--slate);">
+          <strong>🔍 Data attribution clarity:</strong> Angka di section ini = <strong>Sadar Hati direct operation</strong> (CSO code 35YSH per EPISUM profileCSO3 metadata). Database paralel di treasury Sadar Hati untuk <strong>Yayasan Genta Surabaya</strong> (CSO 35YGS, WPSL/FSW program — SR sister organization under same Lembaga Paramitra PR Global Fund Round 8 chain) di-preserve sebagai institutional archive, <strong>tidak diintegrasi sebagai Sadar Hati achievement</strong> tanpa konfirmasi tim mengenai M&amp;E service arrangement. Detail di companion file <code>Knowledge Assets SAHA / 03_Donor_and_Partnership_Archive / Global_Fund_R4_R8 / Paramitra_PR_SR_Chain_Context_28062026.docx</code>.
+        </div>
+
+        <div class="source-attr" style="margin-top:12px;">
+          📊 Source: <strong>EPISUM.mdb / Database EPI SADARHATI / tkegharian10</strong> · 2.793 daily activity records (Dec 2011 – Jun 2012) · extracted 28 Juni 2026 via Python <code>access_parser 0.0.6</code> · companion file <code>Knowledge Assets SAHA / 04_Data_and_M&amp;E / EPISUM_TimeSeries / EPISUM_Monthly_TimeSeries_28062026.xlsx</code>
+        </div>
+
         <!-- ============== 6. PUSKESMAS PARTNERSHIP NETWORK ============== -->
         <h2 class="section-h2" style="margin-top:36px;">🏥 Layanan Berbasis Puskesmas · 8+ Partner Aktif 2012</h2>
         <p style="font-size:13px; color:var(--slate); line-height:1.6; margin:8px 0 14px 0;">Sadar Hati tidak operate dalam silo — embedded di sistem layanan kesehatan publik melalui 8+ Puskesmas + 3 PTRM + RSU Syaiful Anwar (GF ATM). Pattern ini sustainable + scalable.</p>
