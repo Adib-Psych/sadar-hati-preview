@@ -5902,7 +5902,23 @@
 
         <!-- 13+ Donor Matrix Table -->
         <h2 class="section-h2" style="margin-top:32px;">📊 Pipeline Matrix · 13+ Donor Tracked</h2>
-        <p style="font-size:13px; color:var(--slate); line-height:1.6; margin:4px 0 14px 0;">Status terbagi 4: 🟢 <strong>aktif/ongoing</strong> · 🟡 <strong>applied/awaiting</strong> · 🔵 <strong>explored/relationship</strong> · ⚪ <strong>historical/closed</strong>.</p>
+        <p style="font-size:13px; color:var(--slate); line-height:1.6; margin:4px 0 14px 0;">Diurutkan berdasarkan urgensi tindak lanjut — dari yang sedang aktif sampai historis sebagai pijakan track record. Status: 🟢 <strong>aktif/ongoing</strong> · 🟡 <strong>applied/awaiting</strong> · 🔵 <strong>explored/relationship</strong> · ⚪ <strong>historical/closed</strong>.</p>
+
+        <!-- Status Distribution Bar (4-segment proportional) -->
+        <div style="display:flex; align-items:stretch; gap:0; margin:16px 0 20px 0; border-radius:10px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.06); font-size:11.5px; font-weight:700;">
+          <div style="background:linear-gradient(135deg, #2d8659 0%, #1f5e3e 100%); color:white; padding:12px 14px; flex:3; text-align:center;">
+            🟢 <span style="font-size:13px;">ACTIVE · 3</span>
+          </div>
+          <div style="background:linear-gradient(135deg, #d4a017 0%, #b8861c 100%); color:white; padding:12px 14px; flex:2; text-align:center;">
+            🟡 <span style="font-size:13px;">APPLIED · 2</span>
+          </div>
+          <div style="background:linear-gradient(135deg, #4f7ba8 0%, #355a82 100%); color:white; padding:12px 14px; flex:6; text-align:center;">
+            🔵 <span style="font-size:13px;">EXPLORED · 6</span>
+          </div>
+          <div style="background:linear-gradient(135deg, #8a8a8a 0%, #5e5e5e 100%); color:white; padding:12px 14px; flex:3; text-align:center;">
+            ⚪ <span style="font-size:13px;">HISTORICAL · 3</span>
+          </div>
+        </div>
 
         <div style="overflow-x: auto; margin: 14px 0;">
           <table style="width:100%; border-collapse:collapse; font-size:12px; background:white; border-radius:10px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.04);">
@@ -5917,31 +5933,40 @@
               </tr>
             </thead>
             <tbody>
-              <tr style="border-bottom:1px solid #f0e7d8;">
-                <td style="padding:10px 12px; font-weight:700; color:#a07b0f;">1</td>
+              <!-- ============== 🟢 ACTIVE SECTION ============== -->
+              <tr style="background:linear-gradient(90deg, #2d8659 0%, #5fa479 100%); color:white;">
+                <td colspan="6" style="padding:8px 12px; font-weight:700; letter-spacing:1px; font-size:11px;">🟢 ACTIVE · Sedang berjalan / pendanaan aktif (3 donor)</td>
+              </tr>
+              <tr style="border-bottom:1px solid #e8efe9; background:#f4faf5;">
+                <td style="padding:10px 12px; font-weight:700; color:#2d8659;">1</td>
                 <td style="padding:10px 12px; font-weight:700;">ViiV Healthcare</td>
                 <td style="padding:10px 12px;">Int'l Pharma CSR</td>
                 <td style="padding:10px 12px;">2021–2026</td>
                 <td style="padding:10px 12px;">🟢 ACTIVE</td>
-                <td style="padding:10px 12px; color:var(--slate);">Current major · 3 grants cumulative GBP 274.301</td>
+                <td style="padding:10px 12px; color:var(--slate);">Current major · 3 grants cumulative GBP 274.301 ≈ Rp 6,64 M</td>
               </tr>
-              <tr style="background:#fcfaf5; border-bottom:1px solid #f0e7d8;">
-                <td style="padding:10px 12px; font-weight:700; color:#a07b0f;">2</td>
-                <td style="padding:10px 12px; font-weight:700;">Kemenkumham DIPA</td>
-                <td style="padding:10px 12px;">Government Direct</td>
-                <td style="padding:10px 12px;">2023 (156 hari)</td>
-                <td style="padding:10px 12px;">⚪ HISTORICAL</td>
-                <td style="padding:10px 12px; color:var(--slate);">Rp 131,96 Jt · Last MoU Mas Theo · re-entry pursuing</td>
-              </tr>
-              <tr style="border-bottom:1px solid #f0e7d8;">
-                <td style="padding:10px 12px; font-weight:700; color:#a07b0f;">3</td>
-                <td style="padding:10px 12px; font-weight:700;">Kemensos ATENSI/IPWL</td>
+              <tr style="border-bottom:1px solid #e8efe9; background:#fbfdfc;">
+                <td style="padding:10px 12px; font-weight:700; color:#2d8659;">2</td>
+                <td style="padding:10px 12px; font-weight:700;">Kemensos ATENSI / IPWL</td>
                 <td style="padding:10px 12px;">Government Direct</td>
                 <td style="padding:10px 12px;">2021–sekarang</td>
                 <td style="padding:10px 12px;">🟢 ACTIVE</td>
                 <td style="padding:10px 12px; color:var(--slate);">Allocation per beneficiary register · 50+ klien NIK verified</td>
               </tr>
-              <tr style="background:#fcfaf5; border-bottom:1px solid #f0e7d8;">
+              <tr style="border-bottom:1px solid #e8efe9; background:#f4faf5;">
+                <td style="padding:10px 12px; font-weight:700; color:#2d8659;">3</td>
+                <td style="padding:10px 12px; font-weight:700;">PT. PPA + Jatim Fest <span style="font-size:10px; color:var(--slate);">(machinery+booth)</span></td>
+                <td style="padding:10px 12px;">Government BUMN</td>
+                <td style="padding:10px 12px;">2024</td>
+                <td style="padding:10px 12px;">🟢 ACTIVE</td>
+                <td style="padding:10px 12px; color:var(--slate);">Investasi alat 55,5 Jt + Jatim Fest 6,6 Jt = SAHAWOOD capacity boost</td>
+              </tr>
+
+              <!-- ============== 🟡 APPLIED SECTION ============== -->
+              <tr style="background:linear-gradient(90deg, #d4a017 0%, #e6b740 100%); color:white;">
+                <td colspan="6" style="padding:8px 12px; font-weight:700; letter-spacing:1px; font-size:11px;">🟡 APPLIED · Sudah submit aplikasi, menunggu hasil (2 donor)</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f0e7d8; background:#fefaef;">
                 <td style="padding:10px 12px; font-weight:700; color:#a07b0f;">4</td>
                 <td style="padding:10px 12px; font-weight:700;">Global Fund JIP Re-Entry</td>
                 <td style="padding:10px 12px;">Int'l Foundation</td>
@@ -5949,7 +5974,7 @@
                 <td style="padding:10px 12px;">🟡 APPLIED</td>
                 <td style="padding:10px 12px; color:var(--slate);">Jangkar Indonesia Plus · Re-establish post R4 + R8 history</td>
               </tr>
-              <tr style="border-bottom:1px solid #f0e7d8;">
+              <tr style="border-bottom:1px solid #f0e7d8; background:#fdfcf6;">
                 <td style="padding:10px 12px; font-weight:700; color:#a07b0f;">5</td>
                 <td style="padding:10px 12px; font-weight:700;">UNODC DAPC</td>
                 <td style="padding:10px 12px;">UN Agency</td>
@@ -5957,77 +5982,87 @@
                 <td style="padding:10px 12px;">🟡 APPLIED</td>
                 <td style="padding:10px 12px; color:var(--slate);">Drug Abuse Prevention &amp; Care · alignment dgn IPWL scope</td>
               </tr>
-              <tr style="background:#fcfaf5; border-bottom:1px solid #f0e7d8;">
-                <td style="padding:10px 12px; font-weight:700; color:#a07b0f;">6</td>
+
+              <!-- ============== 🔵 EXPLORED SECTION ============== -->
+              <tr style="background:linear-gradient(90deg, #4f7ba8 0%, #7099c2 100%); color:white;">
+                <td colspan="6" style="padding:8px 12px; font-weight:700; letter-spacing:1px; font-size:11px;">🔵 EXPLORED · Sudah dijajaki / hubungan kerja terjalin (6 donor)</td>
+              </tr>
+              <tr style="border-bottom:1px solid #e3ecf5; background:#f5f8fb;">
+                <td style="padding:10px 12px; font-weight:700; color:#355a82;">6</td>
                 <td style="padding:10px 12px; font-weight:700;">YSE Singapore</td>
                 <td style="padding:10px 12px;">Int'l Foundation</td>
                 <td style="padding:10px 12px;">2022 pitch</td>
                 <td style="padding:10px 12px;">🔵 EXPLORED</td>
                 <td style="padding:10px 12px; color:var(--slate);">Young Social Entrepreneur · SAHAWOOD pitch · international showcase</td>
               </tr>
-              <tr style="border-bottom:1px solid #f0e7d8;">
-                <td style="padding:10px 12px; font-weight:700; color:#a07b0f;">7</td>
-                <td style="padding:10px 12px; font-weight:700;">Sisternet XL Axiata</td>
-                <td style="padding:10px 12px;">Domestic CSR</td>
-                <td style="padding:10px 12px;">2022–2023</td>
-                <td style="padding:10px 12px;">⚪ HISTORICAL</td>
-                <td style="padding:10px 12px; color:var(--slate);">Women business empowerment · spawned <strong>safleur</strong> sub-brand</td>
-              </tr>
-              <tr style="background:#fcfaf5; border-bottom:1px solid #f0e7d8;">
-                <td style="padding:10px 12px; font-weight:700; color:#a07b0f;">8</td>
-                <td style="padding:10px 12px; font-weight:700;">AMPLIFY IMPACT (ViiV bridge)</td>
-                <td style="padding:10px 12px;">Int'l Pharma CSR</td>
-                <td style="padding:10px 12px;">2024 bridge</td>
-                <td style="padding:10px 12px;">⚪ HISTORICAL</td>
-                <td style="padding:10px 12px; color:var(--slate);">GBP 9.748,96 · Bridge year ViiV antar fase Chemsex</td>
-              </tr>
-              <tr style="border-bottom:1px solid #f0e7d8;">
-                <td style="padding:10px 12px; font-weight:700; color:#a07b0f;">9</td>
+              <tr style="border-bottom:1px solid #e3ecf5; background:#fafcfd;">
+                <td style="padding:10px 12px; font-weight:700; color:#355a82;">7</td>
                 <td style="padding:10px 12px; font-weight:700;">IAS Youth Leader</td>
                 <td style="padding:10px 12px;">Int'l Conference</td>
                 <td style="padding:10px 12px;">2022–2024</td>
                 <td style="padding:10px 12px;">🔵 EXPLORED</td>
                 <td style="padding:10px 12px; color:var(--slate);">International AIDS Society · networking + reputation grant pathway</td>
               </tr>
-              <tr style="background:#fcfaf5; border-bottom:1px solid #f0e7d8;">
-                <td style="padding:10px 12px; font-weight:700; color:#a07b0f;">10</td>
+              <tr style="border-bottom:1px solid #e3ecf5; background:#f5f8fb;">
+                <td style="padding:10px 12px; font-weight:700; color:#355a82;">8</td>
                 <td style="padding:10px 12px; font-weight:700;">Siap Siaga DFAT (Australia)</td>
                 <td style="padding:10px 12px;">Embassy/Diplomatic</td>
                 <td style="padding:10px 12px;">2023–2024</td>
                 <td style="padding:10px 12px;">🔵 EXPLORED</td>
                 <td style="padding:10px 12px; color:var(--slate);">Australian Aid disaster preparedness · revive HCPI relationship</td>
               </tr>
-              <tr style="border-bottom:1px solid #f0e7d8;">
-                <td style="padding:10px 12px; font-weight:700; color:#a07b0f;">11</td>
+              <tr style="border-bottom:1px solid #e3ecf5; background:#fafcfd;">
+                <td style="padding:10px 12px; font-weight:700; color:#355a82;">9</td>
                 <td style="padding:10px 12px; font-weight:700;">ICMPS Irlandia</td>
                 <td style="padding:10px 12px;">Embassy/Diplomatic</td>
                 <td style="padding:10px 12px;">2023</td>
                 <td style="padding:10px 12px;">🔵 EXPLORED</td>
                 <td style="padding:10px 12px; color:var(--slate);">Irish Catholic Mission Partnership Scheme · international solidarity grant</td>
               </tr>
-              <tr style="background:#fcfaf5; border-bottom:1px solid #f0e7d8;">
-                <td style="padding:10px 12px; font-weight:700; color:#a07b0f;">12</td>
+              <tr style="border-bottom:1px solid #e3ecf5; background:#f5f8fb;">
+                <td style="padding:10px 12px; font-weight:700; color:#355a82;">10</td>
                 <td style="padding:10px 12px; font-weight:700;">Indika Foundation</td>
                 <td style="padding:10px 12px;">Domestic CSR</td>
                 <td style="padding:10px 12px;">2023–2024</td>
                 <td style="padding:10px 12px;">🔵 EXPLORED</td>
                 <td style="padding:10px 12px; color:var(--slate);">Energy company foundation · sustainability + community development</td>
               </tr>
-              <tr style="border-bottom:1px solid #f0e7d8;">
-                <td style="padding:10px 12px; font-weight:700; color:#a07b0f;">13</td>
+              <tr style="border-bottom:1px solid #e3ecf5; background:#fafcfd;">
+                <td style="padding:10px 12px; font-weight:700; color:#355a82;">11</td>
                 <td style="padding:10px 12px; font-weight:700;">Pegadaian Kanwil Jatim</td>
                 <td style="padding:10px 12px;">Domestic CSR</td>
                 <td style="padding:10px 12px;">2024</td>
                 <td style="padding:10px 12px;">🔵 EXPLORED</td>
                 <td style="padding:10px 12px; color:var(--slate);">BUMN regional CSR · pemberdayaan ekonomi + UMKM angle</td>
               </tr>
-              <tr style="background:#fcfaf5;">
-                <td style="padding:10px 12px; font-weight:700; color:#a07b0f;">14+</td>
-                <td style="padding:10px 12px; font-weight:700; font-style:italic;">PT. PPA + Jatim Fest (machinery+booth)</td>
-                <td style="padding:10px 12px;">Government BUMN</td>
-                <td style="padding:10px 12px;">2024</td>
-                <td style="padding:10px 12px;">🟢 ACTIVE</td>
-                <td style="padding:10px 12px; color:var(--slate);">Investasi alat 55,5 Jt + Jatim Fest 6,6 Jt = SAHAWOOD production capacity boost</td>
+
+              <!-- ============== ⚪ HISTORICAL SECTION ============== -->
+              <tr style="background:linear-gradient(90deg, #6a6a6a 0%, #8a8a8a 100%); color:white;">
+                <td colspan="6" style="padding:8px 12px; font-weight:700; letter-spacing:1px; font-size:11px;">⚪ HISTORICAL · Sudah selesai / closed cycle · track record asset (3 donor)</td>
+              </tr>
+              <tr style="border-bottom:1px solid #ececec; background:#f8f8f8;">
+                <td style="padding:10px 12px; font-weight:700; color:#5e5e5e;">12</td>
+                <td style="padding:10px 12px; font-weight:700;">Kemenkumham DIPA LAPAS</td>
+                <td style="padding:10px 12px;">Government Direct</td>
+                <td style="padding:10px 12px;">2023 (156 hari)</td>
+                <td style="padding:10px 12px;">⚪ HISTORICAL</td>
+                <td style="padding:10px 12px; color:var(--slate);">Rp 185,46 Jt · Mas Theo's last MoU · re-entry pursuing 2026/2027</td>
+              </tr>
+              <tr style="border-bottom:1px solid #ececec; background:#fbfbfb;">
+                <td style="padding:10px 12px; font-weight:700; color:#5e5e5e;">13</td>
+                <td style="padding:10px 12px; font-weight:700;">Sisternet XL Axiata</td>
+                <td style="padding:10px 12px;">Domestic CSR</td>
+                <td style="padding:10px 12px;">2022–2023</td>
+                <td style="padding:10px 12px;">⚪ HISTORICAL</td>
+                <td style="padding:10px 12px; color:var(--slate);">Women business empowerment · spawned <strong>safleur</strong> sub-brand</td>
+              </tr>
+              <tr style="background:#f8f8f8;">
+                <td style="padding:10px 12px; font-weight:700; color:#5e5e5e;">14</td>
+                <td style="padding:10px 12px; font-weight:700;">AMPLIFY IMPACT (ViiV bridge)</td>
+                <td style="padding:10px 12px;">Int'l Pharma CSR</td>
+                <td style="padding:10px 12px;">2024 bridge</td>
+                <td style="padding:10px 12px;">⚪ HISTORICAL</td>
+                <td style="padding:10px 12px; color:var(--slate);">GBP 9.748,96 · Bridge year ViiV antar fase Chemsex</td>
               </tr>
             </tbody>
           </table>
