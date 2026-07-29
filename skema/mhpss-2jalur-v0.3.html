@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skema Platform MHPSS — Piramida IASC × 2 Jalur · Sadar Hati × Memantik.id (v0.3)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --wine:#7a1f30; --wine-deep:#5e1424; --clay:#a83244; --clay-soft:#c0616f;
+  --sage:#5b7553; --sage-deep:#3f5439;
+  --plum:#6b4d7a; --plum-deep:#4e3859; --plum-tint:#f3eef7;
+  --teal:#206b74; --teal-deep:#164b52; --teal-tint:#e4eff0;
+  --slate:#46597d;
+  --cream:#fbf7f2; --paper:#fffdfb; --line:#ecdfd5; --line2:#e6d9cf;
+  --ink:#2c2724; --ink-soft:#6f6660; --ink-mute:#8a7f77;
+}
+*{box-sizing:border-box}
+body{margin:0;background:#f4ece4;font-family:'Manrope',-apple-system,BlinkMacSystemFont,sans-serif;color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
+.sheet{max-width:1240px;margin:0 auto;background:var(--cream);box-shadow:0 0 40px rgba(44,39,36,.07)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+
+.mast{background:linear-gradient(135deg,var(--wine-deep),var(--clay));color:#fff;padding:52px 56px 46px}
+.mast .kick{font-size:14px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:#f0c9d0}
+.mast h1{font-family:'Lora',Georgia,serif;font-size:45px;font-weight:600;margin:14px 0 12px;line-height:1.18}
+.mast p{margin:0;font-size:19px;color:#f7e6e9;line-height:1.6;text-align:justify}
+.mast .meta{margin-top:22px;display:flex;flex-wrap:wrap;gap:10px}
+.mast .meta span{font-size:13.5px;font-weight:700;letter-spacing:.03em;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.22);padding:6px 15px;border-radius:999px}
+
+.wrap{padding:46px 56px 56px}
+section{margin-bottom:60px}
+.shead{display:flex;align-items:baseline;gap:15px;margin-bottom:8px;flex-wrap:wrap}
+.snum{font-family:'Lora',serif;font-size:17px;font-weight:700;color:#fff;background:var(--wine);width:35px;height:35px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex:none}
+.shead h2{font-family:'Lora',Georgia,serif;font-size:30px;font-weight:600;margin:0}
+/* Aturan tipografi Adib: SEMUA teks isi yang jadinya >2 baris = justify & mengisi penuh
+   sampai batas margin (termasuk kartu sempit & keterangan samping gambar).
+   1–2 baris = rata kiri. Judul/pernyataan pendek/kutipan = rata tengah. Tanpa hyphens auto. */
+.slede{font-size:17.5px;color:var(--ink-soft);margin:0 0 26px 50px;line-height:1.65;text-align:justify}
+.callout p,.fix p,.open li,
+.lyr-d,.gcard p,.pcard p,.rc .rd{text-align:justify}
+
+.fig{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:26px 24px 18px}
+.fig svg{display:block;width:100%;height:auto}
+.figcap{font-size:14px;color:var(--ink-mute);text-align:center;margin-top:12px;border-top:1px dashed var(--line2);padding-top:13px;line-height:1.5}
+
+.lyr-t{font-family:'Lora',Georgia,serif;font-size:19px;font-weight:600;color:var(--ink);line-height:1.25;margin:0}
+.lyr-e{font-size:13px;color:var(--ink-mute);font-style:italic;margin:3px 0 6px}
+.lyr-d{font-size:15px;color:var(--ink-soft);line-height:1.5;margin:0}
+
+.callout{background:var(--teal-tint);border:1px solid #cfe3e4;border-left:5px solid var(--teal);border-radius:14px;padding:20px 26px;margin-top:24px}
+.callout b{color:var(--teal-deep)}
+.callout p{margin:0;font-size:17px;color:#2f4f52;line-height:1.65}
+
+.fix{background:#f7f3ee;border:1px solid var(--line2);border-left:5px solid var(--sage);border-radius:14px;padding:20px 26px;margin-top:20px}
+.fix h5{font-family:'Lora',serif;font-size:19px;margin:0 0 8px;font-weight:600;color:var(--sage-deep)}
+.fix p{margin:0;font-size:16px;color:var(--ink-soft);line-height:1.65}
+
+.zonecard{border-radius:14px;padding:16px 15px;height:100%;display:flex;flex-direction:column;justify-content:center;text-align:center}
+.zonecard .zl{font-size:12px;font-weight:800;letter-spacing:.11em;color:var(--ink-mute)}
+.zonecard .zt{font-family:'Lora',serif;font-size:21px;font-weight:700;margin:5px 0 4px;line-height:1.15}
+.zonecard .zs{font-size:14px;color:var(--ink-soft);line-height:1.45}
+.zonecard .ztag{margin-top:11px;align-self:center;font-size:12px;font-weight:800;color:#fff;border-radius:999px;padding:4px 13px}
+.zsvc{background:#fbeef1;border:1px solid #ecc9d1}.zsvc .zt{color:var(--wine)}.zsvc .ztag{background:var(--clay)}
+.zlrn{background:var(--plum-tint);border:1px solid #ddcde6}.zlrn .zt{color:var(--plum-deep)}.zlrn .ztag{background:var(--plum)}
+.railcard{background:linear-gradient(180deg,var(--teal),var(--teal-deep));color:#fff;border-radius:14px;padding:17px 13px;height:100%;display:flex;flex-direction:column;justify-content:center;text-align:center}
+.railcard .rk{font-size:11.5px;font-weight:800;letter-spacing:.1em;color:#bfe0e3}
+.railcard .rt2{font-family:'Lora',serif;font-size:20px;font-weight:700;margin:6px 0 7px;line-height:1.15}
+.railcard .rs{font-size:13px;color:#dff0f1;line-height:1.45}
+.railcard ul{list-style:none;margin:11px 0 0;padding:0;font-size:12.5px;color:#e8f4f5}
+.railcard li{padding:4px 0;border-top:1px solid rgba(255,255,255,.18)}
+
+.lanes{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.lane{border-radius:18px;overflow:hidden;border:1px solid var(--line2);background:var(--paper)}
+.lane .lh{padding:19px 24px;color:#fff}
+.lane.pub .lh{background:linear-gradient(135deg,var(--plum-deep),var(--plum))}
+.lane.key .lh{background:linear-gradient(135deg,var(--wine-deep),var(--clay))}
+.lane .lh .lk{font-size:12.5px;font-weight:800;letter-spacing:.13em;opacity:.82}
+.lane .lh h3{font-family:'Lora',serif;font-size:25px;font-weight:600;margin:6px 0 4px}
+.lane .lh p{margin:0;font-size:15px;opacity:.93}
+.lane .lb{padding:18px 20px 20px}
+.row{display:flex;gap:15px;padding:15px 0;border-bottom:1px dashed var(--line2)}
+.row:last-child{border-bottom:none}
+.rt{flex:none;width:70px;border-radius:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-family:'Lora',serif;font-weight:700;font-size:23px;line-height:1;padding:9px 0}
+.rt small{font-size:9.5px;font-weight:800;letter-spacing:.05em;font-family:'Manrope',sans-serif;opacity:.85;margin-top:5px}
+.rt.k4{background:var(--wine-deep)}.rt.k3{background:var(--wine)}.rt.k2{background:var(--clay)}.rt.k1{background:var(--clay-soft)}
+.rc{flex:1}
+.rc .rn{font-family:'Lora',serif;font-size:17.5px;font-weight:600;margin-bottom:7px}
+.rc .rd{font-size:15px;color:var(--ink-soft);line-height:1.5;margin-top:7px}
+.chip{display:inline-block;font-size:12.5px;font-weight:800;padding:3.5px 11px;border-radius:999px;color:#fff;margin:0 5px 5px 0}
+.c-mem{background:var(--plum)}.c-sh{background:var(--clay)}.c-app{background:var(--teal)}.c-tp{background:var(--sage)}
+.refmark{margin:9px 0;border-radius:10px;padding:10px 14px;font-size:14px;color:var(--ink-soft);text-align:center;border:1px dashed}
+.lane.pub .refmark{background:#f0ecf4;border-color:#d9cbe0}
+.lane.key .refmark{background:#f8eef0;border-color:#e6c9d0}
+.refmark b{color:var(--ink)}
+
+.legend{display:flex;flex-wrap:wrap;gap:12px 30px;justify-content:center;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:19px 24px;margin-top:26px}
+.legend span{display:inline-flex;align-items:center;gap:9px;font-size:15px;color:var(--ink-soft)}
+.legend i{width:14px;height:14px;border-radius:4px;display:inline-block;flex:none}
+.i-mem{background:var(--plum)}.i-sh{background:var(--clay)}.i-app{background:var(--teal)}.i-tp{background:var(--sage)}
+
+.prin{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.pcard{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px 19px}
+.pcard h5{font-family:'Lora',serif;font-size:17.5px;font-weight:600;margin:0;text-align:center;line-height:1.25}
+.pcard .porig{margin:3px 0 11px;font-size:12.5px;font-style:italic;color:var(--ink-mute);text-align:center;line-height:1.35}
+.pcard p{margin:0;font-size:14.5px;color:var(--ink-soft);line-height:1.55}
+.pcard.asli{border-top:3px solid var(--teal)}
+.pcard.asli h5{color:var(--teal-deep);letter-spacing:.01em}
+
+.guide{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.gcard{background:var(--paper);border:1px solid var(--line);border-top:4px solid var(--clay);border-radius:16px;padding:22px}
+.gcard:nth-child(2){border-top-color:var(--plum)}
+.gcard:nth-child(3){border-top-color:var(--teal)}
+.gcard h4{font-family:'Lora',serif;font-size:19px;font-weight:600;margin:0 0 9px}
+.gcard p{margin:0;font-size:15.5px;color:var(--ink-soft);line-height:1.6}
+
+.open{background:var(--paper);border:1px solid var(--line);border-left:5px solid var(--slate);border-radius:14px;padding:24px 28px}
+.open h4{font-family:'Lora',serif;font-size:20px;margin:0 0 13px;font-weight:600}
+.open ol{margin:0;padding-left:24px;font-size:16.5px;color:var(--ink-soft);line-height:1.75}
+.open li{margin-bottom:7px}.open b{color:var(--ink)}
+
+footer{border-top:1px solid var(--line2);padding:26px 56px 38px;font-size:14px;color:var(--ink-mute);display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
+
+@media(max-width:900px){
+  .lanes,.prin,.guide{grid-template-columns:1fr}
+  .wrap,.mast,footer{padding-left:24px;padding-right:24px}
+  .mast h1{font-size:34px}
+}
+@media print{body{background:#fff}.sheet{box-shadow:none;max-width:none}}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<div class="mast">
+  <div class="kick">Kerangka Rancangan · v0.3 · proporsi piramida dikoreksi</div>
+  <h1>Platform Kesehatan Jiwa Digital<br>Sadar Hati × Memantik.id</h1>
+  <p>Rancangan berlabuh pada <strong>Piramida Intervensi Berlapis MHPSS</strong> — Inter-Agency Standing Committee (IASC), <em>Guidelines on Mental Health and Psychosocial Support in Emergency Settings</em>, 2007.</p>
+  <div class="meta">
+    <span>Anchor: IASC MHPSS Intervention Pyramid</span>
+    <span>LMS: konsep Memantik.id</span>
+    <span>Arsitektur layanan: model Senacti</span>
+    <span>28 Juli 2026</span>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- ============ PANEL 1 ============ -->
+<section>
+  <div class="shead"><div class="snum">1</div><h2>Piramida IASC — sebagaimana aslinya</h2></div>
+  <p class="slede">Gambar acuan, digambar setia pada panduan aslinya: empat lapis, puncak lancip, sisi lurus dari puncak ke alas, keterangan di sisi kanan. Palet disesuaikan warna lembaga; struktur dan makna tidak diubah.</p>
+
+  <div class="fig">
+    <h2 class="sr-only">Piramida intervensi berlapis IASC dengan empat lapis dari bawah ke atas: Layanan Dasar dan Keamanan; Dukungan Komunitas dan Keluarga; Dukungan Terfokus Non-Spesialis; Layanan Spesialis. Makin ke atas makin sedikit orang yang membutuhkannya dan makin tinggi tingkat pelatihan serta supervisi yang diperlukan.</h2>
+    <svg viewBox="0 0 1180 730" role="img" aria-label="Piramida intervensi berlapis IASC">
+      <defs>
+        <marker id="dot" markerWidth="9" markerHeight="9" refX="4.5" refY="4.5">
+          <circle cx="4.5" cy="4.5" r="3.4" fill="#a89a8f"/>
+        </marker>
+      </defs>
+
+      <!-- geometry: apex (400,30) · base y=690 · half-width 340 · sisi lurus, dihitung -->
+      <polygon points="400,30 485,195 315,195" fill="#5e1424"/>
+      <polygon points="312.4,200 487.6,200 570,360 230,360" fill="#7a1f30"/>
+      <polygon points="227.4,365 572.6,365 655,525 145,525" fill="#a83244"/>
+      <polygon points="142.4,530 657.6,530 740,690 60,690" fill="#c0616f"/>
+
+      <!-- penanda angka + nama lapis · satu ukuran huruf untuk semua -->
+      <g font-family="Lora, Georgia, serif" font-weight="700" text-anchor="middle">
+        <circle cx="400" cy="142" r="15" fill="#fff"/>
+        <text x="400" y="147.5" font-size="16" fill="#5e1424">4</text>
+        <text x="400" y="182" font-size="17" fill="#fff">Spesialis</text>
+
+        <circle cx="400" cy="258" r="15" fill="#fff"/>
+        <text x="400" y="263.5" font-size="16" fill="#7a1f30">3</text>
+        <text x="400" y="298" font-size="17" fill="#fff">Dukungan Terfokus</text>
+
+        <circle cx="400" cy="428" r="15" fill="#fff"/>
+        <text x="400" y="433.5" font-size="16" fill="#a83244">2</text>
+        <text x="400" y="468" font-size="17" fill="#fff">Komunitas &amp; Keluarga</text>
+
+        <circle cx="400" cy="588" r="15" fill="#fff"/>
+        <text x="400" y="593.5" font-size="16" fill="#c0616f">1</text>
+        <text x="400" y="628" font-size="17" fill="#fff">Dasar &amp; Keamanan</text>
+      </g>
+
+      <line x1="446.6" y1="120.5" x2="782" y2="120.5" stroke="#c9bcae" stroke-width="1.6" marker-start="url(#dot)"/>
+      <line x1="530.4" y1="283" x2="782" y2="283" stroke="#c9bcae" stroke-width="1.6" marker-start="url(#dot)"/>
+      <line x1="619.3" y1="455.5" x2="782" y2="455.5" stroke="#c9bcae" stroke-width="1.6" marker-start="url(#dot)"/>
+      <line x1="704.3" y1="620.5" x2="782" y2="620.5" stroke="#c9bcae" stroke-width="1.6" marker-start="url(#dot)"/>
+
+      <foreignObject x="794" y="58" width="374" height="125">
+        <div xmlns="http://www.w3.org/1999/xhtml">
+          <p class="lyr-t">Layanan Spesialis</p>
+          <p class="lyr-e">Specialised services</p>
+          <p class="lyr-d">Bagi sebagian kecil orang dengan kondisi berat yang tak tertangani lapis di bawahnya — ditangani tenaga spesialis: psikiater, perawat jiwa, psikolog.</p>
+        </div>
+      </foreignObject>
+      <foreignObject x="794" y="203" width="374" height="162">
+        <div xmlns="http://www.w3.org/1999/xhtml">
+          <p class="lyr-t">Dukungan Terfokus Non-Spesialis</p>
+          <p class="lyr-e">Focused, non-specialised supports</p>
+          <p class="lyr-d">Bagi sejumlah kecil orang yang butuh intervensi individu, keluarga, atau kelompok oleh petugas <strong>terlatih dan tersupervisi</strong> — misalnya Pertolongan Pertama Psikologis (PFA) dan layanan jiwa dasar oleh petugas kesehatan primer.</p>
+        </div>
+      </foreignObject>
+      <foreignObject x="794" y="383" width="374" height="148">
+        <div xmlns="http://www.w3.org/1999/xhtml">
+          <p class="lyr-t">Dukungan Komunitas &amp; Keluarga</p>
+          <p class="lyr-e">Community and family supports</p>
+          <p class="lyr-d">Mengaktifkan jejaring sosial: penelusuran keluarga &amp; reunifikasi, ritual berkabung, pendidikan non-formal, program pengasuhan suportif, kelompok perempuan, klub remaja.</p>
+        </div>
+      </foreignObject>
+      <foreignObject x="794" y="548" width="374" height="150">
+        <div xmlns="http://www.w3.org/1999/xhtml">
+          <p class="lyr-t">Layanan Dasar &amp; Keamanan</p>
+          <p class="lyr-e">Basic services and security</p>
+          <p class="lyr-d">Memastikan kebutuhan dasar, keamanan, dan martabat terpenuhi dengan cara yang partisipatif, aman, dan pantas secara sosial-budaya — termasuk advokasi agar layanan itu tersedia.</p>
+        </div>
+      </foreignObject>
+
+      <text x="60" y="34" font-family="Manrope, sans-serif" font-size="13.5" font-weight="800" fill="#8a7f77">↑ MAKIN SEDIKIT ORANGNYA</text>
+      <text x="60" y="56" font-family="Manrope, sans-serif" font-size="13" fill="#8a7f77">↑ makin tinggi pelatihan &amp; supervisi yang dibutuhkan</text>
+    </svg>
+    <div class="figcap">Sumber: IASC, <em>Guidelines on Mental Health and Psychosocial Support in Emergency Settings</em> (2007). Digambar ulang dalam palet lembaga; struktur, proporsi, dan makna lapis mengikuti aslinya.</div>
+  </div>
+
+  <div class="callout">
+    <p><b>Yang paling sering keliru dipahami:</b> keempat lapis <strong>dijalankan bersamaan</strong>, bukan berurutan seperti anak tangga. Piramida menunjukkan <em>perbandingan jumlah orang</em> yang membutuhkan tiap lapis, bukan tahapan yang harus dilewati satu per satu. Perpindahan antar lapis terjadi lewat <strong>rujukan</strong> — dan rujukan berjalan dua arah, naik maupun turun.</p>
+  </div>
+
+  <div class="fix">
+    <h5>Catatan revisi</h5>
+    <p><strong>v0.1:</strong> puncak digambar terpotong dan lapis diperlakukan seolah anak tangga dengan satu “gerbang”. <strong>v0.2:</strong> puncak dikembalikan lancip, “gerbang” diganti “titik rujukan”. <strong>v0.3:</strong> lebar tiap lapis ternyata masih dikira-kira sehingga sisi piramida menggembung 3–6 satuan di tiap sambungan; kini seluruh titik dihitung dari persamaan segitiga, sehingga sisinya benar-benar lurus dari puncak ke alas.</p>
+  </div>
+</section>
+
+<!-- ============ PANEL 2 ============ -->
+<section>
+  <div class="shead"><div class="snum">2</div><h2>Hamparan Kita di Atas Piramida</h2></div>
+  <p class="slede">Kerangka IASC di atas dipakai sebagai alas. Di atasnya kita tempelkan dua hal: <strong>zona Belajar–Layanan</strong> (kiri) dan <strong>aplikasi digital sebagai rel penghubung</strong> (kanan). Garis putus-putus menandai <strong>titik rujukan</strong> — tempat dua jalur berpisah.</p>
+
+  <div class="fig">
+    <h2 class="sr-only">Piramida yang sama dilapisi zona: Zona Belajar dari konsep Memantik menyelimuti Lapis 1 dan 2 dan terbuka untuk umum; Zona Layanan model Senacti menyelimuti Lapis 3 dan 4 dengan akses terbatas. Aplikasi digital menjadi rel penghubung yang menjahit Lapis 2 sampai 4. Titik rujukan berada di batas Lapis 2 dan 3.</h2>
+    <svg viewBox="0 0 1180 720" role="img" aria-label="Hamparan zona dan rel aplikasi di atas piramida IASC">
+      <defs>
+        <linearGradient id="railg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#206b74"/><stop offset="1" stop-color="#164b52"/>
+        </linearGradient>
+      </defs>
+      <foreignObject x="16" y="92" width="212" height="196">
+        <div xmlns="http://www.w3.org/1999/xhtml" class="zonecard zsvc">
+          <div class="zl">ZONA ATAS</div>
+          <div class="zt">Zona Layanan</div>
+          <div class="zs">Arsitektur layanan model Senacti — asesmen, pendampingan, rujukan hingga ke klien.</div>
+          <div class="ztag">AKSES TERBATAS</div>
+        </div>
+      </foreignObject>
+      <foreignObject x="16" y="407" width="212" height="196">
+        <div xmlns="http://www.w3.org/1999/xhtml" class="zonecard zlrn">
+          <div class="zl">ZONA BAWAH</div>
+          <div class="zt">Zona Belajar</div>
+          <div class="zs">LMS dari konsep Memantik.id — literasi jiwa, doodle, P3LP, modul swadaya.</div>
+          <div class="ztag">TERBUKA UMUM</div>
+        </div>
+      </foreignObject>
+
+      <path d="M240 34 h16 v307 h-16" fill="none" stroke="#c98a99" stroke-width="2.4"/>
+      <path d="M240 350 h16 v306 h-16" fill="none" stroke="#b39ac0" stroke-width="2.4"/>
+
+      <!-- geometry: apex (620,30) · base y=660 · half-width 260 · dihitung -->
+      <polygon points="620,30 685,187.5 555,187.5" fill="#5e1424"/>
+      <polygon points="552.9,192.5 687.1,192.5 750,345 490,345" fill="#7a1f30"/>
+      <polygon points="487.9,350 752.1,350 815,502.5 425,502.5" fill="#a83244"/>
+      <polygon points="422.9,507.5 817.1,507.5 880,660 360,660" fill="#c0616f"/>
+
+      <g font-family="Lora, Georgia, serif" font-weight="700" text-anchor="middle">
+        <circle cx="620" cy="136" r="14" fill="#fff"/>
+        <text x="620" y="141" font-size="15" fill="#5e1424">4</text>
+        <text x="620" y="174" font-size="16" fill="#fff">Spesialis</text>
+
+        <circle cx="620" cy="252" r="14" fill="#fff"/>
+        <text x="620" y="257" font-size="15" fill="#7a1f30">3</text>
+        <text x="620" y="290" font-size="16" fill="#fff">Dukungan Terfokus</text>
+
+        <circle cx="620" cy="418" r="14" fill="#fff"/>
+        <text x="620" y="423" font-size="15" fill="#a83244">2</text>
+        <text x="620" y="456" font-size="16" fill="#fff">Komunitas &amp; Keluarga</text>
+
+        <circle cx="620" cy="578" r="14" fill="#fff"/>
+        <text x="620" y="583" font-size="15" fill="#c0616f">1</text>
+        <text x="620" y="616" font-size="16" fill="#fff">Dasar &amp; Keamanan</text>
+      </g>
+
+      <!-- titik rujukan: garis melintang + pil di sisi kiri -->
+      <line x1="272" y1="347.5" x2="1090" y2="347.5" stroke="#2c2724" stroke-width="1.8" stroke-dasharray="9 7"/>
+      <rect x="272" y="319" width="196" height="57" rx="12" fill="#2c2724"/>
+      <text x="370" y="342" text-anchor="middle" font-family="Manrope, sans-serif" font-size="13.5" font-weight="800" fill="#fff">TITIK RUJUKAN</text>
+      <text x="370" y="362" text-anchor="middle" font-family="Manrope, sans-serif" font-size="12" fill="#e8dcd8">tempat dua jalur berpisah</text>
+      <text x="370" y="396" text-anchor="middle" font-family="Manrope, sans-serif" font-size="12.5" fill="#8a7f77">↑ rujuk naik &nbsp;·&nbsp; ↓ rujuk balik</text>
+
+      <!-- rel penghubung: batang tegak membentang L4–L2 -->
+      <rect x="1100" y="30" width="46" height="472.5" rx="23" fill="url(#railg)"/>
+      <text transform="translate(1123,266) rotate(-90)" text-anchor="middle" font-family="Manrope, sans-serif" font-size="12.5" font-weight="800" fill="#eaf5f6" letter-spacing="2.5">APLIKASI DIGITAL · REL PENGHUBUNG</text>
+      <circle cx="1123" cy="30" r="7" fill="#164b52"/><circle cx="1123" cy="502.5" r="7" fill="#164b52"/>
+
+      <g font-family="Manrope, sans-serif" font-size="13.5" fill="#12484f">
+        <rect x="862" y="88"  width="226" height="44" rx="11" fill="#e4eff0" stroke="#9dc4c7" stroke-width="1.2"/>
+        <text x="975" y="115" text-anchor="middle">Alur rujukan &amp; jadwal</text>
+        <line x1="1088" y1="110" x2="1100" y2="110" stroke="#206b74" stroke-width="2.2"/>
+
+        <rect x="862" y="203" width="226" height="44" rx="11" fill="#e4eff0" stroke="#9dc4c7" stroke-width="1.2"/>
+        <text x="975" y="230" text-anchor="middle">Pendampingan / coaching</text>
+        <line x1="1088" y1="225" x2="1100" y2="225" stroke="#206b74" stroke-width="2.2"/>
+
+        <rect x="862" y="278" width="226" height="44" rx="11" fill="#e4eff0" stroke="#9dc4c7" stroke-width="1.2"/>
+        <text x="975" y="305" text-anchor="middle">Asesmen mandiri</text>
+        <line x1="1088" y1="300" x2="1100" y2="300" stroke="#206b74" stroke-width="2.2"/>
+
+        <rect x="862" y="408" width="226" height="44" rx="11" fill="#e4eff0" stroke="#9dc4c7" stroke-width="1.2"/>
+        <text x="975" y="435" text-anchor="middle">Modul &amp; konten belajar</text>
+        <line x1="1088" y1="430" x2="1100" y2="430" stroke="#206b74" stroke-width="2.2"/>
+      </g>
+      <text x="1146" y="556" text-anchor="end" font-family="Manrope, sans-serif" font-size="11.5" fill="#8a7f77">fungsi ditempel di ketinggian lapisnya</text>
+
+      <text x="360" y="700" font-family="Manrope, sans-serif" font-size="13.5" fill="#8a7f77">Zona = produk &amp; akses · Piramida = tingkat kebutuhan · Rel = mesin penyampai</text>
+    </svg>
+    <div class="figcap">Hamparan rancangan Sadar Hati × Memantik.id di atas kerangka IASC. Isi tiap irisan masih usulan (v0.3).</div>
+  </div>
+</section>
+
+<!-- ============ PANEL 3 ============ -->
+<section>
+  <div class="shead"><div class="snum">3</div><h2>Dua Jalur — siapa mengisi apa di tiap lapis</h2></div>
+  <p class="slede">Lapis bawah hampir sama untuk keduanya; perbedaan menajam di Lapis 3–4. <strong>Jalur Publik sengaja berhenti di rujukan umum</strong> agar tidak menyentuh ranah sensitif populasi kunci. Warna penanda = <em>siapa pemiliknya</em>, bukan tingkat lapisnya.</p>
+
+  <div class="lanes">
+    <div class="lane pub">
+      <div class="lh">
+        <div class="lk">JALUR 1</div>
+        <h3>Untuk Masyarakat Luas</h3>
+        <p>Pintu terbuka · non-sensitif · tanpa data pribadi klinis</p>
+      </div>
+      <div class="lb">
+        <div class="row">
+          <div class="rt k4">4<small>SPESIALIS</small></div>
+          <div class="rc"><div class="rn">Layanan Spesialis</div>
+            <span class="chip c-tp">Pihak ketiga</span>
+            <div class="rd">Diarahkan ke psikolog klinis, psikiater, atau faskes umum. Sadar Hati tidak menangani langsung di jalur ini.</div></div>
+        </div>
+        <div class="row">
+          <div class="rt k3">3<small>TERFOKUS</small></div>
+          <div class="rc"><div class="rn">Dukungan Terfokus</div>
+            <span class="chip c-app">Aplikasi</span><span class="chip c-tp">Pihak ketiga</span>
+            <div class="rd">Skrining mandiri di aplikasi, lalu diarahkan ke Puskesmas layanan jiwa, hotline nasional, atau mitra rujukan.</div></div>
+        </div>
+        <div class="refmark"><b>⇢ Titik rujukan:</b> pengguna publik <b>diserahkan keluar</b> — tidak masuk sistem layanan Sadar Hati</div>
+        <div class="row">
+          <div class="rt k2">2<small>KOMUNITAS</small></div>
+          <div class="rc"><div class="rn">Komunitas &amp; Keluarga</div>
+            <span class="chip c-mem">Memantik</span>
+            <div class="rd">Inti kekuatan Memantik: literasi jiwa, doodle, P3LP, modul swadaya, kelas dan webinar.</div></div>
+        </div>
+        <div class="row">
+          <div class="rt k1">1<small>DASAR</small></div>
+          <div class="rc"><div class="rn">Dasar &amp; Keamanan</div>
+            <span class="chip c-sh">Sadar Hati</span><span class="chip c-tp">Pihak ketiga</span>
+            <div class="rd">Advokasi, informasi hak dan layanan, arah rujukan dasar, kampanye anti-stigma.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lane key">
+      <div class="lh">
+        <div class="lk">JALUR 2</div>
+        <h3>Untuk Komunitas Kunci Sadar Hati</h3>
+        <p>Akses terbatas · berbasis pendampingan · data terlindungi</p>
+      </div>
+      <div class="lb">
+        <div class="row">
+          <div class="rt k4">4<small>SPESIALIS</small></div>
+          <div class="rc"><div class="rn">Layanan Spesialis</div>
+            <span class="chip c-sh">Sadar Hati</span><span class="chip c-tp">Pihak ketiga</span>
+            <div class="rd">Rujukan khusus: psikiatri adiksi, layanan ARV/CST, psikolog klinis — dengan pendampingan dan supervisi Sadar Hati.</div></div>
+        </div>
+        <div class="row">
+          <div class="rt k3">3<small>TERFOKUS</small></div>
+          <div class="rc"><div class="rn">Dukungan Terfokus</div>
+            <span class="chip c-sh">Sadar Hati</span><span class="chip c-app">Aplikasi</span>
+            <div class="rd">Asesmen SRQ-29 dan DAST-10, pendampingan sebaya, manajemen kasus dengan tenggat kontak — sebagian besar <strong>sudah berjalan</strong>.</div></div>
+        </div>
+        <div class="refmark"><b>⇡ Titik rujukan:</b> pengguna <b>dirujuk masuk</b> ke sistem layanan Sadar Hati</div>
+        <div class="row">
+          <div class="rt k2">2<small>KOMUNITAS</small></div>
+          <div class="rc"><div class="rn">Komunitas &amp; Keluarga</div>
+            <span class="chip c-mem">Memantik</span><span class="chip c-sh">Sadar Hati</span>
+            <div class="rd">Materi Memantik dipadu dukungan sebaya dan kelompok yang sudah berjalan di lapangan.</div></div>
+        </div>
+        <div class="row">
+          <div class="rt k1">1<small>DASAR</small></div>
+          <div class="rc"><div class="rn">Dasar &amp; Keamanan</div>
+            <span class="chip c-sh">Sadar Hati</span>
+            <div class="rd">Ruang aman, kebutuhan dasar, layanan alat suntik steril, kredensial IPWL — fondasi yang membedakan jalur ini.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><i class="i-mem"></i><b style="color:var(--ink)">Memantik.id</b> — literasi &amp; edukasi</span>
+    <span><i class="i-sh"></i><b style="color:var(--ink)">Sadar Hati</b> — layanan &amp; pendampingan</span>
+    <span><i class="i-app"></i><b style="color:var(--ink)">Aplikasi digital</b> — skrining · coaching · rujukan</span>
+    <span><i class="i-tp"></i><b style="color:var(--ink)">Pihak ketiga</b> — spesialis &amp; faskes rujukan</span>
+  </div>
+</section>
+
+<!-- ============ PANEL 4 ============ -->
+<section>
+  <div class="shead"><div class="snum">4</div><h2>Enam Prinsip Inti IASC — pagar rancangan</h2></div>
+  <p class="slede">Panduan IASC tidak hanya memberi bentuk piramida, tetapi juga prinsip yang mengikat cara kerjanya. Enam prinsip ini kita pakai sebagai pagar saat merancang platform. Istilah aslinya dipertahankan sebagai judul — terjemahan Indonesia menyusul di bawahnya; padanan Kemenkes untuk <em>Do No Harm</em> adalah “jangan menyakiti”.</p>
+  <div class="prin">
+    <div class="pcard"><h5>Human Rights &amp; Equity</h5><div class="porig">hak asasi manusia &amp; kesetaraan</div><p>Melindungi hak semua orang dan mendorong pemerataan akses — bukan hanya yang paling mudah dijangkau.</p></div>
+    <div class="pcard"><h5>Participation</h5><div class="porig">pendekatan partisipatif</div><p>Komunitas terdampak ikut merancang dan mengendalikan, bukan sekadar menerima layanan.</p></div>
+    <div class="pcard asli"><h5>Do No Harm</h5><div class="porig">jangan menyakiti</div><p>Setiap fitur diuji risikonya — termasuk risiko membuka data, salah label, dan stigma.</p></div>
+    <div class="pcard"><h5>Building on Available Resources &amp; Capacities</h5><div class="porig">membangun di atas sumber daya &amp; kapasitas yang sudah ada</div><p>Menguatkan yang sudah bekerja: pendamping sebaya, kelompok komunitas, materi yang sudah dimiliki.</p></div>
+    <div class="pcard"><h5>Integrated Support Systems</h5><div class="porig">sistem dukungan terpadu</div><p>Menyatu dengan sistem yang lebih luas, bukan membangun sistem paralel yang berdiri sendiri.</p></div>
+    <div class="pcard"><h5>Multi-layered Supports</h5><div class="porig">dukungan berlapis</div><p>Semua lapis tersedia bersamaan, saling melengkapi, dan terhubung lewat rujukan dua arah.</p></div>
+  </div>
+</section>
+
+<!-- ============ PANEL 5 ============ -->
+<section>
+  <div class="shead"><div class="snum">5</div><h2>Cara Membaca Skema Ini</h2></div>
+  <p class="slede">Tiga kalimat kunci agar tiap irisan mudah dipahami — dan agar diskusi kita tidak kembali tertukar.</p>
+  <div class="guide">
+    <div class="gcard"><h4>Bentuknya adalah data</h4><p>Lebar tiap lapis menunjukkan <em>berapa banyak orang</em> yang membutuhkannya, dan puncak yang menyempit menunjukkan langkanya tenaga spesialis. Bila bentuknya diubah jadi kotak, pesannya ikut berubah.</p></div>
+    <div class="gcard"><h4>Aplikasi bukan lapisan</h4><p>Aplikasi adalah <em>rel</em> yang menjahit Lapis 2–4. Memantik dan Sadar Hati mengisi <em>isi</em>; aplikasi adalah <em>mesin penyampai</em>; pihak ketiga adalah ujung spesialisnya.</p></div>
+    <div class="gcard"><h4>Titik rujukan, bukan gerbang</h4><p>Perpindahan antar lapis adalah rujukan yang bisa naik maupun turun. Di titik itulah dua jalur berpisah: publik dirujuk keluar, komunitas kunci dirujuk masuk.</p></div>
+  </div>
+</section>
+
+<!-- ============ PANEL 6 ============ -->
+<section>
+  <div class="shead"><div class="snum">6</div><h2>Yang Masih Terbuka</h2></div>
+  <p class="slede">Isian tiap kotak di atas adalah usulan kerja, bukan keputusan.</p>
+  <div class="open">
+    <h4>Untuk didiskusikan</h4>
+    <ol>
+      <li><b>Ukuran keberhasilan.</b> Apakah platform ini diukur dari banyaknya rujukan naik, atau dari banyaknya orang yang cukup tertolong di lapis bawah? Jawabannya mengubah cara kita merancang titik rujukan.</li>
+      <li><b>Isi titik rujukan.</b> Apa yang memicu rujukan — hasil skrining, permintaan sendiri, atau penilaian pendamping? Siapa yang memutuskan?</li>
+      <li><b>Rujukan balik.</b> Setelah layanan, bagaimana orang dikembalikan ke dukungan komunitas? Arah ini sering terlupakan.</li>
+      <li><b>Batas Lapis 3.</b> Di mana persisnya swadaya dan pendampingan berhenti, dan layanan klinis dimulai?</li>
+      <li><b>Penyerahan jalur publik.</b> Ke mana tepatnya orang non-populasi-kunci diarahkan, dan bagaimana memastikan rujukan itu sampai?</li>
+      <li><b>Peran Memantik di Lapis 3.</b> Apakah pendamping berasal dari Memantik, Sadar Hati, atau keduanya dengan pembagian peran?</li>
+      <li><b>Celah yang belum terisi.</b> Lapis mana yang belum ada pengisinya dan perlu mitra baru?</li>
+      <li><b>Detail internal Senacti.</b> Modul, alur rujukan, dan susunan teknologinya — belum terlihat dari sumber terbuka.</li>
+    </ol>
+  </div>
+</section>
+
+</div>
+
+<footer>
+  <span>Yayasan Sadar Hati × Memantik.id · Skema v0.3 — bahan diskusi internal</span>
+  <span>Kerangka: IASC Guidelines on MHPSS in Emergency Settings (2007)</span>
+</footer>
+
+</div>
+</body>
+</html>
