@@ -303,7 +303,7 @@
 
   <a class="form-card dast" href="portal.html?go=ruj" style="border-left-color:#a83244;">
     <div class="badge" style="background:rgba(168,50,68,0.13);color:#7d2433;">Rujukan PKM · 🔒 Login PL</div>
-    <h2>Form Rujukan ke Puskesmas</h2>
+    <h2>Rujukan ke Puskesmas</h2>
     <p>Rujuk KD ke layanan Puskesmas (VCT/IMS/Keswa/PrEP/TB/dst). Skrining DAST-10 &amp; SRQ-20 <strong>auto-tarik</strong> dari entri terakhir; cetak A4 siap dibawa. Khusus PL — halaman minta login.</p>
     <div class="meta"><span>⏱ ~2 menit</span><span>🏥 10 layanan</span><span>🔒 per-PL</span></div>
   </a>
@@ -419,6 +419,8 @@
 <script>
 (function(){
   var KD=['absensi'];
+  var __c=[].slice.call(document.querySelectorAll('.form-card'));
+  if(__c.length){var __p=__c[0].parentNode,__a=__c[__c.length-1].nextSibling;__c.sort(function(x,y){return x.querySelector('h2').textContent.trim().localeCompare(y.querySelector('h2').textContent.trim(),'id',{sensitivity:'base'});});__c.forEach(function(el){__p.insertBefore(el,__a);});}
   document.querySelectorAll('.form-card').forEach(function(c){
     var href=(c.getAttribute('href')||'').toLowerCase();
     var isKD=KD.some(function(k){return href.indexOf(k)>=0;});

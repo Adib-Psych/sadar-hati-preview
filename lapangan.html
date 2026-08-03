@@ -893,19 +893,21 @@
           <span class="zone-badge open">TERBUKA</span><span class="chevron">▶</span>
         </div>
         <div class="nav-layer-body">
-              <a class="nav-item active" data-section="l1-master"><span class="icon">📋</span> 1 · Master List Form</a>
-              <a class="nav-item" data-section="l1-form-dast10"><span class="icon">💊</span> 2 · DAST-10 Napza</a>
-              <a class="nav-item" data-section="l1-form-gabungan"><span class="icon">🧪</span> 3 · Gabungan DAST + SRQ</a>
-              <a class="nav-item" data-section="l1-form-gra"><span class="icon">👥</span> 4 · GRA · Risiko Kelompok</a>
-              <a class="nav-item" data-section="l1-form-ira"><span class="icon">⚕️</span> 5 · IRA · Risiko Pribadi</a>
-              <a class="nav-item" data-section="l1-form-konseling"><span class="icon">💬</span> 6 · Konseling</a>
-              <a class="nav-item" data-section="l1-form-bulanan"><span class="icon">📆</span> 7 · Laporan Bulanan Korlap</a>
-              <a class="nav-item" data-section="l1-form-checkin"><span class="icon">📍</span> 8 · Pemetaan Hotspot</a>
-              <a class="nav-item" data-section="l1-form-chemsex"><span class="icon">🔥</span> 9 · Penjangkauan</a>
-              <a class="nav-item" data-section="l1-form-prevkit"><span class="icon">🎒</span> 10 · Prevention Kit</a>
-              <a class="nav-item" data-section="l1-form-vct"><span class="icon">🪪</span> 11 · Registrasi VCT · Kartu ID</a>
-              <a class="nav-item" data-section="l1-form-srq29"><span class="icon">🧠</span> 12 · SRQ-29 Mental Health</a>
-              <a class="nav-item" data-section="l1-portal"><span class="icon">🔑</span> 13 · Portal PL</a>
+              <a class="nav-item active" data-section="l1-master"><span class="icon">📋</span> Master List Form</a>
+              <a class="nav-item" data-section="l1-form-absensi"><span class="icon">✍️</span> Absensi Mandiri KD</a>
+              <a class="nav-item" data-section="l1-form-dast10"><span class="icon">💊</span> DAST-10 · Napza</a>
+              <a class="nav-item" data-section="l1-form-gabungan"><span class="icon">🧪</span> Gabungan DAST + SRQ</a>
+              <a class="nav-item" data-section="l1-form-gra"><span class="icon">👥</span> GRA · Risiko Kelompok</a>
+              <a class="nav-item" data-section="l1-form-ira"><span class="icon">⚕️</span> IRA · Risiko Pribadi</a>
+              <a class="nav-item" data-section="l1-form-konseling"><span class="icon">💬</span> Konseling</a>
+              <a class="nav-item" data-section="l1-form-bulanan"><span class="icon">📆</span> Laporan Bulanan Korlap</a>
+              <a class="nav-item" data-section="l1-form-checkin"><span class="icon">📍</span> Pemetaan Hotspot</a>
+              <a class="nav-item" data-section="l1-form-chemsex"><span class="icon">🔥</span> Penjangkauan</a>
+              <a class="nav-item" data-section="l1-form-prevkit"><span class="icon">🎒</span> Prevention Kit</a>
+              <a class="nav-item" data-section="l1-form-vct"><span class="icon">🪪</span> Registrasi VCT · Kartu ID</a>
+              <a class="nav-item" data-section="l1-form-rujukan"><span class="icon">🏥</span> Rujukan ke Puskesmas</a>
+              <a class="nav-item" data-section="l1-form-srq29"><span class="icon">🧠</span> SRQ-29 Mental Health</a>
+              <a class="nav-item" data-section="l1-portal"><span class="icon">🔑</span> Portal PL</a>
         </div>
       </div>
     </nav>
@@ -1289,7 +1291,7 @@
             <div class="ml-actions"><button class="ml-fill" onclick="window.open('form/absensi.html','_blank')">↗ Buka form</button><button class="ml-copy" data-url="form/absensi.html" onclick="SAHA_COPY(this)">🔗 Copy link</button><button class="ml-qr" data-url="form/absensi.html" onclick="SAHA_QR(this)">📱 QR</button></div>
           </div>
           <div class="ml-card">
-            <div class="tag">Rujukan PKM · Login PL</div><h3>Form Rujukan ke Puskesmas</h3>
+            <div class="tag">Rujukan PKM · Login PL</div><h3>Rujukan ke Puskesmas</h3>
             <p>Rujuk KD ke layanan Puskesmas (VCT/IMS/Keswa/PrEP/TB/dst). Skrining DAST-10 &amp; SRQ-20 auto-tarik; cetak A4 siap dibawa. Khusus PL (login).</p>
             <div class="ml-actions"><button class="ml-fill" onclick="window.open('form/portal.html?go=ruj','_blank')">↗ Buka form</button><button class="ml-copy" data-url="form/portal.html?go=ruj" onclick="SAHA_COPY(this)">🔗 Copy link</button><button class="ml-qr" data-url="form/portal.html?go=ruj" onclick="SAHA_QR(this)">📱 QR</button></div>
           </div>
@@ -1367,6 +1369,20 @@
       </section>
 
       <!-- L3-FORM-DAST10 -->
+      <section class="section" id="l1-form-absensi">
+        <div class="hero"><div class="eyebrow">🟢 Layer 2A · Form Lapangan · Diisi KD</div><h1>Absensi + Skrining Mandiri KD</h1><p class="lede">Diisi langsung oleh KD saat mobile outreach — absensi + DAST-10 + SRQ-29 dalam satu sesi. Satu QR bersama; Petugas (PL) &amp; hotspot dipilih sekali di awal; hasil masuk ke Daftar Hadir &amp; skrining.</p></div>
+        <div class="l1-form-wrap">
+          <div class="l1-form-linkbar"><span class="u">…/form/absensi.html</span><button data-url="form/absensi.html" onclick="SAHA_COPY(this)">🔗 Copy link</button></div>
+          <div class="l1-embed"><iframe src="form/absensi.html" title="Absensi + Skrining Mandiri KD" loading="lazy"></iframe></div>
+        </div>
+      </section>
+      <section class="section" id="l1-form-rujukan">
+        <div class="hero"><div class="eyebrow">🟢 Layer 2A · Form Lapangan · Diisi PL</div><h1>Rujukan ke Puskesmas</h1><p class="lede">Rujuk KD ke layanan Puskesmas (VCT/IMS/Keswa/PrEP/TB/dst). Skrining DAST-10 &amp; SRQ-20 auto-tarik; cetak lembar rujukan A4. Wajib login akun PL.</p></div>
+        <div class="l1-form-wrap">
+          <div class="l1-form-linkbar"><span class="u">…/form/portal.html?go=ruj</span><button data-url="form/portal.html?go=ruj" onclick="SAHA_COPY(this)">🔗 Copy link</button></div>
+          <div class="l1-embed"><iframe src="form/portal.html?go=ruj" title="Rujukan ke Puskesmas" loading="lazy"></iframe></div>
+        </div>
+      </section>
       <section class="section" id="l1-form-dast10">
         <div class="hero"><div class="eyebrow">🟢 Layer 2A · Form Lapangan · No. 2</div><h1>DAST-10 · Skrining Napza</h1><p class="lede">10 pertanyaan Ya/Tidak penggunaan Napza 3 bulan terakhir — asesmen awal IPWL + Harm Reduction. Identitas &amp; area sama dengan Chemsex (1 kesatuan) · tersimpan ke database.</p></div>
         <div class="l1-form-wrap">
@@ -2206,6 +2222,8 @@ tr.me-rawclick{cursor:pointer;}
 <script>
 (function(){
   function tag(){
+    var __g=document.querySelector('#l1-master .ml-grid');
+    if(__g){var __cs=[].slice.call(__g.querySelectorAll('.ml-card'));__cs.sort(function(x,y){return x.querySelector('h3').textContent.trim().localeCompare(y.querySelector('h3').textContent.trim(),'id',{sensitivity:'base'});});__cs.forEach(function(el){__g.appendChild(el);});}
     document.querySelectorAll('#l1-master .ml-card').forEach(function(c){
       if(c.querySelector('.ml-fillbadge'))return;
       var cp=c.querySelector('.ml-copy'); var url=cp?(cp.getAttribute('data-url')||''):'';
