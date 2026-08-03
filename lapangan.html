@@ -842,7 +842,7 @@
         #saha-qr-modal canvas{ border:1px solid #e7ddd3; border-radius:12px; padding:8px; background:#fff; }
         #saha-qr-modal .qract{ display:flex; gap:10px; margin-top:14px; }
         #saha-qr-modal .qract button{ flex:1; padding:10px; border-radius:10px; font-weight:700; font-size:13px; cursor:pointer; font-family:inherit; border:none; }
-        .qr-dl{ background:#6b4d7a; color:#fff; } .qr-cl{ background:#f5efe7; color:#4a4340; border:1.5px solid #ddd3c8 !important; }
+        .qr-dl{ background:#a83244; color:#fff; } .qr-cl{ background:#f5efe7; color:#4a4340; border:1.5px solid #ddd3c8 !important; }
 </style>
 <style>/* master list 4x3 */
   #l1-master .ml-grid { grid-template-columns: repeat(4, 1fr); }
@@ -2029,6 +2029,9 @@ window.SAHA_QR = function(btn){
   document.getElementById('saha-qr-title').textContent = '📱 QR — ' + name;
   document.getElementById('saha-qr-url').textContent = url;
   window.__SAHA_QR_NAME = name.replace(/\s+/g, '_');
+  var isKD = /absensi/i.test(rel);
+  var dl = document.querySelector('#saha-qr-modal .qr-dl');
+  if (dl) dl.style.background = isKD ? '#0d8b8b' : '#a83244';
   document.getElementById('saha-qr-modal').style.display = 'flex';
 };
 window.SAHA_QR_DL = function(){
