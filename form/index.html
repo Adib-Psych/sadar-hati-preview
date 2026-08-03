@@ -189,6 +189,12 @@
     cursor: pointer;
     margin-top: 8px;
   }
+  .form-legend{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;background:#fff;border:1px solid #e7ddd3;border-radius:12px;padding:10px 14px;margin-bottom:16px;font-size:12px;font-weight:700;color:var(--navy);}
+  .form-legend .lg{display:inline-flex;align-items:center;gap:6px;}
+  .form-legend .lg i{width:14px;height:14px;border-radius:4px;display:inline-block;}
+  .fillbadge{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;border-radius:20px;padding:3px 10px;margin-bottom:8px;}
+  .fillbadge.kd{background:rgba(13,139,139,.13);color:#0a6a6a;}
+  .fillbadge.pl{background:rgba(168,50,68,.12);color:#7d2433;}
 </style>
 </head>
 <body>
@@ -203,6 +209,11 @@
     <div class="eyebrow">📋 Digital Assessment Form</div>
     <h1>Pilih Instrumen Assessment</h1>
     <p>Kedua instrumen ini bisa diisi oleh pekerja lapangan (PL) bersama dampingan — durasi rata-rata 3-8 menit. Skor akan dihitung otomatis dengan interpretasi tingkat masalah langsung.</p>
+  </div>
+
+  <div class="form-legend">
+    <span class="lg"><i style="background:#0d8b8b;"></i>👤 Diisi KD sendiri</span>
+    <span class="lg"><i style="background:#a83244;"></i>🩺 Diisi Petugas (PL)</span>
   </div>
 
   <a class="form-card dast" href="absensi.html" style="border-left-color:#7d2433;">
@@ -404,6 +415,20 @@
     updateCount();
     alert('✓ ' + st.synced.length + ' salinan tersinkron dibersihkan.' + (st.pending.length ? ' ' + st.pending.length + ' entri menunggu sinyal tetap aman.' : ''));
   }
+</script>
+<script>
+(function(){
+  var KD=['absensi'];
+  document.querySelectorAll('.form-card').forEach(function(c){
+    var href=(c.getAttribute('href')||'').toLowerCase();
+    var isKD=KD.some(function(k){return href.indexOf(k)>=0;});
+    c.style.borderLeftColor = isKD ? '#0d8b8b' : '#a83244';
+    var b=document.createElement('div');
+    b.className='fillbadge '+(isKD?'kd':'pl');
+    b.textContent=isKD?'\uD83D\uDC64 Diisi KD':'\uD83E\uDE7A Diisi Petugas';
+    if(c.firstChild) c.insertBefore(b,c.firstChild); else c.appendChild(b);
+  });
+})();
 </script>
 <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}</script>
 </body>

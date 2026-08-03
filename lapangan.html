@@ -1278,7 +1278,21 @@
       <!-- L3-MASTER · Master List Form PL -->
       <section class="section active" id="l1-master">
         <div class="hero"><div class="eyebrow">Layer 2A · Form Lapangan · Master List</div><h1>Master List Form PL</h1><p class="lede"><strong>Isi di sini</strong> membuka form langsung di halaman ini (tanpa pindah halaman). <strong>Copy link</strong> untuk dibagikan ke HP petugas lewat chat/WhatsApp, <strong>QR</strong> untuk unduh kode siap cetak. Semua submission otomatis masuk ke <strong>Log Harian</strong> di halaman Monitoring &amp; Data.</p><div style="margin-top:12px;display:flex;gap:9px;flex-wrap:wrap;align-items:center;"><a href="form/" style="background:#f5e9dc;border:1.5px solid #c47a3b;color:#9a5c26;border-radius:10px;padding:9px 14px;font-size:12.5px;font-weight:700;text-decoration:none;">📱 Buka versi HP / PWA</a><button data-url="form/" onclick="SAHA_COPY(this)" style="background:#fff;border:1.5px solid #c47a3b;color:#9a5c26;border-radius:10px;padding:9px 14px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;">🔗 Copy link versi HP</button><span style="font-size:11.5px;color:#6f6660;">versi HP bisa dipasang seperti aplikasi &amp; tetap jalan tanpa sinyal — QR lama tetap berlaku</span></div></div>
+        <div class="ml-legend">
+          <span class="lg"><i style="background:#0d8b8b;"></i>👤 Diisi KD sendiri</span>
+          <span class="lg"><i style="background:#a83244;"></i>🩺 Diisi Petugas (PL)</span>
+        </div>
         <div class="ml-grid">
+          <div class="ml-card">
+            <div class="tag">Absensi Mandiri KD · via QR</div><h3>Absensi + Skrining Mandiri KD</h3>
+            <p>Diisi langsung oleh KD saat mobile outreach: absensi + DAST-10 + SRQ-29 dalam satu sesi. Satu QR bersama; hasil masuk ke Daftar Hadir &amp; skrining.</p>
+            <div class="ml-actions"><button class="ml-fill" onclick="window.open('form/absensi.html','_blank')">↗ Buka form</button><button class="ml-copy" data-url="form/absensi.html" onclick="SAHA_COPY(this)">🔗 Copy link</button><button class="ml-qr" data-url="form/absensi.html" onclick="SAHA_QR(this)">📱 QR</button></div>
+          </div>
+          <div class="ml-card">
+            <div class="tag">Rujukan PKM · Login PL</div><h3>Form Rujukan ke Puskesmas</h3>
+            <p>Rujuk KD ke layanan Puskesmas (VCT/IMS/Keswa/PrEP/TB/dst). Skrining DAST-10 &amp; SRQ-20 auto-tarik; cetak A4 siap dibawa. Khusus PL (login).</p>
+            <div class="ml-actions"><button class="ml-fill" onclick="window.open('form/portal.html?go=ruj','_blank')">↗ Buka form</button><button class="ml-copy" data-url="form/portal.html?go=ruj" onclick="SAHA_COPY(this)">🔗 Copy link</button><button class="ml-qr" data-url="form/portal.html?go=ruj" onclick="SAHA_QR(this)">📱 QR</button></div>
+          </div>
           <div class="ml-card dast">
             <div class="tag">Skrining Napza</div><h3>DAST-10</h3>
             <p>10 pertanyaan Ya/Tidak penggunaan Napza 3 bulan terakhir. Skor + interpretasi 5 tingkat otomatis.</p>
@@ -2176,6 +2190,31 @@ tr.me-rawclick{cursor:pointer;}
     var all = window.__SAHA_ALL || [];
     for(var i=0;i<all.length;i++){ if(all[i].__id===id){ window.SAHA_DTL(all[i], window.SAHA_RINGKAS(all[i])); return; } }
   });
+})();
+</script>
+<style>
+  .ml-legend{display:flex;gap:16px;flex-wrap:wrap;margin:0 0 14px;background:#fff;border:1px solid #e7ddd3;border-radius:12px;padding:10px 15px;font-size:12.5px;font-weight:700;color:#2c2724;}
+  .ml-legend .lg{display:inline-flex;align-items:center;gap:7px;}
+  .ml-legend .lg i{width:15px;height:15px;border-radius:4px;display:inline-block;}
+  .ml-fillbadge{display:inline-block;font-size:9px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;border-radius:20px;padding:2px 9px;margin-bottom:6px;}
+  .ml-fillbadge.kd{background:rgba(13,139,139,.13);color:#0a6a6a;}
+  .ml-fillbadge.pl{background:rgba(168,50,68,.12);color:#7d2433;}
+</style>
+<script>
+(function(){
+  function tag(){
+    document.querySelectorAll('#l1-master .ml-card').forEach(function(c){
+      if(c.querySelector('.ml-fillbadge'))return;
+      var cp=c.querySelector('.ml-copy'); var url=cp?(cp.getAttribute('data-url')||''):'';
+      var isKD=url.toLowerCase().indexOf('absensi')>=0;
+      c.style.borderLeftColor=isKD?'#0d8b8b':'#a83244';
+      var b=document.createElement('div');
+      b.className='ml-fillbadge '+(isKD?'kd':'pl');
+      b.textContent=isKD?'\uD83D\uDC64 Diisi KD':'\uD83E\uDE7A Diisi Petugas';
+      c.insertBefore(b,c.firstChild);
+    });
+  }
+  if(document.readyState!=='loading')tag(); else document.addEventListener('DOMContentLoaded',tag);
 })();
 </script>
 </body>

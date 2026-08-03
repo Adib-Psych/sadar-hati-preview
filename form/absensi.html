@@ -112,10 +112,20 @@
   <div class="screen" id="s-session">
     <div class="apphead"><div class="stepline">Langkah 2 dari 5 · Kehadiran</div><h2>Konfirmasi kehadiran</h2><div class="prog"><i style="width:40%"></i></div></div>
     <div class="scroll">
-      <p class="sub">Data sesi berikut terisi otomatis dari QR yang kamu pindai.</p>
+      <p class="sub">Tanggal terisi otomatis. <b>Petugas &amp; lokasi</b> cukup diisi sekali di awal — otomatis dipakai untuk semua yang mengisi setelahmu hari ini.</p>
       <div class="ctxrow"><span class="ic">📅</span><div><div class="cl">Tanggal</div><div class="cv" id="c-tgl">—</div></div></div>
-      <div class="ctxrow"><span class="ic">📍</span><div><div class="cl">Lokasi / Hotspot</div><div class="cv" id="c-hot">—</div></div></div>
-      <div class="ctxrow"><span class="ic">🧑‍🤝‍🧑</span><div><div class="cl">Petugas pendamping</div><div class="cv" id="c-pl">—</div></div></div>
+      <label class="cl" style="display:block;margin:15px 0 5px;font-weight:800;">🧑‍🤝‍🧑 Petugas Pendamping (PL)</label>
+      <select class="fi" id="s-pl" style="width:100%;" onchange="setSesiPL()">
+        <option value="">— pilih —</option>
+        <option>Nuri</option>
+        <option>David</option>
+        <option>Ibi</option>
+        <option>Dodik</option>
+        <option value="__belum">Belum tahu — PL isi nanti</option>
+      </select>
+      <div id="s-pl-hint" style="font-size:11px;color:#8a7f74;margin-top:5px;line-height:1.45;">Pilih nama PL pendampingmu. Kalau tidak tahu, pilih "Belum tahu" — nanti PL yang melengkapi.</div>
+      <label class="cl" style="display:block;margin:15px 0 5px;font-weight:800;">📍 Hotspot / lokasi hari ini</label>
+      <input class="fi" id="s-hotspot" style="width:100%;" placeholder="mis. Alun-alun, Kota Malang" oninput="setSesiHot()">
       <div class="privacy" style="margin-top:16px;"><div class="ic">💛</div><div class="t">Setelah ini ada <b>beberapa pertanyaan singkat</b> tentang kesehatanmu (napza &amp; perasaan). Rahasia, hanya untuk membantu pendampinganmu.</div></div>
     </div>
     <div class="footpad"><button class="btn" onclick="go('s-dast')">Lanjut →</button><button class="backlink" onclick="go('s-id')">← kembali</button></div>
@@ -230,9 +240,19 @@ const P=new URLSearchParams(location.search);
 const SESI={ pl:P.get("pl")||"", hotspot:P.get("hotspot")||"", kegiatan:P.get("kegiatan")||"Penjangkauan / Mobile Outreach" };
 function todayStr(){ const d=new Date(); return d.toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"}); }
 document.getElementById("c-tgl").textContent=todayStr();
-document.getElementById("c-hot").textContent=SESI.hotspot||"(umum)";
-document.getElementById("c-pl").textContent=SESI.pl||"(belum diisi)";
-document.getElementById("hr-pl").textContent=SESI.pl||"petugas";
+/* ---- setelan sesi (Petugas PL + Hotspot), tersimpan per-hari di HP ---- */
+var SESI_PLS=["Nuri","David","Ibi","Dodik"];
+function updHrPl(){ var e=document.getElementById("hr-pl"); if(e) e.textContent=SESI.pl||"petugas"; }
+function saveSesi(){ try{ localStorage.setItem("saha_abs_sesi", JSON.stringify({d:new Date().toISOString().slice(0,10), pl:SESI.pl||"", hot:SESI.hotspot||""})); }catch(e){} }
+function setSesiPL(){ var v=document.getElementById("s-pl").value; SESI.pl=(v==="__belum"||v==="")?"":v; var h=document.getElementById("s-pl-hint"); if(h){ h.textContent = v==="__belum" ? "Ditandai belum tahu — PL akan melengkapi nanti." : (v==="" ? "Pilih nama PL pendampingmu. Kalau tidak tahu, pilih \"Belum tahu\"." : "\u2713 Pendamping: "+v); h.style.color = v==="__belum" ? "#9a5c26" : (v===""?"#8a7f74":"#3f5749"); } saveSesi(); updHrPl(); }
+function setSesiHot(){ SESI.hotspot=document.getElementById("s-hotspot").value.trim(); saveSesi(); }
+(function(){
+  try{ var raw=localStorage.getItem("saha_abs_sesi"); if(raw){ var o=JSON.parse(raw); if(o&&o.d===new Date().toISOString().slice(0,10)){ if(!SESI.pl&&o.pl)SESI.pl=o.pl; if(!SESI.hotspot&&o.hot)SESI.hotspot=o.hot; } } }catch(e){}
+  var sel=document.getElementById("s-pl"), hot=document.getElementById("s-hotspot");
+  if(sel&&SESI.pl&&SESI_PLS.indexOf(SESI.pl)>=0) sel.value=SESI.pl;
+  if(hot) hot.value=SESI.hotspot||"";
+  updHrPl();
+})();
 
 /* ================= ITEMS ================= */
 const DQ=[
