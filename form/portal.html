@@ -357,8 +357,6 @@
           <button class="btn" style="margin-top:0;" onclick="document.getElementById('f-foto').click()">📷 Ambil / Pilih Foto KTP</button>
           <div class="prev" id="f-prev"><img id="f-prev-img" alt="preview KTP"><div class="pi" id="f-prev-info"></div></div>
           <div class="hint">Foto dikompres otomatis di HP (±150–250 KB) lalu tersimpan aman di database — <strong>hapus dari galeri HP setelah tersimpan</strong>.</div></div>
-        <div class="fld"><label class="fl">Puskesmas Tujuan</label><input class="fi" id="f-pkm" list="pkm-list" placeholder="ketik / pilih — mis. PKM Kendalkerep"><datalist id="pkm-list"><option value="PKM Ampelgading"></option><option value="PKM Ardimulyo"></option><option value="PKM Arjowinangun"></option><option value="PKM Arjuno"></option><option value="PKM Bantur"></option><option value="PKM Bareng"></option><option value="PKM Batu"></option><option value="PKM Beji"></option><option value="PKM Bululawang"></option><option value="PKM Bumiaji"></option><option value="PKM Ciptomulyo"></option><option value="PKM Cisadea"></option><option value="PKM Dampit"></option><option value="PKM Dau"></option><option value="PKM Dinoyo"></option><option value="PKM Donomulyo"></option><option value="PKM Gedangan"></option><option value="PKM Gondanglegi"></option><option value="PKM Gribig"></option><option value="PKM Jabung"></option><option value="PKM Janti"></option><option value="PKM Junrejo"></option><option value="PKM Kalipare"></option><option value="PKM Karangploso"></option><option value="PKM Kasembon"></option><option value="PKM Kedungkandang"></option><option value="PKM Kendalkerep"></option><option value="PKM Kendalsari"></option><option value="PKM Kepanjen"></option><option value="PKM Ketawang"></option><option value="PKM Kromengan"></option><option value="PKM Lawang"></option><option value="PKM Mojolangu"></option><option value="PKM Mulyorejo"></option><option value="PKM Ngajum"></option><option value="PKM Ngantang"></option><option value="PKM Pagak"></option><option value="PKM Pagelaran"></option><option value="PKM Pakis"></option><option value="PKM Pakisaji"></option><option value="PKM Pamotan"></option><option value="PKM Pandanwangi"></option><option value="PKM Polowijen"></option><option value="PKM Poncokusumo"></option><option value="PKM Pujon"></option><option value="PKM Rampal Celaket"></option><option value="PKM Singosari"></option><option value="PKM Sisir"></option><option value="PKM Sitiarjo"></option><option value="PKM Sumbermanjing Kulon"></option><option value="PKM Sumbermanjing Wetan"></option><option value="PKM Sumberpucung"></option><option value="PKM Tajinan"></option><option value="PKM Tirtoyudo"></option><option value="PKM Tumpang"></option><option value="PKM Turen"></option><option value="PKM Wagir"></option><option value="PKM Wajak"></option><option value="PKM Wonokerto"></option><option value="PKM Wonosari"></option></datalist><div style="font-size:10px;color:#6f6660;margin-top:3px;">daftar resmi Malang Raya (Kota Malang · Kab Malang · Kota Batu) — wilayah lain ketik manual</div></div>
-        <div class="fld"><label class="fl">Rencana Tanggal VCT</label><input class="fi" id="f-tglvct" type="date"></div>
         <button class="btn clay" id="btn-vct">💾 Simpan Registrasi</button>
         <div class="err" id="f-err"></div>
         <div class="ok" id="f-ok"></div>
@@ -822,17 +820,16 @@
         idkd: idkd, nama: sahaTC($('f-nama').value), julukan: sahaTC($('f-julukan').value),
         nik: nik, foto: CTX.fotoData, pl: plVal,
         status: CTX.status || 'Baru', tgllahir: $('f-tgllahir').value || '', idkd_placeholder: !!CTX.idkdPlaceholder,
-        puskesmas: $('f-pkm').value.trim(), rencana_vct: $('f-tglvct').value || '',
         updated_at: now, updated_by: CTX.nama || CTX.user.email || '-', created_at: now
       }, { merge: true });
       /* record laporan (tanpa NIK & tanpa foto) utk Log Harian */
       try {
         await fs.addDoc(fs.collection(fb.db, 'submissions'), {
-          form: 'vct', instrumen: 'Registrasi VCT', pl: plVal, created_at: now, schema_version: 'vct-1.0',
+          form: 'vct', instrumen: 'Registrasi KTP', pl: plVal, created_at: now, schema_version: 'vct-1.0',
           tahun: now.slice(0, 4), tanggal: now.slice(0, 10),
           klien: { nama: sahaTC($('f-nama').value), julukan: sahaTC($('f-julukan').value), idkd: idkd, tgllahir: $('f-tgllahir').value || '', idkd_placeholder: !!CTX.idkdPlaceholder },
           status: CTX.status || 'Baru',
-          data: { puskesmas: $('f-pkm').value.trim(), rencana_vct: $('f-tglvct').value || '', ktp_tersimpan: true }
+          data: { ktp_tersimpan: true }
         });
       } catch (e) {}
       /* struk papan */
@@ -846,7 +843,7 @@
       ok.style.display = 'block';
       ok.innerHTML = '✅ <strong>Tersimpan.</strong> NIK + foto KTP kini bisa dibuka lewat menu <strong>Kartu Identitas KD</strong>. Jangan lupa hapus foto dari galeri HP.';
       CTX.fotoData = null; $('f-prev').style.display = 'none';
-      ['f-cari','f-nama','f-julukan','f-idkd','f-nik','f-pkm','f-tglvct','f-tgllahir'].forEach(function (i) { $(i).value = ''; });
+      ['f-cari','f-nama','f-julukan','f-idkd','f-nik','f-tgllahir'].forEach(function (i) { $(i).value = ''; });
       setStatus('Baru'); CTX.idkdManual = false; $('f-idkd').readOnly = true; $('f-tgl-note').textContent = 'otomatis terbaca dari NIK — koreksi bila perlu';
       $('f-nik-note').textContent = '0/16 digit';
     } catch (e) {
