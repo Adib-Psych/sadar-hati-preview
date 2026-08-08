@@ -904,6 +904,13 @@
 
 </div>
 
+<div style="max-width:480px;margin:20px auto 108px;padding:0 14px;">
+  <div style="border-top:1px dashed #e0d5c8;padding-top:16px;text-align:center;">
+    <button type="button" id="btn-pending" onclick="submitPending()" style="width:100%;background:linear-gradient(135deg,#b8791e,#7a5313);color:#fff;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 4px 14px rgba(184,121,30,.25);">💾 Simpan — lengkapi nanti (Pending)</button>
+    <div style="font-size:11.5px;color:#7a6a58;margin-top:8px;line-height:1.5;">Pakai kalau belum sempat/nyaman minta <b>nama lengkap</b>. Cukup isi <b>Nama Panggilan</b> — nanti dilengkapi dari <b>Portal PL → Pending KD</b>.</div>
+  </div>
+</div>
+
 <div class="submit-bar">
   <div class="submit-inner">
     <button class="btn-draft" onclick="saveDraft()">💾 Draft</button>
@@ -1387,6 +1394,36 @@
     }
     updateProgress();
   });
+
+  function submitPending(){
+    var jul=String((answers.julukan||'')).trim();
+    var pl=String((answers.pl||'')).trim();
+    if(!jul){ alert('⚠️ Minimal isi Nama Panggilan (julukan) dulu untuk simpan sebagai Pending.'); return; }
+    if(!pl){ alert('⚠️ Pilih Nama PL dulu.'); return; }
+    var ts=new Date().toISOString();
+    var key='sh-chemsex-pending-'+Date.now();
+    var rec={ form:'chemsex', koreksi:false, pending:true, pl:pl, created_at:ts, schema_version:'chemsex-1.0',
+      wilayah:{ provinsi:answers.provinsi||'', kotakab:answers.kotakab||'', kecamatan:answers.kecamatan||'', desa:answers.desa||'' },
+      klien:{ nama:sahaTC(answers.nama||''), julukan:sahaTC(jul), idkd:answers.idkd||'', jk:answers.jk||'', usia:answers.usia||'', provinsi:answers.provinsi||'' },
+      identitas:{ tahun:answers.tahun||'', pl:pl, tanggal:answers.tanggal||ts.slice(0,10) },
+      answers:Object.assign({},answers) };
+    try{ localStorage.setItem(key, JSON.stringify(rec)); }catch(e){}
+    var pb=document.getElementById('btn-pending');
+    if(window.__pushSubmission){
+      if(pb){ pb.disabled=true; pb.textContent='⏳ Menyimpan…'; }
+      window.__pushSubmission(rec).then(function(id){
+        try{ localStorage.setItem(key+'__cloud', id); }catch(e){}
+        alert('✅ Tersimpan sebagai PENDING untuk "'+jul+'".\n\nLengkapi nama lengkap & tanggal lahir nanti lewat Portal PL → Pending KD.');
+        window.location.reload();
+      }).catch(function(err){
+        if(pb){ pb.disabled=false; pb.textContent='💾 Simpan — lengkapi nanti (Pending)'; }
+        alert('⚠️ Gagal kirim ke server — tersimpan lokal di HP, akan terkirim otomatis saat online.');
+      });
+    } else {
+      alert('✅ Tersimpan lokal sebagai PENDING. Akan terkirim saat online.');
+      window.location.reload();
+    }
+  }
 
   function submitForm() {
     const key = 'sh-chemsex-' + Date.now();
