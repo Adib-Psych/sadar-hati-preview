@@ -238,7 +238,7 @@
       <div class="menuitem" id="mi-pending"><div class="ic" style="background:linear-gradient(135deg,#b8791e,#7a5313);">🕓</div><div><b>Pending KD <span id="pend-badge" style="display:none;background:#bf3838;color:#fff;border-radius:10px;padding:1px 8px;font-size:11px;margin-left:4px;vertical-align:middle;">0</span></b><span>entri penjangkauan yang belum lengkap — lengkapi nama &amp; tanggal lahir</span></div></div>
       <div class="menuitem" id="mi-jadwal">
         <div class="ic" style="background:linear-gradient(135deg,#34478c,#243056);">📅</div>
-        <div><b>Jadwal Aktivitas</b><span>agenda &amp; kalender kegiatan tim — penjangkauan, rapat, pelatihan · lihat &amp; tambah</span></div>
+        <div><b>Jadwal Aktivitas</b><span>agenda &amp; kalender kegiatan tim — Mobile Klinik, FGD, Support Group, Koordinasi · lihat &amp; tambah</span></div>
       </div>
       <div id="adm-home" style="display:none;text-align:center;margin-top:14px;"><a href="../" style="display:inline-block;background:linear-gradient(135deg,#a83244,#7d2433);color:#fff;text-decoration:none;font-weight:800;font-size:12.5px;padding:10px 18px;border-radius:11px;letter-spacing:.3px;">🏠 ← Beranda Hub · khusus admin</a></div>
     </div>
@@ -1211,8 +1211,8 @@ async function saveComplete(btn){
 <div class="jmodal" id="jdw-modal">
   <div class="jmcard">
     <h3 id="jdw-mtitle">Tambah Kegiatan</h3>
-    <div class="jfld"><label>Judul Kegiatan</label><input id="jf-judul" placeholder="mis. Penjangkauan Hotspot Alun-alun"></div>
-    <div class="jfld"><label>Jenis</label><select id="jf-jenis"></select></div>
+    <div class="jfld"><label>Kegiatan</label><select id="jf-jenis"></select></div>
+    <div class="jfld"><label>Judul / Detail (opsional)</label><input id="jf-judul" placeholder="opsional — kosongkan = pakai nama kegiatan"></div>
     <div class="jrow"><div class="jfld"><label>Tanggal</label><input id="jf-tgl" type="date"></div><div class="jfld"><label>Mulai</label><input id="jf-j1" type="time"></div><div class="jfld"><label>Selesai</label><input id="jf-j2" type="time"></div></div>
     <div class="jfld"><label>Lokasi / Hotspot</label><input id="jf-lokasi" placeholder="mis. Alun-alun Kota Malang"></div>
     <div class="jfld"><label>Penanggung Jawab / PL</label><input id="jf-pj" list="jf-pjlist" placeholder="nama PJ/PL"><datalist id="jf-pjlist"></datalist></div>
@@ -1225,15 +1225,15 @@ async function saveComplete(btn){
 (function(){
   if(window.JDW) return;
   var JEN=[
-    {k:'penjangkauan',l:'Penjangkauan',c:'#a83244',e:'🔥'},
-    {k:'fgd',l:'FGD / Support Group',c:'#6b4d7a',e:'👥'},
-    {k:'konseling',l:'Konseling',c:'#0d8b8b',e:'💬'},
-    {k:'rapat',l:'Rapat / Koordinasi',c:'#34478c',e:'🗂️'},
-    {k:'pelatihan',l:'Pelatihan',c:'#b8791e',e:'🎓'},
-    {k:'komunitas',l:'Kegiatan Komunitas',c:'#6f8a5f',e:'🎉'},
+    {k:'mobileklinik',l:'Mobile Klinik',c:'#0d8b8b',e:'🏥'},
+    {k:'fgd',l:'FGD',c:'#6b4d7a',e:'👥'},
+    {k:'supportgroup',l:'Support Group',c:'#a83244',e:'🤝'},
+    {k:'koordinasi',l:'Koordinasi',c:'#b8791e',e:'🗂️'},
     {k:'lainnya',l:'Lainnya',c:'#6f6660',e:'📌'}
   ];
   var JM={}; JEN.forEach(function(x){JM[x.k]=x;});
+  /* keys lama -> tampil sbg Lainnya biar entri lama tetap kebaca (tak error) */
+  ['penjangkauan','konseling','rapat','pelatihan','komunitas'].forEach(function(k){ if(!JM[k]) JM[k]=JM.lainnya; });
   var MB=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
   var HR=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
   var DATA=[], sub=null, editingId=null, built=false;
@@ -1336,12 +1336,13 @@ async function saveComplete(btn){
 
   function openModal(){G('jdw-modal').classList.add('on');}
   function closeModal(){G('jdw-modal').classList.remove('on');editingId=null;}
-  function openAdd(preset){editingId=null;G('jdw-mtitle').textContent='Tambah Kegiatan';G('jf-judul').value='';G('jf-jenis').value='penjangkauan';var t=today();G('jf-tgl').value=preset||((st.ym===t.slice(0,7))?t:(st.ym+'-01'));G('jf-j1').value='16:00';G('jf-j2').value='19:00';G('jf-lokasi').value='';G('jf-pj').value=(window.__PORTAL&&window.__PORTAL.pl)?window.__PORTAL.pl:'';G('jf-catatan').value='';openModal();}
-  function doEdit(id){var e=DATA.filter(function(x){return x.__id===id;})[0];if(!e)return;editingId=id;G('jdw-mtitle').textContent='Edit Kegiatan';G('jf-judul').value=e.judul||'';G('jf-jenis').value=e.jenis||'lainnya';G('jf-tgl').value=e.tgl||'';G('jf-j1').value=e.j1||'';G('jf-j2').value=e.j2||'';G('jf-lokasi').value=e.lokasi||'';G('jf-pj').value=e.pj||'';G('jf-catatan').value=e.catatan||'';openModal();}
+  function openAdd(preset){editingId=null;G('jdw-mtitle').textContent='Tambah Kegiatan';G('jf-judul').value='';G('jf-jenis').value='mobileklinik';var t=today();G('jf-tgl').value=preset||((st.ym===t.slice(0,7))?t:(st.ym+'-01'));G('jf-j1').value='16:00';G('jf-j2').value='19:00';G('jf-lokasi').value='';G('jf-pj').value=(window.__PORTAL&&window.__PORTAL.pl)?window.__PORTAL.pl:'';G('jf-catatan').value='';openModal();}
+  function doEdit(id){var e=DATA.filter(function(x){return x.__id===id;})[0];if(!e)return;editingId=id;G('jdw-mtitle').textContent='Edit Kegiatan';G('jf-judul').value=e.judul||'';G('jf-jenis').value=(JM[e.jenis]&&JM[e.jenis].k===e.jenis)?e.jenis:'lainnya';G('jf-tgl').value=e.tgl||'';G('jf-j1').value=e.j1||'';G('jf-j2').value=e.j2||'';G('jf-lokasi').value=e.lokasi||'';G('jf-pj').value=e.pj||'';G('jf-catatan').value=e.catatan||'';openModal();}
   function doDel(id){var e=DATA.filter(function(x){return x.__id===id;})[0];if(!e)return;if(!confirm('Hapus kegiatan "'+(e.judul||'')+'"?'))return;if(!fb.fs||!CTX.user){alert('📴 Belum terhubung.');return;}fb.fs.deleteDoc(fb.fs.doc(fb.db,'jadwal',id)).catch(function(err){alert('Gagal hapus: '+((err&&(err.code||err.message))||err));});}
   function save(){
-    var judul=G('jf-judul').value.trim(),tgl=G('jf-tgl').value;
-    if(!judul){alert('Judul kegiatan wajib diisi.');return;}
+    var jenis=G('jf-jenis').value;
+    var judul=G('jf-judul').value.trim() || ((JM[jenis]||{}).l) || 'Kegiatan';
+    var tgl=G('jf-tgl').value;
     if(!tgl){alert('Tanggal wajib diisi.');return;}
     if(!fb.fs||!CTX.user){alert('📴 Belum terhubung — cek jaringan.');return;}
     var now=new Date().toISOString();

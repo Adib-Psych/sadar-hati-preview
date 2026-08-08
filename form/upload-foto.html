@@ -53,9 +53,17 @@
 
 <div class="wrap">
   <div class="card">
-    <label class="fl" for="f-keg">Nama kegiatan <span class="req">*</span></label>
-    <input type="text" id="f-keg" placeholder="mis. Mobile Activity @ Terrace Cafe" maxlength="90">
-    <div class="hint">Dipakai jadi nama folder di Drive (digabung tanggal).</div>
+    <label class="fl" for="f-keg">Kegiatan <span class="req">*</span></label>
+    <select id="f-keg">
+      <option value="">— pilih kegiatan —</option>
+      <option>Mobile Klinik</option>
+      <option>FGD</option>
+      <option>Support Group</option>
+      <option>Koordinasi</option>
+      <option value="__other">Lainnya…</option>
+    </select>
+    <input type="text" id="f-keg-other" placeholder="tulis nama kegiatan lain" maxlength="60" style="display:none;margin-top:9px;">
+    <div class="hint">Pilih kategori; <b>lokasi</b> (di bawah) yang membedakan tiap kegiatan.</div>
   </div>
 
   <div class="card" style="display:flex;gap:10px">
@@ -105,6 +113,12 @@
   (function(){ var d=new Date(); var z=function(n){return String(n).padStart(2,'0');};
     $('f-tgl').value = d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate()); })();
 
+  $('f-keg').addEventListener('change', function(){
+    var other = (this.value==='__other');
+    $('f-keg-other').style.display = other ? 'block' : 'none';
+    if(other) $('f-keg-other').focus();
+  });
+
   $('drop').addEventListener('click', function(){ $('files').click(); });
   $('files').addEventListener('change', function(e){ addFiles(e.target.files); this.value=''; });
 
@@ -151,17 +165,19 @@
   function showMsg(cls, html){ var m=$('msg'); m.className='msg '+cls; m.innerHTML=html; }
 
   $('send').addEventListener('click', function(){
-    var keg=$('f-keg').value.trim();
+    var selKeg=$('f-keg').value;
+    var keg=(selKeg==='__other') ? $('f-keg-other').value.trim() : selKeg;
+    var lok=$('f-lok').value.trim();
     if(SCRIPT_URL.indexOf('PASTE_')===0){ showMsg('warn','⚙️ Uploader belum aktif — endpoint Drive belum dipasang. (Admin: deploy Apps Script lalu kirim URL-nya.)'); return; }
-    if(!keg){ showMsg('err','Isi <b>nama kegiatan</b> dulu.'); return; }
+    if(!keg){ showMsg('err','Pilih <b>kegiatan</b> dulu.'); return; }
     if(!picked.length){ showMsg('err','Pilih minimal 1 foto.'); return; }
 
     var btn=this; btn.disabled=true; btn.textContent='⏳ Mengirim…';
     showMsg('warn','Mengirim '+picked.length+' foto… jangan tutup halaman.');
 
-    var folder=$('f-tgl').value+' · '+keg;
+    var folder=$('f-tgl').value+' · '+keg+(lok?' · '+lok:'');
     var payload={ folder:folder, kegiatan:keg, pl:$('f-pl').value.trim(),
-      lokasi:$('f-lok').value.trim(), deskripsi:$('f-desc').value.trim(),
+      lokasi:lok, deskripsi:$('f-desc').value.trim(),
       files:picked.map(function(p){ return {name:p.name,mime:p.mime,data:p.b64}; }) };
 
     fetch(SCRIPT_URL,{ method:'POST', body:JSON.stringify(payload) })
