@@ -126,6 +126,10 @@
       <div id="s-pl-hint" style="font-size:11px;color:#8a7f74;margin-top:5px;line-height:1.45;">Pilih nama PL pendampingmu. Kalau tidak tahu, pilih "Belum tahu" — nanti PL yang melengkapi.</div>
       <label class="cl" style="display:block;margin:15px 0 5px;font-weight:800;">📍 Hotspot / lokasi hari ini</label>
       <input class="fi" id="s-hotspot" style="width:100%;" placeholder="mis. Alun-alun, Kota Malang" oninput="setSesiHot()">
+      <button type="button" id="s-geo-btn" onclick="ambilGPS()" style="margin-top:8px;width:100%;border:1.5px solid var(--sage);background:#f1f6ef;color:var(--sage-deep);border-radius:12px;padding:11px;font-family:inherit;font-size:13.5px;font-weight:800;cursor:pointer;">📍 Kunci titik lokasi GPS</button>
+      <div id="s-geo-box" style="display:none;font-size:12px;line-height:1.5;margin-top:8px;padding:10px 12px;border-radius:10px;"></div>
+      <iframe id="s-geo-map" title="peta lokasi sesi" loading="lazy" style="display:none;width:100%;height:150px;border:1px solid var(--line);border-radius:10px;margin-top:8px;"></iframe>
+      <div style="font-size:11px;color:#8a7f74;margin-top:6px;line-height:1.45;">Cukup dikunci sekali di awal sesi — koordinatnya otomatis ikut ke setiap kehadiran hari ini. Kalau GPS tak bisa, isi nama lokasi saja.</div>
       <div class="privacy" style="margin-top:16px;"><div class="ic">💛</div><div class="t">Setelah ini ada <b>beberapa pertanyaan singkat</b> tentang kesehatanmu (napza &amp; perasaan). Rahasia, hanya untuk membantu pendampinganmu.</div></div>
     </div>
     <div class="footpad"><button class="btn" onclick="go('s-dast')">Lanjut →</button><button class="backlink" onclick="go('s-id')">← kembali</button></div>
@@ -237,21 +241,44 @@ function retryOutbox(){
 
 /* ================= SESSION (QR params) ================= */
 const P=new URLSearchParams(location.search);
-const SESI={ pl:P.get("pl")||"", hotspot:P.get("hotspot")||"", kegiatan:P.get("kegiatan")||"Penjangkauan / Mobile Outreach" };
+const SESI={ pl:P.get("pl")||"", hotspot:P.get("hotspot")||"", kegiatan:P.get("kegiatan")||"Penjangkauan / Mobile Outreach", lat:null, lng:null, akurasi_m:null, gmaps:"" };
 function todayStr(){ const d=new Date(); return d.toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"}); }
 document.getElementById("c-tgl").textContent=todayStr();
 /* ---- setelan sesi (Petugas PL + Hotspot), tersimpan per-hari di HP ---- */
 var SESI_PLS=["Nuri","David","Ibi","Dodik"];
 function updHrPl(){ var e=document.getElementById("hr-pl"); if(e) e.textContent=SESI.pl||"petugas"; }
-function saveSesi(){ try{ localStorage.setItem("saha_abs_sesi", JSON.stringify({d:new Date().toISOString().slice(0,10), pl:SESI.pl||"", hot:SESI.hotspot||""})); }catch(e){} }
+function saveSesi(){ try{ localStorage.setItem("saha_abs_sesi", JSON.stringify({d:new Date().toISOString().slice(0,10), pl:SESI.pl||"", hot:SESI.hotspot||"", lat:(SESI.lat==null?null:SESI.lat), lng:(SESI.lng==null?null:SESI.lng), acc:(SESI.akurasi_m==null?null:SESI.akurasi_m), gm:SESI.gmaps||""})); }catch(e){} }
 function setSesiPL(){ var v=document.getElementById("s-pl").value; SESI.pl=(v==="__belum"||v==="")?"":v; var h=document.getElementById("s-pl-hint"); if(h){ h.textContent = v==="__belum" ? "Ditandai belum tahu — PL akan melengkapi nanti." : (v==="" ? "Pilih nama PL pendampingmu. Kalau tidak tahu, pilih \"Belum tahu\"." : "\u2713 Pendamping: "+v); h.style.color = v==="__belum" ? "#9a5c26" : (v===""?"#8a7f74":"#3f5749"); } saveSesi(); updHrPl(); }
 function setSesiHot(){ SESI.hotspot=document.getElementById("s-hotspot").value.trim(); saveSesi(); }
+function renderGeo(){
+  var box=document.getElementById("s-geo-box"), map=document.getElementById("s-geo-map"), btn=document.getElementById("s-geo-btn");
+  if(SESI.lat!=null && SESI.lng!=null){
+    if(box){ box.style.display="block"; box.style.background="#eef5ec"; box.style.border="1px solid #cfe0c8"; box.style.color="#3f5749";
+      box.innerHTML='✅ <b>Lokasi terkunci</b> · '+SESI.lat+', '+SESI.lng+(SESI.akurasi_m?(' · ±'+SESI.akurasi_m+' m'):'')+'<br><a href="'+SESI.gmaps+'" target="_blank" rel="noopener">🗺️ Cek pin di Google Maps</a>'; }
+    if(map){ var d=0.004; map.src='https://www.openstreetmap.org/export/embed.html?bbox='+(SESI.lng-d)+'%2C'+(SESI.lat-d)+'%2C'+(SESI.lng+d)+'%2C'+(SESI.lat+d)+'&layer=mapnik&marker='+SESI.lat+'%2C'+SESI.lng; map.style.display="block"; }
+    if(btn){ btn.disabled=false; btn.textContent="🔄 Ambil ulang lokasi"; }
+  }
+}
+function ambilGPS(){
+  var box=document.getElementById("s-geo-box"), btn=document.getElementById("s-geo-btn");
+  if(!("geolocation" in navigator)){ if(box){ box.style.display="block"; box.style.background="#fbeada"; box.style.border="1px solid #eccbb0"; box.style.color="#9a5c26"; box.innerHTML="⚠️ HP ini tak mendukung GPS — cukup isi nama lokasi di atas."; } return; }
+  if(btn){ btn.disabled=true; btn.textContent="📡 Mencari sinyal GPS…"; }
+  navigator.geolocation.getCurrentPosition(function(pos){
+    SESI.lat=+pos.coords.latitude.toFixed(6); SESI.lng=+pos.coords.longitude.toFixed(6); SESI.akurasi_m=Math.round(pos.coords.accuracy||0);
+    SESI.gmaps="https://maps.google.com/?q="+SESI.lat+","+SESI.lng;
+    saveSesi(); renderGeo();
+  }, function(err){
+    if(box){ box.style.display="block"; box.style.background="#fbeada"; box.style.border="1px solid #eccbb0"; box.style.color="#9a5c26"; box.innerHTML="⚠️ GPS gagal ("+((err&&err.message)||"izin lokasi belum aktif")+"). Aktifkan izin lokasi lalu ketuk lagi — atau cukup isi nama lokasi di atas."; }
+    if(btn){ btn.disabled=false; btn.textContent="📍 Coba ambil lokasi lagi"; }
+  }, { enableHighAccuracy:true, timeout:15000, maximumAge:60000 });
+}
 (function(){
-  try{ var raw=localStorage.getItem("saha_abs_sesi"); if(raw){ var o=JSON.parse(raw); if(o&&o.d===new Date().toISOString().slice(0,10)){ if(!SESI.pl&&o.pl)SESI.pl=o.pl; if(!SESI.hotspot&&o.hot)SESI.hotspot=o.hot; } } }catch(e){}
+  try{ var raw=localStorage.getItem("saha_abs_sesi"); if(raw){ var o=JSON.parse(raw); if(o&&o.d===new Date().toISOString().slice(0,10)){ if(!SESI.pl&&o.pl)SESI.pl=o.pl; if(!SESI.hotspot&&o.hot)SESI.hotspot=o.hot; if(SESI.lat==null&&o.lat!=null){ SESI.lat=o.lat; SESI.lng=o.lng; SESI.akurasi_m=(o.acc==null?null:o.acc); SESI.gmaps=o.gm||("https://maps.google.com/?q="+o.lat+","+o.lng); } } } }catch(e){}
   var sel=document.getElementById("s-pl"), hot=document.getElementById("s-hotspot");
   if(sel&&SESI.pl&&SESI_PLS.indexOf(SESI.pl)>=0) sel.value=SESI.pl;
   if(hot) hot.value=SESI.hotspot||"";
-  updHrPl();
+  updHrPl(); renderGeo();
+  if(SESI.lat==null && navigator.permissions && navigator.permissions.query){ try{ navigator.permissions.query({name:"geolocation"}).then(function(st){ if(st.state==="granted" && SESI.lat==null) ambilGPS(); }).catch(function(){}); }catch(e){} }
 })();
 
 /* ================= ITEMS ================= */
@@ -366,7 +393,7 @@ async function submitAll(){
   const telp=document.getElementById("f-telp").value.trim();
   const created_at=new Date().toISOString();
   const kd=idkd(nama);
-  const base={ pl:String(SESI.pl||"-"), created_at, schema_version:"1", mode:"self", kegiatan:SESI.kegiatan, hotspot:SESI.hotspot, sesi:created_at, idkd:kd };
+  const base={ pl:String(SESI.pl||"-"), created_at, schema_version:"1", mode:"self", kegiatan:SESI.kegiatan, hotspot:SESI.hotspot, lat:(SESI.lat==null?null:SESI.lat), lng:(SESI.lng==null?null:SESI.lng), akurasi_m:(SESI.akurasi_m==null?null:SESI.akurasi_m), gmaps:SESI.gmaps||"", sesi:created_at, idkd:kd };
   const klienMin={ nama, julukan, idkd:kd };
   const recAbsensi={ ...base, form:"absensi", klien:{ nama, julukan, alamat, telp, idkd:kd }, ttd:sigData() };
   const recDast={ ...base, form:"dast10", klien:klienMin, data:{ answers:dA, skor:s.dast, level:dastLevel(s.dast) } };
