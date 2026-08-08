@@ -1179,7 +1179,7 @@
   updateProgress();
 
   // ========== ID KD AUTO-GENERATOR (Rule 2 + 3) ==========
-  // Format: 4-huruf-nama + DDMMYY (dari tgl lahir) OR 123456 (fallback flag)
+  // Format: 4-huruf-nama + YYMMDD (dari tgl lahir) OR 123456 (fallback flag)
   function generateIdKd() {
     const huruf4 = document.getElementById('f-huruf4').value.trim().toUpperCase();
     const tgl = document.getElementById('f-tgllahir').value; // yyyy-mm-dd
@@ -1194,15 +1194,15 @@
       return;
     }
 
-    let ddmmyy = '123456'; // fallback placeholder
+    let yymmdd = '123456'; // fallback placeholder
     let isPlaceholder = true;
     if (tgl) {
       const [yyyy, mm, dd] = tgl.split('-');
-      ddmmyy = dd + mm + yyyy.slice(2);
+      yymmdd = yyyy.slice(2) + mm + dd;   // YYMMDD — konsisten dgn registry HURUF4-YYYY-MM-DD
       isPlaceholder = false;
     }
 
-    const generated = huruf4 + ddmmyy;
+    const generated = huruf4 + yymmdd;
     idkd.value = generated;
     answers.idkd = generated;
     answers.idkd_placeholder = isPlaceholder;

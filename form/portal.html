@@ -511,14 +511,14 @@
   $('st-lama').addEventListener('click', function () { setStatus('Lama'); });
   setStatus('Baru');
 
-  /* ---------- ID KD otomatis (algoritma sama dgn form lain: HURUF4 + ddmmyy / 123456) ---------- */
+  /* ---------- ID KD otomatis (algoritma sama dgn form lain: HURUF4 + yymmdd / 123456) ---------- */
   CTX.idkdManual = false;
   function autoIdkd() {
     if (CTX.idkdManual) return;
     var src = ($('f-julukan').value || $('f-nama').value || '').replace(/[^A-Za-z]/g, '').toUpperCase();
     var h4 = src.slice(0, 4);
     var d = $('f-tgllahir').value, dd = '123456', ph = true;
-    if (d) { var pp = d.split('-'); dd = pp[2] + pp[1] + pp[0].slice(2); ph = false; }
+    if (d) { var pp = d.split('-'); dd = pp[0].slice(2) + pp[1] + pp[2]; ph = false; }
     $('f-idkd').value = h4 ? (h4 + dd) : '';
     $('f-idkd-flag').style.display = (ph && h4) ? 'inline' : 'none';
     CTX.idkdPlaceholder = ph && !!h4;
