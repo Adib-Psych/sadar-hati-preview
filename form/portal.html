@@ -837,9 +837,10 @@
       } catch (e) {}
       /* struk papan */
       try {
+        var __nik=($('f-nik').value||'').replace(/\D/g,''); var __dd=parseInt(__nik.slice(6,8),10); var __g=(__dd>40&&__dd<=71)?'P':((__dd>=1&&__dd<=31)?'L':'X');
         await fs.addDoc(fs.collection(fb.db, 'entry_log'), {
           form: 'vct', pl: plVal, nm: ($('f-julukan').value.trim() || $('f-nama').value.trim()).slice(0, 50),
-          jam: now, ts: fs.serverTimestamp(), krx: false
+          jam: now, ts: fs.serverTimestamp(), krx: false, g: __g
         });
       } catch (e) {}
       ok.style.display = 'block';
@@ -1064,7 +1065,7 @@
           data:{ nama_layanan:($('rj-layanan').value||'').trim(), kabkota:($('rj-kabkota').value||'').trim(), jenis_layanan:Object.keys(RUJ.jl).filter(function(k){return RUJ.jl[k];}), jenis_rujukan:jrNames, kontak_awal:RUJ.kontak, penjangkauan:RUJ.penj, catatan:($('rj-catatan').value||'').trim(), nik_last4:(($('rj-nik').value||'').replace(/[^0-9]/g,'').slice(-4)), skrining: RUJ.picked?{ srq20:RUJ.picked.srq20, dast:RUJ.picked.dast, dastlvl:RUJ.picked.dastlvl, suicide:RUJ.picked.suicide, tanggal:RUJ.picked.date }:null }
         });
       }catch(e){}
-      try{ await fb.fs.addDoc(fb.fs.collection(fb.db,'entry_log'),{ form:'rujukan', pl:plVal, nm:nama.slice(0,50), jam:now, ts:fb.fs.serverTimestamp(), krx:false }); }catch(e){}
+      try{ var __rn=($('rj-nik').value||'').replace(/\D/g,''); var __rd=parseInt(__rn.slice(6,8),10); var __rg=(__rd>40&&__rd<=71)?'P':((__rd>=1&&__rd<=31)?'L':'X'); await fb.fs.addDoc(fb.fs.collection(fb.db,'entry_log'),{ form:'rujukan', pl:plVal, nm:nama.slice(0,50), jam:now, ts:fb.fs.serverTimestamp(), krx:false, g:__rg }); }catch(e){}
     }
     btn.disabled=false; btn.textContent='🖨️ Simpan & Cetak Rujukan';
     ok.style.display='block'; ok.innerHTML='✅ Tersimpan. Dialog cetak terbuka — pilih <b>"Simpan sebagai PDF"</b> lalu serahkan ke Puskesmas.';

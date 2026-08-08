@@ -1626,11 +1626,12 @@
         try {
           const kl = record.klien || {};
           const nmx = String(kl.julukan || kl.nama || "").trim().slice(0, 50);
+          var __g = (function(j){ j=String(j||'').toLowerCase(); return j.indexOf('perempuan')>=0?'P':(j.indexOf('laki')>=0?'L':'X'); })(kl.jk);
           addDoc(collection(db, 'entry_log'), {
             form: String(record.form || '-'), pl: String(record.pl || '-'),
             nm: nmx || '-',
             jam: String(record.created_at || ''), ts: serverTimestamp(),
-            krx: record.koreksi === true
+            krx: record.koreksi === true, g: __g
           }).catch(() => {});
         } catch (e) {}
         return r.id;

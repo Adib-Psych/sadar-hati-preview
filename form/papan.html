@@ -20,8 +20,13 @@
   .pulse { display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,.16); border-radius:12px; padding:4px 11px; font-size:10px; font-weight:700; letter-spacing:.5px; }
   .dot { width:8px; height:8px; border-radius:50%; background:#8fdc9a; animation:blink 1.6s infinite; }
   @keyframes blink { 50% { opacity:.35; } }
+  .ubar { display:none; justify-content:space-between; align-items:center; margin-top:11px; background:rgba(255,255,255,.13); border-radius:12px; padding:7px 11px; }
+  .ubar .who { font-size:11.5px; color:#fff; font-weight:700; }
+  .ubar .who small { display:block; font-weight:500; color:#f0cdd4; font-size:10px; margin-top:1px; }
+  .ubar button { background:rgba(255,255,255,.22); color:#fff; border:none; border-radius:9px; padding:6px 11px; font-size:11px; font-weight:700; cursor:pointer; font-family:inherit; }
   main { padding:14px 14px 0; }
   .note24 { font-size:10.5px; color:var(--slate); background:#f5efe7; border:1px solid var(--border); border-radius:10px; padding:8px 12px; text-align:center; margin-bottom:12px; line-height:1.5; }
+  .scopebadge { display:inline-block; font-size:10px; font-weight:800; letter-spacing:.4px; padding:2px 8px; border-radius:9px; background:#f3eef7; color:var(--plum-deep); }
   .state { text-align:center; padding:34px 18px; color:var(--slate); font-size:13px; line-height:1.7; }
   .state .big { font-size:38px; margin-bottom:8px; }
   .state.err { color:var(--clay-deep); }
@@ -43,7 +48,18 @@
   .krx { background:#f3eef7; color:var(--plum-deep); border-radius:8px; padding:0 6px; font-size:9px; font-weight:700; margin-left:5px; }
   .more { font-size:10px; color:#a89f97; padding-top:4px; }
   footer { text-align:center; font-size:10px; color:#a89f97; padding:18px 14px 0; line-height:1.6; }
-  .refresh-note { text-align:center; font-size:10px; color:#a89f97; margin-top:2px; }
+  /* login */
+  .ov { position:fixed; inset:0; background:linear-gradient(160deg,var(--clay),var(--clay-deep)); display:flex; align-items:center; justify-content:center; padding:22px; z-index:50; }
+  .lbox { background:#fff; border-radius:18px; padding:26px 22px; max-width:340px; width:100%; box-shadow:0 12px 40px rgba(0,0,0,.25); }
+  .lbox .lg { text-align:center; margin-bottom:14px; }
+  .lbox h2 { font-family:Georgia,serif; font-size:19px; color:var(--clay-deep); text-align:center; }
+  .lbox p { font-size:11.5px; color:var(--slate); text-align:center; margin:5px 0 16px; line-height:1.5; }
+  .lbox label { font-size:11.5px; font-weight:700; display:block; margin-bottom:5px; color:var(--ink); }
+  .lbox input { width:100%; padding:11px 12px; border:1.5px solid var(--border); border-radius:10px; font-size:15px; font-family:inherit; margin-bottom:12px; }
+  .lbox input:focus { outline:none; border-color:var(--clay); }
+  .lbox button { width:100%; padding:13px; border:none; border-radius:11px; background:var(--clay); color:#fff; font-size:15px; font-weight:800; font-family:inherit; cursor:pointer; }
+  .lbox button:disabled { opacity:.55; }
+  .lerr { display:none; background:#fbe9ec; color:var(--clay-deep); font-size:11.5px; border-radius:9px; padding:9px 11px; margin-bottom:11px; }
 </style>
 </head>
 <body>
@@ -56,16 +72,34 @@
       <span class="tot"><strong id="tot">0</strong> entry masuk</span>
       <span class="pulse"><span class="dot"></span> LIVE · update sendiri</span>
     </div>
+    <div class="ubar" id="ubar">
+      <span class="who" id="who">—</span>
+      <button id="logout">Keluar</button>
+    </div>
   </header>
   <main>
-    <div class="note24">🔒 Papan ini hanya menampilkan <strong>24 jam terakhir</strong>: nama/julukan &amp; jam masuk saja — tanpa hasil tes &amp; tanpa data pribadi lain.</div>
-    <div id="board"><div class="state" id="loading"><div class="big">⏳</div>Memuat papan…</div></div>
+    <div class="note24">🔒 Hanya <strong>24 jam terakhir</strong>: nama/julukan &amp; jam masuk — tanpa hasil tes &amp; data pribadi lain. <span id="scope-note"></span></div>
+    <div id="board"><div class="state" id="loading"><div class="big">⏳</div>Memuat…</div></div>
   </main>
-  <footer>Yayasan Sadar Hati · papan ini terkunci otomatis 24 jam di server<br>form: dashboard.sadarhati.org/form</footer>
+  <footer>Yayasan Sadar Hati · akses papan wajib login · terkunci otomatis 24 jam<br>form: dashboard.sadarhati.org/form</footer>
+</div>
+
+<!-- LOGIN OVERLAY -->
+<div class="ov" id="login-ov" style="display:none;">
+  <div class="lbox">
+    <div class="lg"><img src="logo.png" alt="Sadar Hati" style="height:38px;"></div>
+    <h2>Papan Entry</h2>
+    <p>Masuk dengan akun PL / pengurus untuk melihat papan.</p>
+    <div class="lerr" id="li-err"></div>
+    <label for="li-email">Email</label>
+    <input type="email" id="li-email" autocomplete="username" placeholder="nama@pl.sadarhati.org">
+    <label for="li-pass">Kata sandi</label>
+    <input type="password" id="li-pass" autocomplete="current-password" placeholder="••••••••">
+    <button id="li-btn">Masuk</button>
+  </div>
 </div>
 
 <script>
-
   const firebaseConfig = {
     apiKey: "AIzaSyC7127G5fsZprEGfeiqLrRqevTg6Qs2fko",
     authDomain: "sadar-hati-hub.firebaseapp.com",
@@ -75,19 +109,21 @@
     appId: "1:576423718259:web:76600bbdf4f06892b36906"
   };
 
-  const LBL = { chemsex:'🔥 Penjangkauan', dast10:'💊 DAST', srq29:'🧠 SRQ', ira:'⚕️ IRA', gra:'👥 GRA', konseling:'💬 Konseling', 'bulanan-kl':'📆 Bulanan', prevkit:'🎒 Kit', checkin:'📍 Hotspot', vct:'🩺 VCT' };
+  const LBL = { chemsex:'🔥 Penjangkauan', dast10:'💊 DAST', srq29:'🧠 SRQ', ira:'⚕️ IRA', gra:'👥 GRA', konseling:'💬 Konseling', 'bulanan-kl':'📆 Bulanan', prevkit:'🎒 Kit', checkin:'📍 Hotspot', vct:'🩺 VCT', rujukan:'📄 Rujukan' };
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const $ = id => document.getElementById(id);
+  // PL yang menangani dampingan PEREMPUAN (sisanya = laki-laki). PM/pengurus = semua.
+  const FEMALE_PL = ['nuri@pl.sadarhati.org'];
 
-  document.getElementById('tgl').textContent = new Date().toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  $('tgl').textContent = new Date().toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
 
   function render(rows) {
-    const board = document.getElementById('board');
-    document.getElementById('tot').textContent = rows.length;
+    const board = $('board');
+    $('tot').textContent = rows.length;
     if (!rows.length) {
-      board.innerHTML = '<div class="state"><div class="big">📭</div><strong>Belum ada entry yang masuk hari ini.</strong><br>Begitu ada yang submit form, kartunya muncul di sini otomatis —<br>tidak perlu refresh.</div>';
+      board.innerHTML = '<div class="state"><div class="big">📭</div><strong>Belum ada entry dalam 24 jam terakhir.</strong><br>Begitu ada yang submit form, kartunya muncul di sini otomatis.</div>';
       return;
     }
-    // group by PL
     const byPL = {};
     rows.forEach(r => { const k = r.pl || '-'; (byPL[k] = byPL[k] || []).push(r); });
     const groups = Object.entries(byPL).sort((a, b) => b[1].length - a[1].length);
@@ -113,35 +149,98 @@
   }
   window.__PAPAN_RENDER = render; /* utk QA */
 
-  let _terhubung = false;
-  setTimeout(() => {
-    if (!_terhubung && document.getElementById('loading')) {
-      document.getElementById('board').innerHTML = '<div class="state err"><div class="big">📴</div><strong>Belum bisa terhubung.</strong><br>Cek jaringan HP lalu buka ulang halaman ini.</div>';
-    }
-  }, 15000);
+  function errHTML(msg, ico, detail) {
+    return '<div class="state err"><div class="big">' + (ico || '🔧') + '</div><strong>' + esc(msg) + '</strong>' + (detail ? '<br><span style="font-size:11px;color:#a89f97;">' + esc(detail) + '</span>' : '') + '</div>';
+  }
+  function showLogin() { $('login-ov').style.display = 'flex'; $('ubar').style.display = 'none'; $('board').innerHTML = ''; $('tot').textContent = '0'; $('scope-note').textContent = ''; }
+  function hideLogin() { $('login-ov').style.display = 'none'; $('ubar').style.display = 'flex'; }
+
+  let AUTH, DB, FX, _signIn, _signOut, _unsub = null;
+
   (async () => {
     try {
       const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js");
-      const { getFirestore, collection, query, where, orderBy, onSnapshot, Timestamp } = await import("https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js");
+      const A = await import("https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js");
+      const F = await import("https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js");
       const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
-      const batas = Timestamp.fromMillis(Date.now() - 24 * 3600 * 1000);
-      const q = query(collection(db, 'entry_log'), where('ts', '>', batas), orderBy('ts', 'desc'));
-      onSnapshot(q, snap => {
-        _terhubung = true;
-        const rows = [];
-        snap.forEach(d => rows.push(d.data()));
-        render(rows);
-      }, err => {
-        _terhubung = true;
-        console.error('[Papan]', err);
-        document.getElementById('board').innerHTML = '<div class="state err"><div class="big">🔧</div><strong>Papan belum aktif.</strong><br>Aturan server (rules v4) belum dipasang, atau jaringan bermasalah.<br><span style="font-size:11px;color:#a89f97;">' + esc(err.code || err.message || '') + '</span></div>';
+      AUTH = A.getAuth(app); DB = F.getFirestore(app); FX = F;
+      _signIn = A.signInWithEmailAndPassword; _signOut = A.signOut;
+
+      $('li-btn').addEventListener('click', doLogin);
+      $('li-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+      $('logout').addEventListener('click', () => { _signOut(AUTH); });
+
+      A.onAuthStateChanged(AUTH, async (user) => {
+        if (_unsub) { try { _unsub(); } catch (e) {} _unsub = null; }
+        if (!user) { showLogin(); return; }
+        hideLogin();
+        $('board').innerHTML = '<div class="state"><div class="big">⏳</div>Memuat papan…</div>';
+        let role = '', pl = '';
+        try { const rs = await F.getDoc(F.doc(DB, 'roles', user.uid)); if (rs.exists()) { role = String(rs.data().role || '').toLowerCase(); pl = rs.data().pl || ''; } } catch (e) {}
+        startBoard(role, pl, String(user.email || '').toLowerCase());
       });
     } catch (e) {
-      _terhubung = true;
-      document.getElementById('board').innerHTML = '<div class="state err"><div class="big">📴</div><strong>Tidak dapat terhubung.</strong><br>Cek jaringan lalu buka ulang halaman ini.</div>';
+      $('board').innerHTML = errHTML('Tidak dapat terhubung.', '📴', e && (e.code || e.message));
     }
   })();
+
+  async function doLogin() {
+    const em = $('li-email').value.trim(), pw = $('li-pass').value;
+    const b = $('li-btn'), er = $('li-err');
+    er.style.display = 'none';
+    if (!em || !pw) { er.textContent = 'Isi email dan kata sandi.'; er.style.display = 'block'; return; }
+    b.disabled = true; b.textContent = 'Masuk…';
+    try {
+      await _signIn(AUTH, em, pw);
+      $('li-pass').value = '';
+    } catch (e) {
+      const c = String(e.code || '');
+      er.textContent = /password|invalid|credential|user-not|email/i.test(c) ? 'Email atau kata sandi salah.' : ('Gagal masuk: ' + (e.code || e.message));
+      er.style.display = 'block';
+    }
+    b.disabled = false; b.textContent = 'Masuk';
+  }
+
+  function startBoard(role, pl, email) {
+    const isPM = ['admin', 'me', 'manager', 'pm'].indexOf(role) >= 0;
+    const col = FX.collection(DB, 'entry_log');
+
+    if (isPM) {
+      $('who').innerHTML = esc(pl || 'Pengurus') + '<small>akses penuh · semua entri</small>';
+      $('scope-note').innerHTML = '<span class="scopebadge">semua entri</span>';
+      const batas = FX.Timestamp.fromMillis(Date.now() - 24 * 3600 * 1000);
+      const q = FX.query(col, FX.where('ts', '>', batas), FX.orderBy('ts', 'desc'));
+      _unsub = FX.onSnapshot(q, snap => { const rows = []; snap.forEach(d => rows.push(d.data())); render(rows); }, onErr);
+      return;
+    }
+    if (role === 'pl') {
+      const scope = (FEMALE_PL.indexOf(email) >= 0 || /nuri/i.test(pl)) ? 'P' : 'L';
+      const lblS = scope === 'P' ? 'dampingan perempuan' : 'dampingan laki-laki';
+      $('who').innerHTML = esc(pl || email) + '<small>' + lblS + '</small>';
+      $('scope-note').innerHTML = '<span class="scopebadge">' + (scope === 'P' ? '♀ perempuan' : '♂ laki-laki') + '</span>';
+      // in [scope,'X']: X = gender tak diketahui (mis. tanpa NIK) → tetap terlihat semua PL
+      const q = FX.query(col, FX.where('g', 'in', [scope, 'X']));
+      _unsub = FX.onSnapshot(q, snap => {
+        const batasMs = Date.now() - 24 * 3600 * 1000;
+        let rows = [];
+        snap.forEach(d => rows.push(d.data()));
+        rows = rows.filter(r => { const t = (r.ts && r.ts.toMillis) ? r.ts.toMillis() : (r.jam ? Date.parse(r.jam) : 0); return t >= batasMs; });
+        rows.sort((a, b) => { const ta = (a.ts && a.ts.toMillis) ? a.ts.toMillis() : Date.parse(a.jam || 0); const tb = (b.ts && b.ts.toMillis) ? b.ts.toMillis() : Date.parse(b.jam || 0); return tb - ta; });
+        render(rows);
+      }, onErr);
+      return;
+    }
+    // role lain / kosong
+    $('who').innerHTML = esc(email) + '<small>tanpa akses papan</small>';
+    $('board').innerHTML = errHTML('Akun ini belum punya akses Papan Entry.', '🔒', 'Hubungi admin bila ini keliru.');
+  }
+
+  function onErr(err) {
+    console.error('[Papan]', err);
+    const c = String(err && (err.code || err.message) || '');
+    const msg = c.indexOf('permission') >= 0 ? 'Akses ditolak / aturan server belum aktif.' : 'Gagal memuat papan.';
+    $('board').innerHTML = errHTML(msg, '🔧', c);
+  }
 </script>
 <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}</script>
 </body>
