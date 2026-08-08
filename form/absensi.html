@@ -125,6 +125,10 @@
       </select>
       <div id="s-pl-hint" style="font-size:11px;color:#8a7f74;margin-top:5px;line-height:1.45;">Pilih nama PL pendampingmu. Kalau tidak tahu, pilih "Belum tahu" — nanti PL yang melengkapi.</div>
       <label class="cl" style="display:block;margin:15px 0 5px;font-weight:800;">📍 Hotspot / lokasi hari ini</label>
+      <div id="s-hot-jadwal-wrap" style="display:none;margin-bottom:7px;">
+        <select class="fi" id="s-hot-jadwal" style="width:100%;" onchange="pickJadwal()"></select>
+        <div style="font-size:11px;color:#8a7f74;margin-top:4px;">Pilih dari Jadwal Aktivitas, atau ketik manual di bawah.</div>
+      </div>
       <input class="fi" id="s-hotspot" style="width:100%;" placeholder="mis. Alun-alun, Kota Malang" oninput="setSesiHot()">
       <button type="button" id="s-geo-btn" onclick="ambilGPS()" style="margin-top:8px;width:100%;border:1.5px solid var(--sage);background:#f1f6ef;color:var(--sage-deep);border-radius:12px;padding:11px;font-family:inherit;font-size:13.5px;font-weight:800;cursor:pointer;">📍 Kunci titik lokasi GPS</button>
       <div id="s-geo-box" style="display:none;font-size:12px;line-height:1.5;margin-top:8px;padding:10px 12px;border-radius:10px;"></div>
@@ -209,9 +213,9 @@ let DB=null, FS=null;
 (async()=>{
   try{
     const {initializeApp}=await import("https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js");
-    const {getFirestore,collection,addDoc,serverTimestamp}=await import("https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js");
-    const app=initializeApp(firebaseConfig); DB=getFirestore(app); FS={collection,addDoc,serverTimestamp};
-    console.log("[SAHA] Firebase siap"); retryOutbox(); window.addEventListener("online",retryOutbox);
+    const {getFirestore,collection,addDoc,getDocs,serverTimestamp}=await import("https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js");
+    const app=initializeApp(firebaseConfig); DB=getFirestore(app); FS={collection,addDoc,getDocs,serverTimestamp};
+    console.log("[SAHA] Firebase siap"); retryOutbox(); window.addEventListener("online",retryOutbox); loadJadwal();
   }catch(e){ console.error("[SAHA] Firebase gagal:",e); }
 })();
 function queue(rec){ try{ localStorage.setItem("saha_abs_"+rec.form+"_"+rec.created_at, JSON.stringify(rec)); }catch(e){} }
@@ -271,6 +275,48 @@ function ambilGPS(){
     if(box){ box.style.display="block"; box.style.background="#fbeada"; box.style.border="1px solid #eccbb0"; box.style.color="#9a5c26"; box.innerHTML="⚠️ GPS gagal ("+((err&&err.message)||"izin lokasi belum aktif")+"). Aktifkan izin lokasi lalu ketuk lagi — atau cukup isi nama lokasi di atas."; }
     if(btn){ btn.disabled=false; btn.textContent="📍 Coba ambil lokasi lagi"; }
   }, { enableHighAccuracy:true, timeout:15000, maximumAge:60000 });
+}
+var JADWAL_CACHE=[];
+function jadFmtTgl(t){ try{ return new Date(t+"T00:00:00").toLocaleDateString("id-ID",{day:"numeric",month:"short"}); }catch(e){ return t||""; } }
+function jadEsc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function fillJadwalOptions(arr){
+  var today=new Date().toISOString().slice(0,10);
+  arr=(arr||[]).filter(function(e){ return (e&&(e.tgl||""))>=today; })
+       .sort(function(a,b){ return ((a.tgl||"")+(a.j1||"")).localeCompare((b.tgl||"")+(b.j1||"")); })
+       .slice(0,40);
+  JADWAL_CACHE=arr;
+  var sel=document.getElementById("s-hot-jadwal"), wrap=document.getElementById("s-hot-jadwal-wrap");
+  if(!sel||!wrap||!arr.length) return 0;
+  var html='<option value="">— pilih kegiatan terjadwal —</option>';
+  arr.forEach(function(e,i){
+    var dstr=(e.tgl===today)?"Hari ini":jadFmtTgl(e.tgl);
+    var jam=e.j1?(" "+e.j1):"";
+    var loc=e.lokasi?(" @ "+e.lokasi):"";
+    html+='<option value="'+i+'">'+jadEsc(dstr+jam+" — "+(e.judul||"kegiatan")+loc)+'</option>';
+  });
+  html+='<option value="__manual">✏️ Lainnya / ketik manual</option>';
+  sel.innerHTML=html; wrap.style.display="block";
+  return arr.length;
+}
+async function loadJadwal(){
+  try{
+    if(!DB||!FS||!FS.getDocs) return;
+    var snap=await FS.getDocs(FS.collection(DB,"jadwal"));
+    var arr=[]; snap.forEach(function(d){ arr.push(d.data()||{}); });
+    fillJadwalOptions(arr);
+  }catch(e){ /* baca jadwal gagal (rules belum publik / offline) -> biarkan input manual */ }
+}
+function pickJadwal(){
+  var sel=document.getElementById("s-hot-jadwal"); if(!sel) return;
+  var v=sel.value; if(v==="") return;
+  var hot=document.getElementById("s-hotspot");
+  if(v==="__manual"){ if(hot){ hot.value=""; hot.focus(); } SESI.hotspot=""; saveSesi(); return; }
+  var e=JADWAL_CACHE[+v]; if(!e) return;
+  var loc=String(e.lokasi||e.judul||"").trim();
+  if(hot) hot.value=loc;
+  SESI.hotspot=loc;
+  if(e.judul) SESI.kegiatan=String(e.judul);
+  saveSesi();
 }
 (function(){
   try{ var raw=localStorage.getItem("saha_abs_sesi"); if(raw){ var o=JSON.parse(raw); if(o&&o.d===new Date().toISOString().slice(0,10)){ if(!SESI.pl&&o.pl)SESI.pl=o.pl; if(!SESI.hotspot&&o.hot)SESI.hotspot=o.hot; if(SESI.lat==null&&o.lat!=null){ SESI.lat=o.lat; SESI.lng=o.lng; SESI.akurasi_m=(o.acc==null?null:o.acc); SESI.gmaps=o.gm||("https://maps.google.com/?q="+o.lat+","+o.lng); } } } }catch(e){}
