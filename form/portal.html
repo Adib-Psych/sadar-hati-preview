@@ -587,16 +587,19 @@
     info.textContent = 'Memproses foto…';
     $('f-prev').style.display = 'block';
     var draw = function (src, w, h) {
-      var MAX = 1280;
-      var sc = Math.min(1, MAX / Math.max(w, h));
-      var cw = Math.round(w * sc), ch = Math.round(h * sc);
-      var cv = document.createElement('canvas'); cv.width = cw; cv.height = ch;
-      cv.getContext('2d').drawImage(src, 0, 0, cw, ch);
-      var q = 0.78, out = cv.toDataURL('image/jpeg', q);
+      /* selalu simpan LANDSCAPE ukuran KTP (~1.586:1), cover-fit + crop tengah */
+      var TW = 1024, TH = 645;
+      var cv = document.createElement('canvas'); cv.width = TW; cv.height = TH;
+      var ctx = cv.getContext('2d');
+      var ir = w / h, tr = TW / TH, sw, sh, sx, sy;
+      if (ir > tr) { sh = h; sw = h * tr; sx = (w - sw) / 2; sy = 0; }
+      else { sw = w; sh = w / tr; sx = 0; sy = (h - sh) / 2; }
+      ctx.drawImage(src, sx, sy, sw, sh, 0, 0, TW, TH);
+      var q = 0.8, out = cv.toDataURL('image/jpeg', q);
       while (out.length > 300000 && q > 0.4) { q -= 0.08; out = cv.toDataURL('image/jpeg', q); }
       CTX.fotoData = out;
       $('f-prev-img').src = out;
-      info.textContent = '✓ terkompres: ' + Math.round(out.length * 3 / 4 / 1024) + ' KB (' + cw + '×' + ch + ')';
+      info.textContent = '\u2713 tersimpan landscape: ' + Math.round(out.length * 3 / 4 / 1024) + ' KB (' + TW + '\u00d7' + TH + ')';
     };
     if (window.createImageBitmap) {
       createImageBitmap(f, { imageOrientation: 'from-image' }).then(function (bm) { draw(bm, bm.width, bm.height); })
