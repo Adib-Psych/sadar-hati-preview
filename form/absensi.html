@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="theme-color" content="#a83244">
+<meta name="theme-color" content="#0d8b8b">
 <title>Absensi &amp; Skrining · Sadar Hati</title>
 <style>
   :root{
-    --clay:#a83244;--clay-deep:#7d2433;--clay-tint:#f7e9ec;--plum:#6b4d7a;--plum-deep:#4e3859;
+    --clay:#0d8b8b;--clay-deep:#0a6d6d;--clay-tint:#e2f2f1;--plum:#6b4d7a;--plum-deep:#4e3859;
     --cream:#fbf7f2;--ink:#2c2724;--slate:#6f6660;--line:#e7ddd3;--sage:#6f8f6a;--sage-deep:#4d6b48;--amber:#b06a1f;--amber-tint:#f7ecd9;
   }
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -32,7 +32,7 @@
   .btn.ghost{background:#fff;color:var(--clay-deep);border:1.5px solid var(--clay);box-shadow:none;}
   .footpad{padding:11px 18px 16px;border-top:1px solid var(--line);background:#fff;flex:none;}
   .backlink{font-size:12px;color:var(--slate);background:none;border:none;font-family:inherit;cursor:pointer;padding:9px 2px;}
-  .privacy{background:var(--clay-tint);border:1px solid #ecd5da;border-radius:13px;padding:13px 15px;display:flex;gap:11px;margin:15px 0;}
+  .privacy{background:var(--clay-tint);border:1px solid #cbe9e6;border-radius:13px;padding:13px 15px;display:flex;gap:11px;margin:15px 0;}
   .privacy .ic{flex:none;width:30px;height:30px;border-radius:9px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;}
   .privacy .t{font-size:12.3px;line-height:1.5;color:var(--clay-deep);}
   .privacy .t b{font-weight:800;}
@@ -60,12 +60,12 @@
   .domainhdr.first{margin-top:2px;}
   .sigwrap{border:1.5px dashed var(--clay);border-radius:14px;background:#fffaf8;margin-top:8px;position:relative;}
   canvas#sig{width:100%;height:170px;display:block;touch-action:none;border-radius:14px;}
-  .sigph{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#c9b0b6;font-size:14px;pointer-events:none;}
-  .hr{background:linear-gradient(160deg,#fbeef0,#f6e3e7);border:1.5px solid #e8c3cc;border-radius:16px;padding:22px;text-align:center;margin-top:8px;}
+  .sigph{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#97c8c4;font-size:14px;pointer-events:none;}
+  .hr{background:linear-gradient(160deg,#ecf8f7,#d9f0ee);border:1.5px solid #bce0dd;border-radius:16px;padding:22px;text-align:center;margin-top:8px;}
   .hr .em{font-size:42px;}
   .hr h3{font-size:19px;color:var(--clay-deep);margin:8px 0 6px;font-weight:800;}
   .hr p{font-size:13.5px;color:#5f4a4f;line-height:1.6;}
-  .hr .notif{background:#fff;border:1px solid #e8c3cc;border-radius:11px;padding:12px;margin-top:15px;font-size:12.5px;color:var(--clay-deep);font-weight:700;line-height:1.4;}
+  .hr .notif{background:#fff;border:1px solid #bce0dd;border-radius:11px;padding:12px;margin-top:15px;font-size:12.5px;color:var(--clay-deep);font-weight:700;line-height:1.4;}
   .thanks{text-align:center;padding:20px 6px;}
   .thanks .em{font-size:58px;}
   .thanks h3{font-size:23px;color:var(--sage-deep);margin:10px 0 8px;font-weight:800;}
@@ -153,7 +153,7 @@
 
   <!-- S5 HIGH RISK -->
   <div class="screen" id="s-hr">
-    <div class="apphead" style="background:linear-gradient(150deg,#8f2d3c,#5f1a24);"><div class="stepline">Kamu tidak sendiri</div><h2>Terima kasih sudah jujur 💛</h2></div>
+    <div class="apphead" style="background:linear-gradient(150deg,#0c7a7a,#06504f);"><div class="stepline">Kamu tidak sendiri</div><h2>Terima kasih sudah jujur 💛</h2></div>
     <div class="scroll">
       <div class="hr"><div class="em">🤝</div><h3>Kami di sini untukmu</h3>
         <p>Dari jawabanmu, ada hal yang penting kami temani langsung. Kamu <b>tidak sendirian</b> — yuk ngobrol sebentar sama petugas yang ada di sini sekarang.</p>
@@ -338,7 +338,7 @@ function go(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.rem
 
 /* signature */
 let sigCanvas,sigCtx,drawing=false,sigDrawn=false;
-function sizeSig(){ if(!sigCanvas)return; const r=sigCanvas.getBoundingClientRect(); if(!r.width)return; sigCanvas.width=r.width*2; sigCanvas.height=r.height*2; sigCtx.setTransform(1,0,0,1,0,0); sigCtx.scale(2,2); sigCtx.strokeStyle="#7d2433"; sigCtx.lineWidth=2.6; sigCtx.lineCap="round"; }
+function sizeSig(){ if(!sigCanvas)return; const r=sigCanvas.getBoundingClientRect(); if(!r.width)return; sigCanvas.width=r.width*2; sigCanvas.height=r.height*2; sigCtx.setTransform(1,0,0,1,0,0); sigCtx.scale(2,2); sigCtx.strokeStyle="#0a6d6d"; sigCtx.lineWidth=2.6; sigCtx.lineCap="round"; }
 function initSig(){ sigCanvas=document.getElementById("sig"); sigCtx=sigCanvas.getContext("2d"); sizeSig();
   const pos=e=>{ const b=sigCanvas.getBoundingClientRect(); const t=e.touches?e.touches[0]:e; return [t.clientX-b.left,t.clientY-b.top]; };
   const start=e=>{ drawing=true; sigDrawn=true; const[x,y]=pos(e); sigCtx.beginPath(); sigCtx.moveTo(x,y); document.getElementById("sigph").style.display="none"; e.preventDefault(); };

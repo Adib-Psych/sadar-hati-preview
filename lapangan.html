@@ -1034,8 +1034,8 @@
 
       <style>
         .l1-form-wrap { max-width: 680px; margin: 22px auto 0; }
-        .l1-form-linkbar { display:flex; align-items:center; gap:8px; background:var(--clay); color:#fff; font-weight:700; font-size:12.5px; padding:11px 14px; border-radius:12px 12px 0 0; }
-        .l1-form-linkbar .u { word-break:break-all; opacity:.92; }
+        .l1-form-linkbar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; background:var(--clay); color:#fff; font-weight:700; font-size:12.5px; padding:11px 14px; border-radius:12px 12px 0 0; }
+        .l1-form-linkbar .u { word-break:break-all; opacity:.92; flex:1 1 200px; min-width:0; }
         .l1-form-linkbar button { margin-left:auto; flex-shrink:0; background:rgba(255,255,255,.2); color:#fff; border:1px solid rgba(255,255,255,.5); border-radius:8px; padding:5px 10px; font-size:11px; font-weight:700; cursor:pointer; }
         .l1-form-linkbar button:hover { background:rgba(255,255,255,.34); }
         .l1-embed { border:1px solid var(--border); border-top:none; border-radius:0 0 14px 14px; overflow:hidden; background:var(--cream); box-shadow:0 10px 30px rgba(168,50,68,0.10); }
@@ -1057,8 +1057,8 @@
         .ml-card .tag { font-size:9.5px; font-weight:800; letter-spacing:1.2px; text-transform:uppercase; color:var(--slate); }
         .ml-card h3 { font-family:'Lora',Georgia,serif; font-size:17px; margin:3px 0 4px; color:var(--navy); }
         .ml-card p { font-size:12px; color:var(--slate); line-height:1.5; margin:6px 0 14px; flex:1; }
-        .ml-actions { display:flex; gap:8px; }
-        .ml-actions button { flex:1; border:none; border-radius:9px; padding:10px 8px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; }
+        .ml-actions { display:flex; gap:8px; flex-wrap:wrap; }
+        .ml-actions button { flex:1 1 auto; min-width:84px; border:none; border-radius:9px; padding:10px 8px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; }
         .ml-fill { background:var(--clay); color:#fff; }
         .ml-fill:hover { background:var(--clay-deep); }
         .ml-copy { background:var(--clay-tint); color:var(--clay-deep); }
