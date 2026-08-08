@@ -8,12 +8,12 @@
    - gstatic/fonts    : cache-first (URL versi beku, aman)
    - firestore/API    : TIDAK disentuh SW (langsung network) — SDK punya antrian sendiri
    ============================================================ */
-var CACHE_NAME = 'saha-form-v64';
+var CACHE_NAME = 'saha-form-v65';
 var PRECACHE = [
   './', 'index.html',
   'chemsex.html', 'dast10.html', 'srq29.html', 'gabungan.html', 'ira.html',
   'gra.html', 'konseling.html', 'bulanan.html', 'prevkit.html', 'checkin.html',
-  'papan.html', 'portal.html',
+  'papan.html', 'portal.html', 'upload-foto.html',
   'saha-data.js', 'saha-shared.js', 'saha-roster.js',
   'logo.png', 'manifest.json', 'icon-192.png', 'icon-512.png'
 ];
