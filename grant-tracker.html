@@ -73,8 +73,38 @@
   footer a{color:var(--blue);word-break:break-all;}
   @media(max-width:640px){.stats{grid-template-columns:repeat(2,1fr);}header h1{font-size:23px;}}
 </style>
+
+<style id="gt-gate-css">
+#gt-gate{position:fixed;inset:0;z-index:99999;background:linear-gradient(160deg,#fbf7f2,#f0e7dc);
+  display:flex;align-items:center;justify-content:center;padding:20px;font-family:inherit;}
+#gt-gate .box{background:#fff;border:1px solid #e6ddd2;border-radius:16px;max-width:390px;width:100%;
+  padding:22px 20px;box-shadow:0 18px 40px -22px rgba(0,0,0,.4);text-align:left;}
+#gt-gate h2{margin:0 0 4px;font-size:16px;color:#7d2433;}
+#gt-gate p{margin:0 0 14px;font-size:12.5px;color:#6f6660;line-height:1.55;}
+#gt-gate input{width:100%;box-sizing:border-box;border:1px solid #ddd3c6;border-radius:10px;
+  padding:10px 12px;font-size:13px;margin-bottom:9px;font-family:inherit;}
+#gt-gate button{width:100%;border:0;border-radius:10px;padding:11px;font-weight:800;font-size:13px;
+  color:#fff;background:linear-gradient(135deg,#a83244,#7d2433);cursor:pointer;}
+#gt-gate .err{font-size:12px;color:#bf3838;margin-top:9px;display:none;}
+#gt-gate .hint{font-size:11px;color:#8c8279;margin-top:11px;line-height:1.5;}
+body.gt-locked > header, body.gt-locked > .wrap{display:none !important;}
+</style>
 </head>
-<body>
+<body class="gt-locked">
+
+<div id="gt-gate">
+  <div class="box">
+    <h2>🔒 Halaman Internal</h2>
+    <p>Grant Opportunities Tracker berisi data funder, tenggat, dan strategi hibah Yayasan Sadar Hati.
+       Masuk dengan akun internal (Admin · M&amp;E · Manager) untuk melanjutkan.</p>
+    <input id="gt-em" type="email" placeholder="email" autocomplete="username">
+    <input id="gt-pw" type="password" placeholder="kata sandi" autocomplete="current-password">
+    <button id="gt-go">Masuk</button>
+    <div class="err" id="gt-err"></div>
+    <div class="hint">Bukan staf Sadar Hati? <a href="./" style="color:#7d2433;">← kembali ke Beranda</a></div>
+  </div>
+</div>
+
 <header>
   <div class="wrap">
     <div class="eyebrow">Grant Opportunities Tracker · v2 — Ronde Verifikasi Ulang</div>
@@ -266,5 +296,35 @@
   </footer>
 
 </div>
+
+<script type="module">
+  import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+  const cfg={apiKey:"AIzaSyC7127G5fsZprEGfeiqLrRqevTg6Qs2fko",authDomain:"sadar-hati-hub.firebaseapp.com",
+    projectId:"sadar-hati-hub",storageBucket:"sadar-hati-hub.firebasestorage.app",
+    messagingSenderId:"576423718259",appId:"1:576423718259:web:76600bbdf4f06892b36906"};
+  const app=getApps().length?getApps()[0]:initializeApp(cfg);
+  const auth=getAuth(app), db=getFirestore(app);
+  const OK=['admin','me','manager'];
+  const $=i=>document.getElementById(i);
+  function unlock(){ document.body.classList.remove('gt-locked'); const g=$('gt-gate'); if(g) g.remove(); }
+  function deny(msg){ const e=$('gt-err'); if(e){ e.style.display='block'; e.textContent=msg; } }
+  onAuthStateChanged(auth, async u=>{
+    if(!u) return;
+    let role='';
+    try{ const s=await getDoc(doc(db,'roles',u.uid)); if(s.exists()) role=String(s.data().role||'').toLowerCase(); }catch(e){}
+    if(OK.indexOf(role)>=0){ try{localStorage.setItem('saha_ctx',JSON.stringify({role:role,t:Date.now()}));}catch(e){} unlock(); }
+    else deny('Akun ini tidak punya akses ke halaman ini (perlu Admin / M&E / Manager).');
+  });
+  $('gt-go').addEventListener('click', async ()=>{
+    const b=$('gt-go'); b.disabled=true; b.textContent='Memeriksa…'; $('gt-err').style.display='none';
+    try{ await signInWithEmailAndPassword(auth,$('gt-em').value.trim(),$('gt-pw').value); }
+    catch(e){ deny('Gagal masuk: '+(e.code||e.message)); }
+    b.disabled=false; b.textContent='Masuk';
+  });
+  $('gt-pw').addEventListener('keydown',e=>{ if(e.key==='Enter') $('gt-go').click(); });
+</script>
+
 </body>
 </html>
