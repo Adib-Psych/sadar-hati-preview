@@ -996,7 +996,7 @@
               <a class="nav-item" data-section="l2-out-checkin"><span class="icon">📍</span> 8 · Pemetaan Hotspot</a>
               <a class="nav-item" data-section="l2-out-chemsex"><span class="icon">🔥</span> 9 · Penjangkauan</a>
               <a class="nav-item" data-section="l2-out-prevkit"><span class="icon">🎒</span> 10 · Prevention Kit</a>
-              <a class="nav-item" data-section="l2-out-vct"><span class="icon">🪪</span> 11 · Registrasi VCT</a>
+              <a class="nav-item" data-section="l2-out-vct"><span class="icon">🪪</span> 11 · Registrasi KTP</a>
               <a class="nav-item" data-section="l2-out-srq29"><span class="icon">🧠</span> 12 · SRQ-29 Mental Health</a>
               <a class="nav-item" data-section="l2-out-rujukan"><span class="icon">🏥</span> 13 · Rujukan ke Puskesmas</a>
               <a class="nav-item" data-section="l2-out-galeri"><span class="icon">📸</span> 14 · Galeri Foto Aktivitas</a>
@@ -1449,7 +1449,7 @@
         <div id="lh-data" style="display:none;">
           <div class="lh-toolbar">
             <div class="lh-stat">Total: <strong id="lh-count">0</strong> laporan</div>
-            <select id="lh-f-form" class="lh-fin"><option value="">Semua form</option><option value="chemsex">🔥 Chemsex</option><option value="dast10">💊 DAST-10</option><option value="srq29">🧠 SRQ-29</option><option value="ira">⚕️ IRA</option><option value="gra">👥 GRA</option><option value="konseling">💬 Konseling</option><option value="bulanan-kl">📆 Bulanan Korlap</option><option value="prevkit">🎒 Prevention Kit</option><option value="checkin">📍 Pemetaan Hotspot</option><option value="vct">🪪 Registrasi VCT</option></select>
+            <select id="lh-f-form" class="lh-fin"><option value="">Semua form</option><option value="chemsex">🔥 Chemsex</option><option value="dast10">💊 DAST-10</option><option value="srq29">🧠 SRQ-29</option><option value="ira">⚕️ IRA</option><option value="gra">👥 GRA</option><option value="konseling">💬 Konseling</option><option value="bulanan-kl">📆 Bulanan Korlap</option><option value="prevkit">🎒 Prevention Kit</option><option value="checkin">📍 Pemetaan Hotspot</option><option value="vct">🪪 Registrasi KTP</option></select>
             <select id="lh-f-pl" class="lh-fin"><option value="">Semua PL</option></select>
             <input type="text" id="lh-f-q" class="lh-fin" placeholder="Cari nama/kode/area...">
             <button class="lh-btn-sm" id="lh-export">📥 CSV</button>
@@ -1510,12 +1510,12 @@
           .vct-tbl td{padding:7px 10px;border-top:1px solid #f5edf1;}
           .vct-tbl tr:hover td{background:#faf5f8;}
         </style>
-        <div class="hero"><div class="eyebrow">🔴 Layer 2B · Laporan Lapangan · Output · No. 11</div><h1>Registrasi VCT — Rekap &amp; Monitoring</h1><p class="lede">Halaman output form <strong>Registrasi VCT · Kartu Identitas</strong>: berapa KD sudah teregistrasi, ke puskesmas mana dirujuk, rencana tanggal VCT, dan sebaran per PL. <strong>Bagian bawah halaman ini memuat tabel kelengkapan KTP</strong> (nama, NIK, foto) — khusus akun internal, untuk mengecek KD mana yang KTP-nya belum masuk.</p></div>
+        <div class="hero"><div class="eyebrow">🔴 Layer 2B · Laporan Lapangan · Output · No. 11</div><h1>Registrasi KTP — Rekap &amp; Monitoring</h1><p class="lede">Halaman output form <strong>Registrasi KTP · Kartu Identitas</strong>: berapa KD sudah teregistrasi kartu identitasnya dan sebarannya per PL. <em>Puskesmas tujuan &amp; rencana VCT bukan bagian form ini</em> — keduanya ada di form Rujukan ke Puskesmas (Rumah 13). <strong>Bagian bawah halaman ini memuat tabel kelengkapan KTP</strong> (nama, NIK, foto) — khusus akun internal, untuk mengecek KD mana yang KTP-nya belum masuk.</p></div>
         <div class="vct-chips">
-          <div class="vct-chip"><b id="vct-c-total">0</b><span>total registrasi VCT</span></div>
+          <div class="vct-chip"><b id="vct-c-total">0</b><span>total registrasi KTP</span></div>
           <div class="vct-chip"><b id="vct-c-7">0</b><span>7 hari terakhir</span></div>
           <div class="vct-chip"><b id="vct-c-baru">0</b><span>KD baru</span></div>
-          <div class="vct-chip"><b id="vct-c-pkm">0</b><span>puskesmas tujuan</span></div>
+          <div class="vct-chip"><b id="vct-c-pkm">0</b><span>PL yang input</span></div>
         </div>
         <div style="background:#fff;border:1px solid var(--slate-lighter);border-radius:12px;padding:14px 16px;margin-bottom:14px;">
           <div style="font-size:11px;font-weight:800;letter-spacing:.6px;color:#6b2a44;margin-bottom:6px;">REGISTRASI PER PL</div>
@@ -1523,8 +1523,8 @@
         </div>
         <div style="overflow:auto;background:#fff;border:1px solid var(--slate-lighter);border-radius:12px;max-height:430px;">
           <table class="vct-tbl" style="width:100%;border-collapse:collapse;font-size:12.5px;min-width:680px;">
-            <thead><tr><th>TANGGAL</th><th>ID KD</th><th>PL</th><th>PUSKESMAS TUJUAN</th><th>RENCANA VCT</th><th>STATUS</th></tr></thead>
-            <tbody id="vct-body"><tr><td colspan="6" style="padding:14px;color:#6f6660;">Login staf untuk memuat data…</td></tr></tbody>
+            <thead><tr><th>TANGGAL</th><th>ID KD</th><th>PL</th><th>STATUS KONTAK</th></tr></thead>
+            <tbody id="vct-body"><tr><td colspan="4" style="padding:14px;color:#6f6660;">Login staf untuk memuat data…</td></tr></tbody>
           </table>
         </div>
         <div class="hs-note" style="background:#faf3f6;border-color:#dcbecb;">🔐 <b>Rekap di atas</b> sengaja hanya memakai ID KD. <b>Tabel kelengkapan KTP di bawah</b> menampilkan nama, NIK &amp; foto — terbuka hanya untuk akun internal (Admin · M&amp;E · Manager). Perlu diketahui: akses lewat halaman ini <b>belum dicatat</b> di log <code>ktp_akses</code> seperti di Portal PL, jadi jangan dibuka di layar yang terlihat orang lain.</div>
@@ -1553,8 +1553,8 @@
           <button class="rb-btn g" id="kt-csv">⬇️ Unduh CSV</button>
         </div>
         <div style="font-size:11px;color:#6f6660;margin-bottom:6px;" id="kt-info">—</div>
-        <table class="rb-tbl k"><thead><tr><th style="width:100px;">Foto KTP</th><th>Nama KD</th><th>ID KD</th><th>NIK</th><th>PL</th><th>Status</th><th>Aksi</th></tr></thead>
-        <tbody id="kt-body"></tbody></table>
+        <div class="rb-scroll"><table class="rb-tbl k"><thead><tr><th style="width:100px;">Foto KTP</th><th>Nama KD</th><th>ID KD</th><th>NIK</th><th>PL</th><th>Status</th><th>Aksi</th></tr></thead>
+        <tbody id="kt-body"></tbody></table></div>
         <div style="text-align:center;margin-top:10px;"><button class="rb-btn g" id="kt-more" style="display:none;">Tampilkan 100 lagi</button></div>
 
       </section>
@@ -1876,6 +1876,12 @@
   .rb-tbl.r th{background:#a83244;} .rb-tbl.k th{background:#94395c;}
   .rb-tbl td{padding:8px 10px;border-top:1px solid #f0ebe4;vertical-align:middle;}
   .rb-tbl tr:hover td{background:#fbf8f4;}
+  .rb-scroll{max-height:540px;overflow:auto;border:1px solid var(--slate-lighter);border-radius:12px;background:#fff;box-shadow:0 3px 12px rgba(0,0,0,.05);overscroll-behavior:contain;}
+  .rb-scroll .rb-tbl{box-shadow:none;border-radius:0;overflow:visible;border-collapse:separate;border-spacing:0;}
+  .rb-scroll .rb-tbl thead th{position:sticky;top:0;z-index:3;}
+  .rb-scroll .rb-tbl td{border-top:0;border-bottom:1px solid #f0ebe4;}
+  .rb-scroll::-webkit-scrollbar{width:11px;height:11px;}
+  .rb-scroll::-webkit-scrollbar-thumb{background:#cbbfb2;border-radius:7px;border:3px solid #fff;}
   .rb-empty{padding:22px;text-align:center;color:#6f6660;font-size:12.5px;}
   .rb-thumb{width:88px;height:56px;object-fit:cover;border-radius:7px;border:1px solid #e6ddd2;display:block;cursor:zoom-in;background:#f0ebe4;}
   .rb-nofoto{width:88px;height:56px;border-radius:7px;border:1px dashed #d9c9b5;display:flex;align-items:center;justify-content:center;font-size:9.5px;color:#b8791e;background:#fdf8ef;text-align:center;line-height:1.25;}
@@ -1907,8 +1913,8 @@
           <select id="abs-pl"><option value="">Semua PL</option></select>
           <button class="rb-btn g" id="abs-csv">⬇️ Unduh CSV</button>
         </div>
-        <table class="rb-tbl"><thead><tr><th>Tanggal</th><th>Kegiatan</th><th>Lokasi / Hotspot</th><th>PL</th><th style="text-align:center;">Hadir</th><th>Aksi</th></tr></thead>
-        <tbody id="abs-body"></tbody></table>
+        <div class="rb-scroll"><table class="rb-tbl"><thead><tr><th>Tanggal</th><th>Kegiatan</th><th>Lokasi / Hotspot</th><th>PL</th><th style="text-align:center;">Hadir</th><th>Aksi</th></tr></thead>
+        <tbody id="abs-body"></tbody></table></div>
       </section>
 
       <section class="section" id="l2-out-dast10">
@@ -1995,8 +2001,8 @@
           <select id="ruj-pl"><option value="">Semua PL</option></select>
           <button class="rb-btn g" id="ruj-csv">⬇️ Unduh CSV</button>
         </div>
-        <table class="rb-tbl r"><thead><tr><th>Tanggal</th><th>KD</th><th>ID KD</th><th>Dirujuk ke</th><th>Layanan</th><th>PL</th></tr></thead>
-        <tbody id="ruj-body"></tbody></table>
+        <div class="rb-scroll"><table class="rb-tbl r"><thead><tr><th>Tanggal</th><th>KD</th><th>ID KD</th><th>Dirujuk ke</th><th>Layanan</th><th>PL</th></tr></thead>
+        <tbody id="ruj-body"></tbody></table></div>
       </section>
 
       <section class="section" id="l2-out-galeri">
@@ -2233,7 +2239,7 @@
         <div class="me-zone me-live">
           <div class="me-zhead"><span class="me-zt">1 · Capaian Live Dashboard</span><span class="me-ztag l"><span class="me-livechip"><span class="me-dot"></span>LIVE</span></span>
             <div class="me-seg" id="mv-seg"><button data-p="bulan">Bulanan</button><button data-p="kuartal">Kuartalan</button><button data-p="tahun" class="on">Tahunan</button></div><span class="me-pbig" id="mv-pbig">—</span></div>
-          <div class="me-zsub">Terisi otomatis dari entri 6 form live (pakai tanggal entri): Penjangkauan → kontak &amp; komoditas · DAST-10 + SRQ-29 → skrining &amp; rujukan · Registrasi VCT → tes HIV · Konseling → dukungan psikososial.</div>
+          <div class="me-zsub">Terisi otomatis dari entri 6 form live (pakai tanggal entri): Penjangkauan → kontak &amp; komoditas · DAST-10 + SRQ-29 → skrining &amp; rujukan · Registrasi KTP → kartu identitas · Konseling → dukungan psikososial.</div>
           <div class="cards" id="mv-live-kpi"></div>
           <div class="me-grid" id="mv-live-grid"></div>
         </div>
@@ -2778,7 +2784,7 @@ function updateBreadcrumb(item) {
   }
 
   // ===== PANEL ADMIN (tahap 1) =====
-  window.SAHA_FORM_LABELS={chemsex:'🔥 Penjangkauan',dast10:'💊 DAST-10',srq29:'🧠 SRQ-29',ira:'⚕️ IRA',gra:'👥 GRA',konseling:'💬 Konseling','bulanan-kl':'📆 Bulanan Korlap',prevkit:'🎒 Prev-Kit',checkin:'📍 Check-In',vct:'🩺 Registrasi VCT',master:'📋 Master List'};
+  window.SAHA_FORM_LABELS={chemsex:'🔥 Penjangkauan',dast10:'💊 DAST-10',srq29:'🧠 SRQ-29',ira:'⚕️ IRA',gra:'👥 GRA',konseling:'💬 Konseling','bulanan-kl':'📆 Bulanan Korlap',prevkit:'🎒 Prev-Kit',checkin:'📍 Check-In',vct:'🪪 Registrasi KTP',master:'📋 Master List'};
   window.SAHA_ROLE='staff';
   function applyRoleUI(){
     const r=window.SAHA_ROLE;
@@ -3161,7 +3167,7 @@ window.SAHA_QR_DL = function(){
 </div>
 
 <script>
-/* ===== RUMAH OUTPUT: Pemetaan Hotspot + Registrasi VCT (v0.57) ===== */
+/* ===== RUMAH OUTPUT: Pemetaan Hotspot + Registrasi KTP (v0.57) ===== */
 (function(){
   var esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c];});};
   function fdate(s){ if(!s) return '-'; try{ var d=new Date(String(s).length===10?s+'T00:00:00':s); if(isNaN(d)) return String(s); return d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});}catch(e){ return String(s); } }
@@ -3248,20 +3254,20 @@ window.SAHA_QR_DL = function(){
     var t7=Date.now()-7*86400000;
     setTxt('vct-c-7',rows.filter(function(x){ var d=new Date(x.created_at||0); return d.getTime()>=t7; }).length);
     setTxt('vct-c-baru',rows.filter(function(x){ return String(x.status||'').toLowerCase()==='baru'; }).length);
-    var pkm={}; rows.forEach(function(x){ var p=((x.data||{}).puskesmas||'').trim(); if(p) pkm[p.toLowerCase()]=p; });
-    setTxt('vct-c-pkm',Object.keys(pkm).length);
+    var plset={}; rows.forEach(function(x){ var p=(x.pl||'').trim(); if(p) plset[p]=1; });
+    setTxt('vct-c-pkm',Object.keys(plset).length);
     var per={}; rows.forEach(function(x){ var p=x.pl||'?'; per[p]=(per[p]||0)+1; });
     var mx=1; Object.keys(per).forEach(function(k){ if(per[k]>mx) mx=per[k]; });
     var pl=document.getElementById('vct-pl');
     if(pl) pl.innerHTML = rows.length ? Object.keys(per).sort(function(a,b){return per[b]-per[a];}).map(function(k){
       return '<div class="vct-plbar"><span class="nm">'+esc(k)+'</span><span class="bar"><span class="fill" style="width:'+Math.round(per[k]/mx*100)+'%"></span></span><span class="n">'+per[k]+'</span></div>';
-    }).join('') : '<div style="font-size:12px;color:#6f6660;">Belum ada registrasi VCT masuk.</div>';
+    }).join('') : '<div style="font-size:12px;color:#6f6660;">Belum ada registrasi KTP masuk.</div>';
     tb.innerHTML = rows.length ? rows.slice(0,120).map(function(x){
       var d=x.data||{}, kl=x.klien||{};
       return '<tr><td>'+fdate(x.tanggal||x.created_at)+'</td><td style="font-weight:800;color:#6b2a44;">'+esc(kl.idkd||'-')+'</td>'+
-        '<td>'+esc(x.pl||'-')+'</td><td>'+esc(d.puskesmas||'-')+'</td><td>'+(d.rencana_vct?fdate(d.rencana_vct):'<span style="color:#a89f97;">belum dijadwalkan</span>')+'</td>'+
+        '<td>'+esc(x.pl||'-')+'</td>'+
         '<td>'+esc(x.status||'-')+'</td></tr>';
-    }).join('') : '<tr><td colspan="6" style="padding:14px;color:#6f6660;">Belum ada registrasi VCT — entri PL dari Portal/Form No. 12 muncul di sini otomatis.</td></tr>';
+    }).join('') : '<tr><td colspan="6" style="padding:14px;color:#6f6660;">Belum ada registrasi KTP — entri PL dari Portal PL / Form Registrasi KTP muncul di sini otomatis.</td></tr>';
   }
 
   window.SAHA_RENDER_HOUSES = function(){ try{ hsRender(); }catch(e){} try{ vctRender(); }catch(e){} try{ if(window.SAHA_RENDER_ABS) window.SAHA_RENDER_ABS(); }catch(e){} try{ if(window.SAHA_RENDER_RUJ) window.SAHA_RENDER_RUJ(); }catch(e){} try{ if(window.SAHA_RENDER_KTP) window.SAHA_RENDER_KTP(); }catch(e){} };
@@ -3801,7 +3807,7 @@ window.SAHA_QR_DL = function(){
     var kpi=el('mv-live-kpi');
     kpi.innerHTML='<div class="card" style="background:linear-gradient(135deg,var(--clay) 0%,var(--clay-deep) 100%);color:#fff;border-color:var(--clay-deep);"><div class="label" style="color:#fff;opacity:.85;">Kontak Penjangkauan</div><div class="value" style="color:#fff;">'+pj.length+'</div><div class="desc" style="color:#fff;opacity:.9;">← form Penjangkauan</div></div>'+
       '<div class="card"><div class="label">Skrining DAST + SRQ</div><div class="value">'+skrin+'</div><div class="desc">'+da.length+' DAST · '+sq.length+' SRQ</div></div>'+
-      '<div class="card"><div class="label">Tes HIV (VCT)</div><div class="value">'+vc.length+'</div><div class="desc">← form Registrasi VCT</div></div>'+
+      '<div class="card"><div class="label">Tes HIV (VCT)</div><div class="value">'+vc.length+'</div><div class="desc">← form Registrasi KTP</div></div>'+
       '<div class="card" style="background:var(--sage-light);border-color:var(--sage);"><div class="label">Dukungan Psikososial</div><div class="value" style="color:var(--sage-deep);">'+ko.length+'</div><div class="desc">← form Konseling</div></div>';
     var g=el('mv-live-grid');var tot=pj.length+skrin+vc.length+ko.length;
     if(!tot){g.innerHTML='<div class="me-cc" style="grid-column:1/-1;"><div class="me-empty"><div class="big">🗂️</div>Belum ada entri live untuk '+esc(P.big())+'.<br>Kartu terisi otomatis begitu tim mengentri form apa pun.</div></div>';return;}
