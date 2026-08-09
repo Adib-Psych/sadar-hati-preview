@@ -1884,6 +1884,12 @@
   .rb-scroll::-webkit-scrollbar-thumb{background:#cbbfb2;border-radius:7px;border:3px solid #fff;}
   .rb-empty{padding:22px;text-align:center;color:#6f6660;font-size:12.5px;}
   .rb-thumb{width:88px;height:56px;object-fit:cover;border-radius:7px;border:1px solid #e6ddd2;display:block;cursor:zoom-in;background:#f0ebe4;}
+  .rb-wrap{position:relative;width:88px;height:56px;}
+  .rb-wm{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:7px;}
+  .rb-wm div{position:absolute;font-size:6.5px;font-weight:800;color:rgba(125,36,51,.42);transform:rotate(-18deg);white-space:nowrap;letter-spacing:.4px;text-shadow:0 0 2px rgba(255,255,255,.4);}
+  .rb-zoomwrap{position:relative;}
+  .rb-zoomwrap .rb-wm div{font-size:13px;letter-spacing:1.1px;color:rgba(125,36,51,.32);}
+  .rb-wmnote{font-size:10px;color:#7d2433;background:#f6e9ea;border-radius:7px;padding:5px 8px;margin-top:8px;line-height:1.5;}
   .rb-nofoto{width:88px;height:56px;border-radius:7px;border:1px dashed #d9c9b5;display:flex;align-items:center;justify-content:center;font-size:9.5px;color:#b8791e;background:#fdf8ef;text-align:center;line-height:1.25;}
   .rb-pill{display:inline-block;font-size:9.5px;font-weight:800;border-radius:8px;padding:2px 7px;white-space:nowrap;}
   .rb-pill.ok{background:#e6f4f4;color:#0a6d6d;} .rb-pill.pend{background:#fff3cd;color:#7a5313;}
@@ -1907,6 +1913,7 @@
           <div class="rb-chip"><b id="abs-c-hadir">0</b><span>TOTAL KEHADIRAN</span></div>
           <div class="rb-chip"><b id="abs-c-kd">0</b><span>KD UNIK</span></div>
           <div class="rb-chip"><b id="abs-c-ttd">0</b><span>ADA TANDA TANGAN</span></div>
+          <div class="rb-chip" style="border-left-color:#b8791e;"><b id="abs-c-nopl" style="color:#8c5a12;">0</b><span>ENTRI TANPA PL</span></div>
         </div>
         <div class="rb-tools">
           <input type="search" id="abs-q" placeholder="cari kegiatan / lokasi / PL / nama KD…">
@@ -4352,6 +4359,7 @@ tr.me-rawclick{cursor:pointer;}
     T('abs-c-sesi',ABS.length); T('abs-c-hadir',tot.length);
     T('abs-c-kd',Object.keys(uniq).length);
     T('abs-c-ttd',tot.filter(function(x){return !!x.ttd;}).length);
+    T('abs-c-nopl',tot.filter(function(x){var p=(x.pl||'').trim(); return !p||p==='-'||p==='__belum'||x.pl_status==='belum_diisi';}).length);
     fillSel('abs-pl',[...new Set(ABS.map(function(r){return r.pl;}).filter(function(v){return v&&v!=='-';}))].sort());
     absDraw();
   };
@@ -4521,6 +4529,13 @@ tr.me-rawclick{cursor:pointer;}
       return true;
     });
   }
+  function wmText(){ var t=new Date();
+    return 'SADAR HATI · '+(window.SAHA_NAMA||window.SAHA_ROLE||'INTERNAL').toUpperCase()+' · '
+      +t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0')+' '
+      +String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0'); }
+  function wmLayer(n){ var s='<div class="rb-wm">',t=E(wmText());
+    for(var i=0;i<n;i++) s+='<div style="top:'+(i*20-6)+'%;left:'+((i%2)*-14-8)+'%;">'+t+' &nbsp; '+t+'</div>';
+    return s+'</div>'; }
   function pill(s){
     if(s==='ada') return '<span class="rb-pill ok">✅ lengkap</span>';
     if(s==='pending') return '<span class="rb-pill pend">⏳ verifikasi</span>';
@@ -4533,7 +4548,7 @@ tr.me-rawclick{cursor:pointer;}
     T('kt-info','Menampilkan '+page.length+' dari '+f.length+' baris'+(f.length!==ROWS.length?(' (difilter dari '+ROWS.length+')'):''));
     tb.innerHTML = page.length ? page.map(function(r){
       var idx=ROWS.indexOf(r), s=statusOf(r), k=r.ktp;
-      var foto = (k&&k.foto) ? '<img class="rb-thumb" src="'+k.foto+'" onclick="ktZoom('+idx+')" alt="KTP">'
+      var foto = (k&&k.foto) ? '<div class="rb-wrap"><img class="rb-thumb" src="'+k.foto+'" onclick="ktZoom('+idx+')" alt="KTP">'+wmLayer(6)+'</div>'
                              : '<div class="rb-nofoto">belum ada<br>foto KTP</div>';
       return '<tr><td>'+foto+'</td><td><b>'+E(r.nama||'-')+'</b>'+(k&&k.julukan?'<div style="font-size:10px;color:#6f6660;">'+E(k.julukan)+'</div>':'')+'</td>'
         +'<td style="font-size:11.5px;">'+E(r.idkd||'-')+'</td>'
@@ -4549,7 +4564,8 @@ tr.me-rawclick{cursor:pointer;}
   window.ktZoom=function(i){ var k=ROWS[i]&&ROWS[i].ktp; if(!k||!k.foto) return;
     rbCloseModal(); document.getElementById('rb-mcard').innerHTML='<h3>'+E(ROWS[i].nama)+'</h3>'
       +'<div style="font-size:11.5px;color:#6f6660;margin-bottom:9px;">ID '+E(k.idkd||'-')+' · NIK '+E(k.nik||'-')+' · PL '+E(k.pl||'-')+'</div>'
-      +'<img src="'+k.foto+'" style="width:100%;border-radius:11px;border:1px solid #e6ddd2;">'
+      +'<div class="rb-zoomwrap"><img src="'+k.foto+'" style="width:100%;border-radius:11px;border:1px solid #e6ddd2;display:block;">'+wmLayer(9)+'</div>'
+      +'<div class="rb-wmnote">🔒 Foto ber-watermark nama &amp; waktu pembuka. Dokumen identitas — jangan disebarkan atau difoto ulang.</div>'
       +'<div style="margin-top:11px;display:flex;gap:8px;"><button class="rb-btn g" onclick="rbCloseModal()">Tutup</button></div>';
     document.getElementById('rb-modal').classList.add('on'); };
 

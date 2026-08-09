@@ -126,7 +126,7 @@
         <option>Dodik</option>
         <option value="__belum">Belum tahu — PL isi nanti</option>
       </select>
-      <div id="s-pl-hint" style="font-size:11px;color:#8a7f74;margin-top:5px;line-height:1.45;">Pilih nama PL pendampingmu. Kalau tidak tahu, pilih "Belum tahu" — nanti PL yang melengkapi.</div>
+      <div id="s-pl-warn" style="display:none;background:#fff3cd;border:1px solid #ffe08a;border-radius:9px;padding:8px 10px;margin-top:7px;font-size:11.5px;color:#7a5313;line-height:1.5;">⚠️ <b>Petugas belum dipilih.</b> Kehadiranmu tetap tersimpan, tapi akan masuk antrian tindak lanjut sampai PL melengkapi. Kalau tahu nama pendampingmu, pilih sekarang supaya datanya langsung lengkap.</div><div id="s-pl-hint" style="font-size:11px;color:#8a7f74;margin-top:5px;line-height:1.45;">Pilih nama PL pendampingmu. Kalau tidak tahu, pilih "Belum tahu" — nanti PL yang melengkapi.</div>
       <label class="cl" style="display:block;margin:15px 0 5px;font-weight:800;">📍 Hotspot / lokasi hari ini</label>
       <div id="s-hot-jadwal-wrap" style="display:none;margin-bottom:7px;">
         <select class="fi" id="s-hot-jadwal" style="width:100%;" onchange="pickJadwal()"></select>
@@ -229,7 +229,7 @@ function pushRec(rec){
 function strukVisit(rec){
   if(!DB||!FS) return;
   try{ FS.addDoc(FS.collection(DB,"entry_log"),{
-    form:"absensi", pl:String(rec.pl||"-").slice(0,60),
+    form:"absensi", pl:String(rec.pl||"").slice(0,60), pl_status:String(rec.pl||"")?"terisi":"belum_diisi",
     nm:String((rec.klien&&(rec.klien.julukan||rec.klien.nama))||"-").slice(0,50),
     jam:String(rec.created_at||""), ts:FS.serverTimestamp(), krx:false
   }).catch(()=>{}); }catch(e){}
@@ -253,9 +253,11 @@ function todayStr(){ const d=new Date(); return d.toLocaleDateString("id-ID",{we
 document.getElementById("c-tgl").textContent=todayStr();
 /* ---- setelan sesi (Petugas PL + Hotspot), tersimpan per-hari di HP ---- */
 var SESI_PLS=["Nuri","David","Ibi","Dodik"];
-function updHrPl(){ var e=document.getElementById("hr-pl"); if(e) e.textContent=SESI.pl||"petugas"; }
+function updPlWarn(){ var w=document.getElementById("s-pl-warn"); if(!w) return;
+    w.style.display=(!SESI.pl||SESI.pl==="__belum")?"block":"none"; }
+  function updHrPl(){ var e=document.getElementById("hr-pl"); if(e) e.textContent=SESI.pl||"petugas"; }
 function saveSesi(){ try{ localStorage.setItem("saha_abs_sesi", JSON.stringify({d:new Date().toISOString().slice(0,10), pl:SESI.pl||"", hot:SESI.hotspot||"", lat:(SESI.lat==null?null:SESI.lat), lng:(SESI.lng==null?null:SESI.lng), acc:(SESI.akurasi_m==null?null:SESI.akurasi_m), gm:SESI.gmaps||""})); }catch(e){} }
-function setSesiPL(){ var v=document.getElementById("s-pl").value; SESI.pl=(v==="__belum"||v==="")?"":v; var h=document.getElementById("s-pl-hint"); if(h){ h.textContent = v==="__belum" ? "Ditandai belum tahu — PL akan melengkapi nanti." : (v==="" ? "Pilih nama PL pendampingmu. Kalau tidak tahu, pilih \"Belum tahu\"." : "\u2713 Pendamping: "+v); h.style.color = v==="__belum" ? "#9a5c26" : (v===""?"#8a7f74":"#3f5749"); } saveSesi(); updHrPl(); }
+function setSesiPL(){ try{setTimeout(updPlWarn,10);}catch(e){} var v=document.getElementById("s-pl").value; SESI.pl=(v==="__belum"||v==="")?"":v; var h=document.getElementById("s-pl-hint"); if(h){ h.textContent = v==="__belum" ? "Ditandai belum tahu — PL akan melengkapi nanti." : (v==="" ? "Pilih nama PL pendampingmu. Kalau tidak tahu, pilih \"Belum tahu\"." : "\u2713 Pendamping: "+v); h.style.color = v==="__belum" ? "#9a5c26" : (v===""?"#8a7f74":"#3f5749"); } saveSesi(); updHrPl(); }
 function setSesiHot(){ SESI.hotspot=document.getElementById("s-hotspot").value.trim(); saveSesi(); }
 function renderGeo(){
   var box=document.getElementById("s-geo-box"), map=document.getElementById("s-geo-map"), btn=document.getElementById("s-geo-btn");
@@ -410,7 +412,7 @@ function dastLevel(s){ if(s>=9)return"Sangat berat"; if(s>=6)return"Berat"; if(s
 function finishSrq(){ go(scores().highrisk?"s-hr":"s-sign"); }
 
 /* nav */
-function go(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active")); const el=document.getElementById(id); el.classList.add("active"); const sc=el.querySelector(".scroll"); if(sc)sc.scrollTop=0; window.scrollTo(0,0); if(id==="s-sign") setTimeout(sizeSig,40); }
+function go(id){ try{ if(id==="s-session") updPlWarn(); }catch(e){} document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active")); const el=document.getElementById(id); el.classList.add("active"); const sc=el.querySelector(".scroll"); if(sc)sc.scrollTop=0; window.scrollTo(0,0); if(id==="s-sign") setTimeout(sizeSig,40); }
 
 /* signature */
 let sigCanvas,sigCtx,drawing=false,sigDrawn=false;
@@ -442,7 +444,8 @@ async function submitAll(){
   const telp=document.getElementById("f-telp").value.trim();
   const created_at=new Date().toISOString();
   const kd=idkd(nama);
-  const base={ pl:String(SESI.pl||"-"), created_at, schema_version:"1", mode:"self", kegiatan:SESI.kegiatan, hotspot:SESI.hotspot, lat:(SESI.lat==null?null:SESI.lat), lng:(SESI.lng==null?null:SESI.lng), akurasi_m:(SESI.akurasi_m==null?null:SESI.akurasi_m), gmaps:SESI.gmaps||"", sesi:created_at, idkd:kd };
+  const plKosong = !SESI.pl || SESI.pl==='__belum';
+      const base={ pl:(plKosong?'':String(SESI.pl)), pl_status:(plKosong?'belum_diisi':'terisi'), created_at, schema_version:"1", mode:"self", kegiatan:SESI.kegiatan, hotspot:SESI.hotspot, lat:(SESI.lat==null?null:SESI.lat), lng:(SESI.lng==null?null:SESI.lng), akurasi_m:(SESI.akurasi_m==null?null:SESI.akurasi_m), gmaps:SESI.gmaps||"", sesi:created_at, idkd:kd };
   const klienMin={ nama, julukan, idkd:kd };
   const recAbsensi={ ...base, form:"absensi", klien:{ nama, julukan, alamat, telp, idkd:kd }, ttd:sigData() };
   const recDast={ ...base, form:"dast10", klien:klienMin, data:{ answers:dA, skor:s.dast, level:dastLevel(s.dast) } };
