@@ -1221,6 +1221,16 @@ function renderVerifCard(x){
     +'<div style="display:flex;gap:8px;">'
     +'<button class="btn" style="margin:0;background:linear-gradient(135deg,#0d8b8b,#0a6d6d);" onclick="doVerify(this)">✓ Verifikasi</button>'
     +'<button class="btn" style="margin:0;width:auto;padding:9px 13px;background:#7d6b5c;" onclick="openVerifEdit(this)">✏️ Koreksi</button></div>'
+    +'<button class="btn" style="margin:8px 0 0;background:'+(x.rusak?'linear-gradient(135deg,#b8791e,#8c5a12)':'#8a8078')+';" onclick="openGanti(this)">🔄 Ganti Foto KTP'+(x.rusak?' (perlu diganti)':'')+'</button>'
+    +'<div class="vf-ganti" style="display:none;margin-top:10px;border-top:1px dashed var(--line);padding-top:10px;">'
+      +'<div style="font-size:11px;color:var(--slate);line-height:1.55;margin-bottom:8px;">Ambil ulang foto KTP yang jelas. Foto lama akan <b>digantikan</b>; arsip lama tetap tersimpan di Google Drive.</div>'
+      +'<input type="file" class="vf-file" accept="image/*" capture="environment" style="display:none;">'
+      +'<button class="btn" style="margin:0;background:linear-gradient(135deg,#0d8b8b,#0a6d6d);" onclick="this.closest(&quot;.vf-ganti&quot;).querySelector(&quot;.vf-file&quot;).click()">📷 Ambil / Pilih Foto Baru</button>'
+      +'<div class="vf-gprev" style="display:none;margin-top:9px;"><img class="vf-gimg" style="width:100%;border-radius:10px;display:block;border:1px solid var(--border);">'
+        +'<div class="vf-ginfo" style="font-size:10.5px;color:var(--slate);margin-top:4px;"></div>'
+        +'<div class="fld" style="margin-top:8px;"><label class="fl">NIK (koreksi bila sebelumnya tak terbaca)</label><input class="fi vf-gnik" inputmode="numeric" value="'+esc(x.nik||'')+'"></div>'
+        +'<button class="btn" style="margin:0;" onclick="simpanGanti(this)">💾 Simpan Penggantian</button>'
+        +'<div class="vf-gmsg" style="font-size:11px;margin-top:6px;"></div></div></div>'
     +'<div class="vf-edit" style="display:none;margin-top:10px;border-top:1px dashed var(--line);padding-top:10px;">'
     +'<div class="fld"><label class="fl">Nama Lengkap</label><input class="fi vf-nama" value="'+esc(x.nama||'')+'"></div>'
     +'<div class="fld"><label class="fl">Julukan</label><input class="fi vf-jul" value="'+esc(x.julukan||'')+'"></div>'
@@ -1229,6 +1239,63 @@ function renderVerifCard(x){
     +'<button class="btn vf-save" style="margin:0;" onclick="saveVerif(this,true)">💾 Simpan &amp; Verifikasi</button>'
     +'<button class="btn" style="margin:6px 0 0;background:#7d6b5c;" onclick="saveVerif(this,false)">💾 Simpan koreksi (tetap pending)</button>'
     +'<div class="vf-msg" style="font-size:11px;margin-top:6px;"></div></div></div>';
+}
+
+/* ===== GANTI (REPLACE) FOTO KTP — utk KTP rusak / scan baru ===== */
+function __ktpCompress(file, cb){
+  var TW=1024, TH=645;
+  function draw(src,w,h){
+    var cv=document.createElement('canvas'); cv.width=TW; cv.height=TH;
+    var c=cv.getContext('2d'), ir=w/h, tr=TW/TH, sw,sh,sx,sy;
+    if(ir>tr){ sh=h; sw=h*tr; sx=(w-sw)/2; sy=0; } else { sw=w; sh=w/tr; sx=0; sy=(h-sh)/2; }
+    c.drawImage(src,sx,sy,sw,sh,0,0,TW,TH);
+    var q=0.8,out=cv.toDataURL('image/jpeg',q);
+    while(out.length>300000 && q>0.4){ q-=0.08; out=cv.toDataURL('image/jpeg',q); }
+    cb(out);
+  }
+  if(window.createImageBitmap){
+    createImageBitmap(file,{imageOrientation:'from-image'}).then(function(bm){draw(bm,bm.width,bm.height);}).catch(fb2);
+  } else fb2();
+  function fb2(){ var im=new Image(); im.onload=function(){ draw(im,im.naturalWidth,im.naturalHeight); URL.revokeObjectURL(im.src); }; im.src=URL.createObjectURL(file); }
+}
+function openGanti(btn){
+  var c=btn.closest('.card'), box=c.querySelector('.vf-ganti');
+  var on=(!box.style.display||box.style.display==='none');
+  box.style.display=on?'block':'none';
+  if(!on || box.__wired) return;
+  box.__wired=1;
+  box.querySelector('.vf-file').addEventListener('change', function(){
+    var f=this.files&&this.files[0]; if(!f) return;
+    var prev=box.querySelector('.vf-gprev'), info=box.querySelector('.vf-ginfo');
+    prev.style.display='block'; info.textContent='Memproses foto…';
+    __ktpCompress(f, function(dataUrl){
+      box.__foto=dataUrl;
+      box.querySelector('.vf-gimg').src=dataUrl;
+      info.textContent='✓ siap: '+Math.round(dataUrl.length*3/4/1024)+' KB (1024×645)';
+    });
+  });
+}
+async function simpanGanti(btn){
+  var c=btn.closest('.card'), box=c.querySelector('.vf-ganti'), msg=box.querySelector('.vf-gmsg');
+  var id=c.getAttribute('data-id'), foto=box.__foto;
+  if(!foto){ msg.style.color='#bf3838'; msg.textContent='Belum ada foto baru.'; return; }
+  var nik=(box.querySelector('.vf-gnik').value||'').replace(/[^0-9]/g,'');
+  if(nik && nik.length!==16){ msg.style.color='#bf3838'; msg.textContent='NIK harus 16 digit (atau kosongkan).'; return; }
+  btn.disabled=true; msg.style.color='var(--slate)'; msg.textContent='Menyimpan…';
+  try{
+    var ref=fb.fs.doc(fb.db,'ktp',id);
+    var snap=await fb.fs.getDoc(ref); var old=(snap.exists&&snap.exists())?snap.data():{};
+    var oleh=(CTX.nama||CTX.pl||CTX.role||'-'), now=new Date().toISOString();
+    var riwayat=(old.riwayat_ganti||[]).slice(0,9);
+    riwayat.unshift({ pada:now, oleh:oleh, nik_lama:old.nik||'', alasan:(old.verif_flag==='rusak_perlu_ganti'?'KTP rusak/terpotong':'ganti scan baru'), catatan_lama:old.verif_note||'' });
+    var upd={ foto:foto, rusak:false, riwayat_ganti:riwayat, ganti_terakhir_pada:now, ganti_terakhir_oleh:oleh,
+              updated_at:now, updated_by:oleh };
+    if(nik) upd.nik=nik;
+    if((old.verif_flag||'')==='rusak_perlu_ganti'){ upd.verif_flag=''; upd.verif_note=''; }
+    await fb.fs.updateDoc(ref,upd);
+    msg.style.color='#0a6d6d'; msg.textContent='✓ Foto KTP diganti. Silakan cek lalu tekan Verifikasi.';
+    setTimeout(loadVerif,900);
+  }catch(e){ btn.disabled=false; msg.style.color='#bf3838'; msg.textContent='Gagal: '+((e&&e.code)||(e&&e.message)||e); }
 }
 function openVerifEdit(btn){ var c=btn.closest('.card'); var ed=c.querySelector('.vf-edit'); ed.style.display=(!ed.style.display||ed.style.display==='none')?'block':'none'; }
 async function assignPL(btn){
@@ -1353,7 +1420,7 @@ async function saveVerif(btn, alsoVerify){
     <div class="jfld"><label>Judul / Detail (opsional)</label><input id="jf-judul" placeholder="opsional — kosongkan = pakai nama kegiatan"></div>
     <div class="jrow"><div class="jfld"><label>Tanggal</label><input id="jf-tgl" type="date"></div><div class="jfld"><label>Mulai</label><input id="jf-j1" type="time"></div><div class="jfld"><label>Selesai</label><input id="jf-j2" type="time"></div></div>
     <div class="jfld"><label>Lokasi / Hotspot</label><input id="jf-lokasi" placeholder="mis. Alun-alun Kota Malang"></div>
-    <div class="jfld"><label>Penanggung Jawab / PL</label><input id="jf-pj" list="jf-pjlist" placeholder="nama PJ/PL"><datalist id="jf-pjlist"></datalist></div>
+    <div class="jfld" id="jf-materi-wrap" style="display:none;"><label>Materi / Topik <span style="color:#a83244;">*</span></label><input id="jf-materi" placeholder="mis. Pencegahan overdosis · Stigma & dukungan sebaya"></div><div class="jfld" id="jf-pemateri-wrap" style="display:none;"><label>Pemateri / Fasilitator <span style="color:#a83244;">*</span></label><input id="jf-pemateri" list="jf-pematerilist" placeholder="nama pemateri / narasumber"><datalist id="jf-pematerilist"></datalist></div><div class="jfld"><label>Penanggung Jawab / PL</label><input id="jf-pj" list="jf-pjlist" placeholder="nama PJ/PL"><datalist id="jf-pjlist"></datalist></div>
     <div class="jfld"><label>Catatan (opsional)</label><textarea id="jf-catatan" placeholder="target, logistik, dsb."></textarea></div>
     <div class="jmact"><button class="jb-save" id="jdw-save" type="button">💾 Simpan</button><button class="jb-cancel" id="jdw-cancel" type="button">Batal</button></div>
   </div>
@@ -1395,6 +1462,7 @@ async function saveVerif(btn, alsoVerify){
     G('jvt-ag').onclick=function(){setView('agenda');};
     G('jvt-cal').onclick=function(){setView('kalender');};
     G('jdw-add').onclick=function(){openAdd();};
+    G('jf-jenis').onchange=jdwToggleMateri;
     G('jdw-save').onclick=save;
     G('jdw-cancel').onclick=closeModal;
     G('jdw-modal').onclick=function(e){if(e.target===this)closeModal();};
@@ -1430,7 +1498,7 @@ async function saveVerif(btn, alsoVerify){
         return '<div class="jev'+(isP?' past':'')+'"><div class="jbar" style="background:'+j.c+'"></div>'
           +'<div class="jt"><div class="t1">'+E(e.j1||'—')+'</div>'+(e.j2?'<div class="t2">'+E(e.j2)+'</div>':'')+'</div>'
           +'<div class="jb"><span class="jbadge" style="background:'+j.c+'">'+j.e+' '+E(j.l)+'</span>'
-          +'<h4>'+E(e.judul)+'</h4><div class="jm">'+(e.lokasi?'<span>📍 '+E(e.lokasi)+'</span>':'')+(e.pj?'<span>👤 '+E(e.pj)+'</span>':'')+'</div>'
+          +'<h4>'+E(e.judul)+'</h4><div class="jm">'+(e.lokasi?'<span>📍 '+E(e.lokasi)+'</span>':'')+(e.pj?'<span>👤 '+E(e.pj)+'</span>':'')+(e.pemateri?'<span>🎤 '+E(e.pemateri)+'</span>':'')+'</div>'+(e.materi?'<div class="jn" style="background:#f3eef7;border-color:#e0d4ea;">📚 <b>Materi:</b> '+E(e.materi)+'</div>':'')
           +(e.catatan?'<div class="jn">📝 '+E(e.catatan)+'</div>':'')+'</div>'
           +'<div class="ja"><button class="je-edit" data-id="'+E(e.__id)+'" title="Edit">✏️</button><button class="je-del" data-id="'+E(e.__id)+'" title="Hapus">🗑️</button></div></div>';
       }).join('');
@@ -1468,23 +1536,39 @@ async function saveVerif(btn, alsoVerify){
     var list=DATA.filter(function(e){return e.tgl===ds&&!st.off[e.jenis]&&(!st.pj||e.pj===st.pj);}).sort(function(a,b){return (a.j1||'').localeCompare(b.j1||'');});
     var h='<div class="jdetail"><div class="jday"><span class="dn">'+d.getDate()+'</span><span class="dw">'+HR[d.getDay()]+' · '+MB[d.getMonth()]+'</span>'+(ds===td?'<span class="jtoday">HARI INI</span>':'')+'<button class="jdadd" data-add="'+ds+'" type="button">+ Tambah</button></div>';
     if(!list.length){h+='<div class="jempty" style="padding:18px">Belum ada kegiatan tanggal ini.<br>Ketuk <b>+ Tambah</b> untuk menjadwalkan.</div>';}
-    else{h+=list.map(function(e){var j=JM[e.jenis]||JM.lainnya;return '<div class="jev'+(isP?' past':'')+'"><div class="jbar" style="background:'+j.c+'"></div><div class="jt"><div class="t1">'+E(e.j1||'—')+'</div>'+(e.j2?'<div class="t2">'+E(e.j2)+'</div>':'')+'</div><div class="jb"><span class="jbadge" style="background:'+j.c+'">'+j.e+' '+E(j.l)+'</span><h4>'+E(e.judul)+'</h4><div class="jm">'+(e.lokasi?'<span>📍 '+E(e.lokasi)+'</span>':'')+(e.pj?'<span>👤 '+E(e.pj)+'</span>':'')+'</div>'+(e.catatan?'<div class="jn">📝 '+E(e.catatan)+'</div>':'')+'</div><div class="ja"><button class="je-edit" data-id="'+E(e.__id)+'" title="Edit">✏️</button><button class="je-del" data-id="'+E(e.__id)+'" title="Hapus">🗑️</button></div></div>';}).join('');}
+    else{h+=list.map(function(e){var j=JM[e.jenis]||JM.lainnya;return '<div class="jev'+(isP?' past':'')+'"><div class="jbar" style="background:'+j.c+'"></div><div class="jt"><div class="t1">'+E(e.j1||'—')+'</div>'+(e.j2?'<div class="t2">'+E(e.j2)+'</div>':'')+'</div><div class="jb"><span class="jbadge" style="background:'+j.c+'">'+j.e+' '+E(j.l)+'</span><h4>'+E(e.judul)+'</h4><div class="jm">'+(e.lokasi?'<span>📍 '+E(e.lokasi)+'</span>':'')+(e.pj?'<span>👤 '+E(e.pj)+'</span>':'')+(e.pemateri?'<span>🎤 '+E(e.pemateri)+'</span>':'')+'</div>'+(e.materi?'<div class="jn" style="background:#f3eef7;border-color:#e0d4ea;">📚 <b>Materi:</b> '+E(e.materi)+'</div>':'')+(e.catatan?'<div class="jn">📝 '+E(e.catatan)+'</div>':'')+'</div><div class="ja"><button class="je-edit" data-id="'+E(e.__id)+'" title="Edit">✏️</button><button class="je-del" data-id="'+E(e.__id)+'" title="Hapus">🗑️</button></div></div>';}).join('');}
     h+='</div>';return h;
   }
 
+  var MATERI_JENIS=['fgd','supportgroup'];
+  function jdwToggleMateri(){
+    var need=MATERI_JENIS.indexOf(G('jf-jenis').value)>=0;
+    var a=G('jf-materi-wrap'), b=G('jf-pemateri-wrap');
+    if(a) a.style.display=need?'block':'none';
+    if(b) b.style.display=need?'block':'none';
+  }
+  function fillPemateri(){
+    var ps=[];DATA.forEach(function(e){if(e.pemateri)ps.push(e.pemateri);});
+    var u=ps.filter(function(v,i){return ps.indexOf(v)===i;}).sort();
+    var dl=G('jf-pematerilist'); if(dl) dl.innerHTML=u.map(function(x){return '<option value="'+E(x)+'">';}).join('');
+  }
   function openModal(){G('jdw-modal').classList.add('on');}
   function closeModal(){G('jdw-modal').classList.remove('on');editingId=null;}
-  function openAdd(preset){editingId=null;G('jdw-mtitle').textContent='Tambah Kegiatan';G('jf-judul').value='';G('jf-jenis').value='mobileklinik';var t=today();G('jf-tgl').value=preset||((st.ym===t.slice(0,7))?t:(st.ym+'-01'));G('jf-j1').value='16:00';G('jf-j2').value='19:00';G('jf-lokasi').value='';G('jf-pj').value=(window.__PORTAL&&window.__PORTAL.pl)?window.__PORTAL.pl:'';G('jf-catatan').value='';openModal();}
-  function doEdit(id){var e=DATA.filter(function(x){return x.__id===id;})[0];if(!e)return;editingId=id;G('jdw-mtitle').textContent='Edit Kegiatan';G('jf-judul').value=e.judul||'';G('jf-jenis').value=(JM[e.jenis]&&JM[e.jenis].k===e.jenis)?e.jenis:'lainnya';G('jf-tgl').value=e.tgl||'';G('jf-j1').value=e.j1||'';G('jf-j2').value=e.j2||'';G('jf-lokasi').value=e.lokasi||'';G('jf-pj').value=e.pj||'';G('jf-catatan').value=e.catatan||'';openModal();}
+  function openAdd(preset){editingId=null;G('jdw-mtitle').textContent='Tambah Kegiatan';G('jf-judul').value='';G('jf-jenis').value='mobileklinik';var t=today();G('jf-tgl').value=preset||((st.ym===t.slice(0,7))?t:(st.ym+'-01'));G('jf-j1').value='16:00';G('jf-j2').value='19:00';G('jf-lokasi').value='';G('jf-pj').value=(window.__PORTAL&&window.__PORTAL.pl)?window.__PORTAL.pl:'';G('jf-catatan').value='';G('jf-materi').value='';G('jf-pemateri').value='';fillPemateri();jdwToggleMateri();openModal();}
+  function doEdit(id){var e=DATA.filter(function(x){return x.__id===id;})[0];if(!e)return;editingId=id;G('jdw-mtitle').textContent='Edit Kegiatan';G('jf-judul').value=e.judul||'';G('jf-jenis').value=(JM[e.jenis]&&JM[e.jenis].k===e.jenis)?e.jenis:'lainnya';G('jf-tgl').value=e.tgl||'';G('jf-j1').value=e.j1||'';G('jf-j2').value=e.j2||'';G('jf-lokasi').value=e.lokasi||'';G('jf-pj').value=e.pj||'';G('jf-catatan').value=e.catatan||'';G('jf-materi').value=e.materi||'';G('jf-pemateri').value=e.pemateri||'';fillPemateri();jdwToggleMateri();openModal();}
   function doDel(id){var e=DATA.filter(function(x){return x.__id===id;})[0];if(!e)return;if(!confirm('Hapus kegiatan "'+(e.judul||'')+'"?'))return;if(!fb.fs||!CTX.user){alert('📴 Belum terhubung.');return;}fb.fs.deleteDoc(fb.fs.doc(fb.db,'jadwal',id)).catch(function(err){alert('Gagal hapus: '+((err&&(err.code||err.message))||err));});}
   function save(){
     var jenis=G('jf-jenis').value;
     var judul=G('jf-judul').value.trim() || ((JM[jenis]||{}).l) || 'Kegiatan';
     var tgl=G('jf-tgl').value;
     if(!tgl){alert('Tanggal wajib diisi.');return;}
+    var perluMateri=MATERI_JENIS.indexOf(jenis)>=0;
+    var materi=G('jf-materi').value.trim(), pemateri=G('jf-pemateri').value.trim();
+    if(perluMateri && !materi){alert('Materi/Topik wajib diisi untuk '+((JM[jenis]||{}).l||'kegiatan ini')+'.');return;}
+    if(perluMateri && !pemateri){alert('Pemateri/Fasilitator wajib diisi untuk '+((JM[jenis]||{}).l||'kegiatan ini')+'.');return;}
     if(!fb.fs||!CTX.user){alert('📴 Belum terhubung — cek jaringan.');return;}
     var now=new Date().toISOString();
-    var rec={judul:judul,jenis:G('jf-jenis').value,tgl:tgl,j1:G('jf-j1').value,j2:G('jf-j2').value,lokasi:G('jf-lokasi').value.trim(),pj:G('jf-pj').value.trim(),catatan:G('jf-catatan').value.trim(),updated_at:now,updated_by:(CTX.nama||CTX.pl||CTX.user.email||'-')};
+    var rec={judul:judul,jenis:G('jf-jenis').value,tgl:tgl,j1:G('jf-j1').value,j2:G('jf-j2').value,lokasi:G('jf-lokasi').value.trim(),pj:G('jf-pj').value.trim(),catatan:G('jf-catatan').value.trim(),materi:(perluMateri?materi:''),pemateri:(perluMateri?pemateri:''),updated_at:now,updated_by:(CTX.nama||CTX.pl||CTX.user.email||'-')};
     var btn=G('jdw-save');btn.disabled=true;btn.textContent='⏳ Menyimpan…';
     var done=function(){btn.disabled=false;btn.textContent='💾 Simpan';st.ym=tgl.slice(0,7);st.selDay=tgl;renderMonth();closeModal();};
     var fail=function(err){btn.disabled=false;btn.textContent='💾 Simpan';var c=(err&&(err.code||err.message))||err;alert((c&&String(c).indexOf('permission')>=0)?'⚠️ Jadwal belum aktif — minta admin publish aturan Firestore (rules v10).':'Gagal simpan: '+c);};
