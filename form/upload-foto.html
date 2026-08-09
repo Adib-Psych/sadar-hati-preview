@@ -43,6 +43,9 @@
   .msg.warn{background:#fff6e0;border-left:4px solid var(--amber);color:#8a6100;display:block}
   .msg a{color:inherit;font-weight:700}
   .foot{text-align:center;font-size:11px;color:var(--mut);margin-top:18px}
+
+.saha-topbar{display:flex;justify-content:space-between;align-items:center;max-width:560px;margin:0 auto;padding:10px 14px 0;font-size:12px;}
+.saha-topbar a{color:var(--mut);text-decoration:none;font-weight:700;}
 </style>
 </head>
 <body>
@@ -51,6 +54,7 @@
   <p>Kirim foto kegiatan lapangan ke arsip Drive Sadar Hati.</p>
 </header>
 
+<div class="saha-topbar"><a href="index.html" onclick="return sahaBack(event)">← Kembali</a><a href="../" style="color:var(--mut);text-decoration:none;font-weight:700;">🏠 Dashboard</a></div>
 <div class="wrap">
   <div class="card">
     <label class="fl" for="f-keg">Kegiatan <span class="req">*</span></label>
@@ -198,5 +202,6 @@
       });
   });
 </script>
+<script>function sahaBack(e){ if(window.self!==window.top){ if(e) e.preventDefault(); window.parent.postMessage({saha:'nav',to:'l3-master'},'*'); return false; } return true; }</script>
 </body>
 </html>

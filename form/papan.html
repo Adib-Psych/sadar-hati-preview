@@ -60,10 +60,14 @@
   .lbox button { width:100%; padding:13px; border:none; border-radius:11px; background:var(--clay); color:#fff; font-size:15px; font-weight:800; font-family:inherit; cursor:pointer; }
   .lbox button:disabled { opacity:.55; }
   .lerr { display:none; background:#fbe9ec; color:var(--clay-deep); font-size:11.5px; border-radius:9px; padding:9px 11px; margin-bottom:11px; }
+
+.saha-topbar{display:flex;justify-content:space-between;align-items:center;margin:0 0 12px;font-size:12px;}
+.saha-topbar a{color:var(--slate);text-decoration:none;font-weight:700;}
 </style>
 </head>
 <body>
 <div class="wrap">
+  <div class="saha-topbar"><a href="index.html" onclick="return sahaBack(event)">← Kembali</a><a href="../" style="color:var(--slate);text-decoration:none;font-weight:700;">🏠 Dashboard</a></div>
   <header>
     <div style="display:flex;justify-content:flex-start;margin-bottom:10px;"><span style="background:#fff;border-radius:10px;padding:5px 12px;display:inline-flex;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,.18);"><img src="logo.png" alt="Yayasan Sadar Hati" style="height:30px;width:auto;"></span></div>
     <h1>📊 Papan Entry Hari Ini</h1>
@@ -243,5 +247,6 @@
   }
 </script>
 <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}</script>
+<script>function sahaBack(e){ if(window.self!==window.top){ if(e) e.preventDefault(); window.parent.postMessage({saha:'nav',to:'l3-master'},'*'); return false; } return true; }</script>
 </body>
 </html>
