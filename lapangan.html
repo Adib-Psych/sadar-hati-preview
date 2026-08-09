@@ -907,7 +907,8 @@
               <a class="nav-item" data-section="l1-form-vct"><span class="icon">🪪</span> Registrasi KTP · Kartu ID</a>
               <a class="nav-item" data-section="l1-form-rujukan"><span class="icon">🏥</span> Rujukan ke Puskesmas</a>
               <a class="nav-item" data-section="l1-form-srq29"><span class="icon">🧠</span> SRQ-29 Mental Health</a>
-              <a class="nav-item" data-section="l1-portal"><span class="icon">🔑</span> Portal PL</a>
+              <a class="nav-item" data-section="l1-form-upload"><span class="icon">📸</span> Upload Foto Aktivitas</a>
+            <a class="nav-item" data-section="l1-portal"><span class="icon">🔑</span> Portal PL</a>
         </div>
       </div>
     </nav>
@@ -1060,6 +1061,8 @@
         .ml-actions { display:flex; gap:8px; flex-wrap:wrap; }
         .ml-actions button { flex:1 1 auto; min-width:84px; border:none; border-radius:9px; padding:10px 8px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; }
         .ml-fill { background:var(--clay); color:#fff; }
+        .ml-fill.kd { background:#0d8b8b; }
+        .ml-fill.kd:hover { background:#0a6d6d; }
         .ml-fill:hover { background:var(--clay-deep); }
         .ml-copy { background:var(--clay-tint); color:var(--clay-deep); }
         .ml-copy.done { background:var(--sage); color:#fff; }
@@ -1288,12 +1291,12 @@
           <div class="ml-card">
             <div class="tag">Absensi Mandiri KD · via QR</div><h3>Absensi + Skrining Mandiri KD</h3>
             <p>Diisi langsung oleh KD saat mobile outreach: absensi + DAST-10 + SRQ-29 dalam satu sesi. Satu QR bersama; hasil masuk ke Daftar Hadir &amp; skrining.</p>
-            <div class="ml-actions"><button class="ml-fill" onclick="window.open('form/absensi.html','_blank')">↗ Buka form</button><button class="ml-copy" data-url="form/absensi.html" onclick="SAHA_COPY(this)">🔗 Copy link</button><button class="ml-qr" data-url="form/absensi.html" onclick="SAHA_QR(this)">📱 QR</button></div>
+            <div class="ml-actions"><button class="ml-fill kd" onclick="SAHA_GO('l1-form-absensi')">📝 Isi di sini</button><button class="ml-copy" data-url="form/absensi.html" onclick="SAHA_COPY(this)">🔗 Copy link</button><button class="ml-qr" data-url="form/absensi.html" onclick="SAHA_QR(this)">📱 QR</button></div>
           </div>
           <div class="ml-card">
             <div class="tag">Rujukan PKM · Login PL</div><h3>Rujukan ke Puskesmas</h3>
             <p>Rujuk KD ke layanan Puskesmas (VCT/IMS/Keswa/PrEP/TB/dst). Skrining DAST-10 &amp; SRQ-20 auto-tarik; cetak A4 siap dibawa. Khusus PL (login).</p>
-            <div class="ml-actions"><button class="ml-fill" onclick="window.open('form/portal.html?go=ruj','_blank')">↗ Buka form</button><button class="ml-copy" data-url="form/portal.html?go=ruj" onclick="SAHA_COPY(this)">🔗 Copy link</button><button class="ml-qr" data-url="form/portal.html?go=ruj" onclick="SAHA_QR(this)">📱 QR</button></div>
+            <div class="ml-actions"><button class="ml-fill" onclick="SAHA_GO('l1-form-rujukan')">📝 Isi di sini</button><button class="ml-copy" data-url="form/portal.html?go=ruj" onclick="SAHA_COPY(this)">🔗 Copy link</button><button class="ml-qr" data-url="form/portal.html?go=ruj" onclick="SAHA_QR(this)">📱 QR</button></div>
           </div>
           <div class="ml-card dast">
             <div class="tag">Skrining Napza</div><h3>DAST-10</h3>
@@ -1343,7 +1346,7 @@
           <div class="ml-card" style="border-left-color:#0d8b8b;">
             <div class="tag">📸 Dokumentasi</div><h3>Upload Foto Aktivitas</h3>
             <p>Kirim foto kegiatan lapangan ke arsip Drive Sadar Hati — banyak foto sekaligus, lengkap dengan lokasi &amp; catatan. Tersimpan otomatis ke folder Drive per tanggal &amp; kegiatan.</p>
-            <div class="ml-actions"><button class="ml-fill" onclick="window.open('form/upload-foto.html','_blank')">↗ Buka form</button><button class="ml-copy" data-url="form/upload-foto.html" onclick="SAHA_COPY(this)">🔗 Copy link</button><button class="ml-qr" data-url="form/upload-foto.html" onclick="SAHA_QR(this)">📱 QR</button></div>
+            <div class="ml-actions"><button class="ml-fill" onclick="SAHA_GO('l1-form-upload')">📝 Isi di sini</button><button class="ml-copy" data-url="form/upload-foto.html" onclick="SAHA_COPY(this)">🔗 Copy link</button><button class="ml-qr" data-url="form/upload-foto.html" onclick="SAHA_QR(this)">📱 QR</button></div>
           </div>
           <div class="ml-card srq" style="border-left-color:#4e3859;">
             <div class="tag">Registrasi · Login PL</div><h3>Registrasi KTP · Kartu Identitas</h3>
@@ -1478,6 +1481,14 @@
       </section>
 
       <!-- L3-PORTAL-PL -->
+      <section class="section" id="l1-form-upload">
+        <div class="hero"><div class="eyebrow">🟢 Layer 2A · Form Lapangan · Dokumentasi</div><h1>Upload Foto Aktivitas</h1><p class="lede">Kirim foto kegiatan lapangan ke arsip Google Drive Sadar Hati — banyak foto sekaligus, lengkap dengan lokasi &amp; catatan. Tersimpan otomatis ke folder Drive per tanggal &amp; kegiatan.</p></div>
+        <div class="l1-form-wrap">
+          <div class="l1-form-linkbar"><span class="u">…/form/upload-foto.html</span><button data-url="form/upload-foto.html" onclick="SAHA_COPY(this)">🔗 Copy link</button></div>
+          <div class="l1-embed"><iframe src="form/upload-foto.html" title="Upload Foto Aktivitas" loading="lazy"></iframe></div>
+        </div>
+      </section>
+
       <section class="section" id="l1-portal">
         <div class="hero"><div class="eyebrow">🟢 Layer 2A · Khusus Petugas Lapangan</div><h1>Portal PL — Papan Entry · Search ID · Hub Form</h1><p class="lede">Satu link khusus PL (wajib login akun PL): <strong>Papan Entry</strong>, <strong>Search ID KD</strong> — kartu identitas dengan NIK + preview KTP ber-watermark (per-PL, tiap akses tercatat, tanpa tombol unduh) — dan hub semua form. Registrasi KTP juga bisa dibuka dari dalam portal, atau langsung lewat <strong>Form No. 11</strong>.</p></div>
         <div class="l1-form-wrap">
