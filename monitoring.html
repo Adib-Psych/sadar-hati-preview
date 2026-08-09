@@ -984,9 +984,10 @@
           <div class="donor-group expanded">
             <div class="donor-header">
               <span class="donor-name">📤 Output Form</span>
-              <span class="donor-badge">10 FORM</span><span class="chevron">▶</span>
+              <span class="donor-badge">13 FORM</span><span class="chevron">▶</span>
             </div>
             <div class="donor-sub-items">
+              <a class="nav-item" data-section="l2-out-absensi"><span class="icon">✍️</span> 1 · Absensi Mandiri KD</a>
               <a class="nav-item" data-section="l2-out-dast10"><span class="icon">💊</span> 2 · DAST-10 Napza</a>
               <a class="nav-item" data-section="l2-out-gra"><span class="icon">👥</span> 4 · GRA · Risiko Kelompok</a>
               <a class="nav-item" data-section="l2-out-ira"><span class="icon">⚕️</span> 5 · IRA · Risiko Pribadi</a>
@@ -997,6 +998,8 @@
               <a class="nav-item" data-section="l2-out-prevkit"><span class="icon">🎒</span> 10 · Prevention Kit</a>
               <a class="nav-item" data-section="l2-out-vct"><span class="icon">🪪</span> 11 · Registrasi VCT</a>
               <a class="nav-item" data-section="l2-out-srq29"><span class="icon">🧠</span> 12 · SRQ-29 Mental Health</a>
+              <a class="nav-item" data-section="l2-out-rujukan"><span class="icon">🏥</span> 13 · Rujukan ke Puskesmas</a>
+              <a class="nav-item" data-section="l2-out-galeri"><span class="icon">📸</span> 14 · Galeri Foto Aktivitas</a>
             </div>
           </div>
               <a class="nav-item" data-section="l2-clients"><span class="icon">👥</span> Clients Database</a>
@@ -1507,7 +1510,7 @@
           .vct-tbl td{padding:7px 10px;border-top:1px solid #f5edf1;}
           .vct-tbl tr:hover td{background:#faf5f8;}
         </style>
-        <div class="hero"><div class="eyebrow">🔴 Layer 2B · Laporan Lapangan · Output · No. 11</div><h1>Registrasi VCT — Rekap &amp; Monitoring</h1><p class="lede">Halaman output form <strong>Registrasi VCT · Kartu Identitas</strong>: berapa KD sudah teregistrasi, ke puskesmas mana dirujuk, rencana tanggal VCT, dan sebaran per PL. <strong>Identitas lengkap (NIK &amp; foto KTP) tidak tampil di sini</strong> — hanya bisa dibuka per-PL lewat Portal PL dan tiap akses tercatat.</p></div>
+        <div class="hero"><div class="eyebrow">🔴 Layer 2B · Laporan Lapangan · Output · No. 11</div><h1>Registrasi VCT — Rekap &amp; Monitoring</h1><p class="lede">Halaman output form <strong>Registrasi VCT · Kartu Identitas</strong>: berapa KD sudah teregistrasi, ke puskesmas mana dirujuk, rencana tanggal VCT, dan sebaran per PL. <strong>Bagian bawah halaman ini memuat tabel kelengkapan KTP</strong> (nama, NIK, foto) — khusus akun internal, untuk mengecek KD mana yang KTP-nya belum masuk.</p></div>
         <div class="vct-chips">
           <div class="vct-chip"><b id="vct-c-total">0</b><span>total registrasi VCT</span></div>
           <div class="vct-chip"><b id="vct-c-7">0</b><span>7 hari terakhir</span></div>
@@ -1524,7 +1527,36 @@
             <tbody id="vct-body"><tr><td colspan="6" style="padding:14px;color:#6f6660;">Login staf untuk memuat data…</td></tr></tbody>
           </table>
         </div>
-        <div class="hs-note" style="background:#faf3f6;border-color:#dcbecb;">🔐 Halaman ini sengaja hanya menampilkan ID KD (tanpa nama/NIK/foto). Kartu identitas lengkap: Portal PL → Search ID KD (per-PL, ber-watermark, akses tercatat).</div>
+        <div class="hs-note" style="background:#faf3f6;border-color:#dcbecb;">🔐 <b>Rekap di atas</b> sengaja hanya memakai ID KD. <b>Tabel kelengkapan KTP di bawah</b> menampilkan nama, NIK &amp; foto — terbuka hanya untuk akun internal (Admin · M&amp;E · Manager). Perlu diketahui: akses lewat halaman ini <b>belum dicatat</b> di log <code>ktp_akses</code> seperti di Portal PL, jadi jangan dibuka di layar yang terlihat orang lain.</div>
+      
+        <div class="rb-note" style="background:#f0f7f7;border-color:#cfe7e7;color:#0a5c5c;">
+          <b>Cek kelengkapan KTP per klien.</b> Daftar di bawah menggabungkan <i>database klien</i> dengan <i>arsip KTP</i>.
+          Baris yang sudah ada fotonya = lengkap; yang belum = <b>pending</b>, artinya KTP-nya masih perlu difoto.
+          Semua perubahan di sini langsung tersambung dengan Portal PL (koleksi <code>ktp</code> yang sama).
+        </div>
+        <div class="rb-chips">
+          <div class="rb-chip k"><b id="kt-c-klien">0</b><span>KLIEN DI DATABASE</span></div>
+          <div class="rb-chip k"><b id="kt-c-foto">0</b><span>SUDAH ADA FOTO KTP</span></div>
+          <div class="rb-chip k"><b id="kt-c-blm">0</b><span>BELUM ADA KTP</span></div>
+          <div class="rb-chip k"><b id="kt-c-pend">0</b><span>MENUNGGU VERIFIKASI</span></div>
+        </div>
+        <div class="rb-tools">
+          <input type="search" id="kt-q" placeholder="cari nama / julukan / ID KD / NIK…">
+          <select id="kt-pl"><option value="">Semua PL</option></select>
+          <select id="kt-st">
+            <option value="">Semua status</option>
+            <option value="ada">✅ Sudah ada foto</option>
+            <option value="belum">⬜ Belum ada KTP</option>
+            <option value="pending">⏳ Menunggu verifikasi</option>
+            <option value="rusak">🔄 Perlu diganti (rusak)</option>
+          </select>
+          <button class="rb-btn g" id="kt-csv">⬇️ Unduh CSV</button>
+        </div>
+        <div style="font-size:11px;color:#6f6660;margin-bottom:6px;" id="kt-info">—</div>
+        <table class="rb-tbl k"><thead><tr><th style="width:100px;">Foto KTP</th><th>Nama KD</th><th>ID KD</th><th>NIK</th><th>PL</th><th>Status</th><th>Aksi</th></tr></thead>
+        <tbody id="kt-body"></tbody></table>
+        <div style="text-align:center;margin-top:10px;"><button class="rb-btn g" id="kt-more" style="display:none;">Tampilkan 100 lagi</button></div>
+
       </section>
 
       <section class="section" id="l2-admin">
@@ -1826,6 +1858,59 @@
       </section>
 
 
+      
+<style id="rumah-baru-css">
+  .rb-chips{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:2px 0 14px;}
+  .rb-chip{background:#fff;border:1px solid var(--slate-lighter);border-left:4px solid #0d8b8b;border-radius:11px;padding:11px 13px;}
+  .rb-chip b{display:block;font-size:22px;color:#0a6d6d;font-family:'Lora',Georgia,serif;}
+  .rb-chip span{font-size:10.5px;color:#6f6660;letter-spacing:.3px;}
+  .rb-chip.r{border-left-color:#a83244;} .rb-chip.r b{color:#7d2433;}
+  .rb-chip.k{border-left-color:#94395c;} .rb-chip.k b{color:#6b2a44;}
+  .rb-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:6px 0 12px;}
+  .rb-tools input,.rb-tools select{border:1px solid #ddd8d0;border-radius:9px;padding:8px 10px;font-size:12.5px;font-family:inherit;background:#fff;}
+  .rb-tools input[type=search]{flex:1;min-width:180px;}
+  .rb-btn{border:0;border-radius:9px;padding:8px 13px;font-weight:800;font-size:12px;font-family:inherit;cursor:pointer;color:#fff;background:linear-gradient(135deg,#0d8b8b,#0a6d6d);}
+  .rb-btn.g{background:#7d6b5c;} .rb-btn.r{background:linear-gradient(135deg,#a83244,#7d2433);}
+  .rb-tbl{width:100%;border-collapse:collapse;font-size:12.5px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 3px 12px rgba(0,0,0,.05);}
+  .rb-tbl th{background:#0d8b8b;color:#fff;padding:9px 10px;text-align:left;font-size:11px;letter-spacing:.4px;text-transform:uppercase;}
+  .rb-tbl.r th{background:#a83244;} .rb-tbl.k th{background:#94395c;}
+  .rb-tbl td{padding:8px 10px;border-top:1px solid #f0ebe4;vertical-align:middle;}
+  .rb-tbl tr:hover td{background:#fbf8f4;}
+  .rb-empty{padding:22px;text-align:center;color:#6f6660;font-size:12.5px;}
+  .rb-thumb{width:88px;height:56px;object-fit:cover;border-radius:7px;border:1px solid #e6ddd2;display:block;cursor:zoom-in;background:#f0ebe4;}
+  .rb-nofoto{width:88px;height:56px;border-radius:7px;border:1px dashed #d9c9b5;display:flex;align-items:center;justify-content:center;font-size:9.5px;color:#b8791e;background:#fdf8ef;text-align:center;line-height:1.25;}
+  .rb-pill{display:inline-block;font-size:9.5px;font-weight:800;border-radius:8px;padding:2px 7px;white-space:nowrap;}
+  .rb-pill.ok{background:#e6f4f4;color:#0a6d6d;} .rb-pill.pend{background:#fff3cd;color:#7a5313;}
+  .rb-pill.no{background:#f6e9ea;color:#7d2433;}
+  .rb-note{background:#f3eef7;border:1px solid #e0d4ea;border-radius:10px;padding:10px 12px;font-size:11.5px;color:#4e3859;line-height:1.6;margin-bottom:12px;}
+  .rb-modal{display:none;position:fixed;inset:0;z-index:9200;background:rgba(30,27,26,.72);align-items:center;justify-content:center;padding:18px;}
+  .rb-modal.on{display:flex;}
+  .rb-mcard{background:#fff;border-radius:15px;max-width:640px;width:100%;max-height:88vh;overflow:auto;padding:18px 18px 16px;}
+  .rb-mcard h3{margin:0 0 3px;font-size:16px;color:#7d2433;}
+  .rb-fld{margin-bottom:9px;} .rb-fld label{display:block;font-size:11px;font-weight:700;color:#6f6660;margin-bottom:3px;}
+  .rb-fld input{width:100%;box-sizing:border-box;border:1px solid #ddd8d0;border-radius:9px;padding:9px 11px;font-size:13px;font-family:inherit;}
+  #absA4{display:none;}
+  @media print{ body.print-abs > *{display:none !important;} body.print-abs #absA4{display:block !important;position:static;} @page{size:A4 portrait;margin:0;} }
+</style>
+
+      <section class="section" id="l2-out-absensi">
+        <div class="hero"><div class="eyebrow">🟢 Layer 2A · Rumah Output · No. 1</div><h1>✍️ Absensi Mandiri KD</h1>
+        <p class="lede">Rekap kehadiran dari form <strong>Absensi + Skrining Mandiri KD</strong> yang diisi sendiri oleh KD lewat QR. Dikelompokkan per <strong>sesi kegiatan</strong> — bisa dipratinjau, dicetak A4, atau diunduh CSV.</p></div>
+        <div class="rb-chips">
+          <div class="rb-chip"><b id="abs-c-sesi">0</b><span>SESI KEGIATAN</span></div>
+          <div class="rb-chip"><b id="abs-c-hadir">0</b><span>TOTAL KEHADIRAN</span></div>
+          <div class="rb-chip"><b id="abs-c-kd">0</b><span>KD UNIK</span></div>
+          <div class="rb-chip"><b id="abs-c-ttd">0</b><span>ADA TANDA TANGAN</span></div>
+        </div>
+        <div class="rb-tools">
+          <input type="search" id="abs-q" placeholder="cari kegiatan / lokasi / PL / nama KD…">
+          <select id="abs-pl"><option value="">Semua PL</option></select>
+          <button class="rb-btn g" id="abs-csv">⬇️ Unduh CSV</button>
+        </div>
+        <table class="rb-tbl"><thead><tr><th>Tanggal</th><th>Kegiatan</th><th>Lokasi / Hotspot</th><th>PL</th><th style="text-align:center;">Hadir</th><th>Aksi</th></tr></thead>
+        <tbody id="abs-body"></tbody></table>
+      </section>
+
       <section class="section" id="l2-out-dast10">
         <div class="hero"><div class="eyebrow">🔴 Layer 2B · Laporan Lapangan · Output</div><h1>💊 DAST-10 — Skrining Keparahan Penggunaan Napza</h1><p class="lede"><strong>Drug Abuse Screening Test</strong> (10 item) mengukur keparahan penggunaan napza 3 bulan terakhir → dasar rujukan Faskes. Zona 1 = data live entri dashboard (per periode); Zona 2 = baseline historis KoBo; Zona 3 = data mentah (khusus Admin · M&amp;E · Direktur).</p></div>
         <!-- ZONA 1 · LIVE -->
@@ -1894,6 +1979,39 @@
           <div class="me-rawblocked">🔒 Anda tidak punya akses ke data mentah level klien.</div>
         </div>
         </section>
+
+      <section class="section" id="l2-out-rujukan">
+        <div class="hero"><div class="eyebrow">🟢 Layer 2A · Rumah Output · No. 13</div><h1>🏥 Rujukan ke Puskesmas</h1>
+        <p class="lede">Semua surat rujukan yang sudah dibuat PL lewat form <strong>Rujukan ke Puskesmas</strong> — siapa dirujuk, ke Puskesmas mana, layanan apa, dan kapan.</p></div>
+        <div class="rb-note"><b>Bukan duplikat Case Management.</b> Halaman ini membaca <i>surat rujukan eksternal</i> ke Puskesmas (form Rujukan, tersimpan di <code>submissions</code>). Sedangkan <b>Case Management</b> membaca koleksi <code>referrals</code> — antrian konseling <i>internal</i> yang lahir otomatis dari hasil skrining DAST-10/SRQ-29. Dua alur berbeda: yang satu keluar ke layanan kesehatan, yang satu ditangani sendiri oleh tim.</div>
+        <div class="rb-chips">
+          <div class="rb-chip r"><b id="ruj-c-total">0</b><span>TOTAL RUJUKAN</span></div>
+          <div class="rb-chip r"><b id="ruj-c-30">0</b><span>30 HARI TERAKHIR</span></div>
+          <div class="rb-chip r"><b id="ruj-c-pkm">0</b><span>PUSKESMAS TUJUAN</span></div>
+          <div class="rb-chip r"><b id="ruj-c-kd">0</b><span>KD DIRUJUK</span></div>
+        </div>
+        <div class="rb-tools">
+          <input type="search" id="ruj-q" placeholder="cari nama KD / ID / Puskesmas / layanan…">
+          <select id="ruj-pl"><option value="">Semua PL</option></select>
+          <button class="rb-btn g" id="ruj-csv">⬇️ Unduh CSV</button>
+        </div>
+        <table class="rb-tbl r"><thead><tr><th>Tanggal</th><th>KD</th><th>ID KD</th><th>Dirujuk ke</th><th>Layanan</th><th>PL</th></tr></thead>
+        <tbody id="ruj-body"></tbody></table>
+      </section>
+
+      <section class="section" id="l2-out-galeri">
+        <div class="hero"><div class="eyebrow">🟢 Layer 2A · Rumah Output · No. 14</div><h1>📸 Galeri Foto Aktivitas</h1>
+        <p class="lede">Arsip foto kegiatan lapangan yang dikirim PL lewat form <strong>Upload Foto Aktivitas</strong>. Tersimpan di Google Drive Sadar Hati, tersusun per folder <em>tanggal · kegiatan · lokasi</em>.</p></div>
+        <div class="rb-note">Foto disimpan di <b>Google Drive</b> (bukan database), jadi galeri ini menampilkan folder Drive langsung. Bila tampil kosong atau minta izin, buka dengan akun yang punya akses ke Drive Sadar Hati.</div>
+        <div class="rb-tools">
+          <button class="rb-btn" id="gal-open">↗ Buka folder di Google Drive</button>
+          <button class="rb-btn g" id="gal-reload">🔄 Muat ulang galeri</button>
+        </div>
+        <div style="background:#fff;border:1px solid var(--slate-lighter);border-radius:12px;overflow:hidden;box-shadow:0 3px 12px rgba(0,0,0,.05);">
+          <iframe id="gal-frame" src="" style="width:100%;height:620px;border:0;display:block;" title="Galeri Foto Aktivitas"></iframe>
+        </div>
+      </section>
+
       <section class="section" id="l2-out-ira">
 
         <div class="hero"><div class="eyebrow">🔴 Layer 2B · Laporan Lapangan · Output</div><h1>⚕️ IRA — Penilaian Risiko Pribadi</h1><p class="lede"><strong>Individual Risk Assessment</strong>: memetakan perilaku berisiko HIV per individu — berbagi alat, pola kondom, jumlah pasangan — dasar rencana pengurangan risiko. Zona 1 = data live entri dashboard (per periode); Zona 2 = baseline historis KoBo; Zona 3 = data mentah (khusus Admin · M&amp;E · Direktur).</p></div>
@@ -2520,6 +2638,9 @@ function updateBreadcrumb(item) {
   };
   window.SAHA_REF_ARCH = async function(id){ await window.SAHA_REF_SAVE(id,{archived:true,status:'selesai'}); alert('✓ Masuk Arsip — lihat tab "Arsip · Selesai".'); };
   window.SAHA_REF_CANCEL = async function(id){ await window.SAHA_REF_SAVE(id,{archived:true,status:'batal'}); alert('✓ Rujukan dibatalkan (salah input) — tersimpan di Arsip dengan tanda "Dibatalkan", tidak dihitung di kaskade.'); };
+  window.__SAHA_KTP_UPDATE=async function(id,data,isNew){ if(isNew) return setDoc(doc(db,'ktp',id),data,{merge:true}); return updateDoc(doc(db,'ktp',id),data); };
+  let __ktpSub=null;
+  onAuthStateChanged(auth, u=>{ if(u && !__ktpSub){ __ktpSub=onSnapshot(collection(db,'ktp'), snap=>{ const K=[]; snap.forEach(d=>{ const v=d.data(); v.__id=d.id; K.push(v); }); window.__SAHA_KTP=K; if(window.SAHA_RENDER_KTP){ try{ window.SAHA_RENDER_KTP(); }catch(e){} } }, err=>{ window.__SAHA_KTP=[]; console.warn('[ktp]',err&&err.code); if(window.SAHA_RENDER_KTP){ try{ window.SAHA_RENDER_KTP(); }catch(e){} } }); } });
   let __cmSub=null;
   onAuthStateChanged(auth, u=>{
     if(u && !__cmSub){
@@ -2893,7 +3014,7 @@ function cfFromCache(){
 }
 async function load(force){
   if(loaded && !force) return;
-  try { const snap=await getDocs(collection(db,'clients')); ALL=[]; snap.forEach(d=>ALL.push(d.data())); loaded=true; fillFilters(); render();
+  try { const snap=await getDocs(collection(db,'clients')); ALL=[]; snap.forEach(d=>ALL.push(d.data())); loaded=true; window.__SAHA_CLIENTS=ALL; if(window.SAHA_RENDER_KTP){try{window.SAHA_RENDER_KTP();}catch(e){}} fillFilters(); render();
     try{ localStorage.setItem(CF_CK, JSON.stringify({t:Date.now(), rows:ALL.map(cfKeep)})); }catch(e){}
     cfAge(Date.now()); }
   catch(e){ const l=$('cf-locked'); if(l){ l.style.display='block'; l.innerHTML='<span class="icon">⚠️</span><div>Gagal memuat data klien: '+esc(e.code||e.message)+'. Bisa jadi kuota baca harian gratis habis — coba lagi setelah ~jam 14-15 WIB, atau pakai data lokal (💾) bila ada.</div>'; } }
@@ -3143,7 +3264,7 @@ window.SAHA_QR_DL = function(){
     }).join('') : '<tr><td colspan="6" style="padding:14px;color:#6f6660;">Belum ada registrasi VCT — entri PL dari Portal/Form No. 12 muncul di sini otomatis.</td></tr>';
   }
 
-  window.SAHA_RENDER_HOUSES = function(){ try{ hsRender(); }catch(e){} try{ vctRender(); }catch(e){} };
+  window.SAHA_RENDER_HOUSES = function(){ try{ hsRender(); }catch(e){} try{ vctRender(); }catch(e){} try{ if(window.SAHA_RENDER_ABS) window.SAHA_RENDER_ABS(); }catch(e){} try{ if(window.SAHA_RENDER_RUJ) window.SAHA_RENDER_RUJ(); }catch(e){} try{ if(window.SAHA_RENDER_KTP) window.SAHA_RENDER_KTP(); }catch(e){} };
 })();
 </script>
 
@@ -4164,6 +4285,366 @@ tr.me-rawclick{cursor:pointer;}
   /* ikut chain rumah: re-render tiap __SAHA_ALL berubah (utk kaskade S1) */
   var prev=window.SAHA_RENDER_HOUSES;
   window.SAHA_RENDER_HOUSES=function(){ if(prev){ try{prev();}catch(e){} } try{ if(document.getElementById('cm-list')) SAHA_RENDER_CM(); }catch(e){} };
+})();
+</script>
+
+<div id="absA4"><div class="a4" style="width:210mm;min-height:297mm;background:#fff;margin:0 auto;padding:14mm;color:#1e1b1a;font-family:'Segoe UI',system-ui,sans-serif;">
+  <div style="text-align:center;"><div style="font-size:20px;font-weight:800;letter-spacing:.6px;">YAYASAN SADAR HATI</div>
+  <div style="font-size:9px;color:#6f6660;font-style:italic;">Rehabilitasi Sosial · Pengurangan Dampak Buruk · Pendampingan Populasi Kunci</div>
+  <div style="font-size:9px;margin-top:3px;">Jl. Danau Ngebel F5/D6, Sawojajar, Kota Malang 65139 · sadarhati.org</div></div>
+  <div style="border-top:3px solid #7d2433;margin-top:8px;"></div><div style="border-top:1px solid #7d2433;margin-top:2px;"></div>
+  <div style="text-align:center;margin:14px 0 4px;"><h2 style="font-size:16px;font-weight:800;letter-spacing:3px;display:inline-block;border-bottom:2px solid #1e1b1a;padding-bottom:2px;margin:0;">DAFTAR HADIR</h2></div>
+  <div style="text-align:center;font-size:9px;color:#6f6660;margin-bottom:10px;" id="absA4-no">—</div>
+  <table style="width:100%;font-size:10px;border-collapse:collapse;margin-bottom:9px;"><tr><td style="width:90px;">Kegiatan</td><td id="absA4-keg" style="border-bottom:1px dotted #999;"></td><td style="width:80px;">Hari/Tanggal</td><td id="absA4-tgl" style="border-bottom:1px dotted #999;"></td></tr>
+  <tr><td>Lokasi/Hotspot</td><td id="absA4-lok" style="border-bottom:1px dotted #999;"></td><td>Pendamping</td><td id="absA4-pl" style="border-bottom:1px dotted #999;"></td></tr></table>
+  <table style="width:100%;border-collapse:collapse;font-size:10px;" id="absA4-tbl"></table>
+  <div style="margin-top:10px;font-size:10px;">Jumlah hadir: <b id="absA4-n">0</b> orang</div>
+  <div style="margin-top:12px;border-top:1px dashed #cbb;padding-top:7px;font-size:8.5px;color:#6f6660;"><b style="color:#7d2433;">Dokumen rahasia — memuat data pribadi klien.</b> Simpan terbatas &amp; musnahkan sesuai SOP perlindungan data Yayasan Sadar Hati.</div>
+</div></div>
+<div class="rb-modal" id="rb-modal"><div class="rb-mcard" id="rb-mcard"></div></div>
+
+<script>
+/* ================= RUMAH BARU: Absensi · Rujukan · KTP · Galeri ================= */
+(function(){
+  var KTP_FOLDER='1GvAHL9Z8VG6sboWZ-UdsFZ9prtQ9ZevB';
+  var FOTO_FOLDER='17mCnHv-iJogY7muxWUxradP4Lo_M2J5g';
+  function el(i){return document.getElementById(i);}
+  function T(i,v){var e=el(i); if(e) e.textContent=v;}
+  function E(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  function tgl(iso){ if(!iso) return '-'; var d=new Date(iso); if(isNaN(d)) return String(iso).slice(0,10);
+    return d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}); }
+  function csv(rows,name){
+    var s=rows.map(function(r){return r.map(function(c){return '"'+String(c==null?'':c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+    var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['﻿'+s],{type:'text/csv;charset=utf-8'}));
+    a.download=name; a.click(); setTimeout(function(){URL.revokeObjectURL(a.href);},400);
+  }
+  function fillSel(id,vals){ var s=el(id); if(!s) return; var cur=s.value;
+    s.innerHTML='<option value="">Semua PL</option>'+vals.map(function(v){return '<option>'+E(v)+'</option>';}).join(''); s.value=cur; }
+  function modal(html){ var m=el('rb-modal'); el('rb-mcard').innerHTML=html; m.classList.add('on');
+    m.onclick=function(e){ if(e.target===m) m.classList.remove('on'); }; }
+  window.rbCloseModal=function(){ el('rb-modal').classList.remove('on'); };
+
+  /* ---------- 1. ABSENSI ---------- */
+  var ABS=[];
+  function absGroup(all){
+    var g={};
+    all.filter(function(x){return x.form==='absensi';}).forEach(function(x){
+      var key=x.sesi||x.created_at||'-';
+      if(!g[key]) g[key]={sesi:key, tgl:x.created_at||key, keg:x.kegiatan||'-', lok:x.hotspot||x.lokasi||'-', pl:x.pl||'-', rows:[]};
+      if(x.kegiatan&&g[key].keg==='-') g[key].keg=x.kegiatan;
+      if((x.pl||'-')!=='-') g[key].pl=x.pl;
+      g[key].rows.push(x);
+    });
+    return Object.keys(g).map(function(k){return g[k];}).sort(function(a,b){return String(b.tgl).localeCompare(String(a.tgl));});
+  }
+  window.SAHA_RENDER_ABS=function(){
+    var tb=el('abs-body'); if(!tb) return;
+    var all=window.__SAHA_ALL||[];
+    ABS=absGroup(all);
+    var tot=all.filter(function(x){return x.form==='absensi';});
+    var uniq={}; tot.forEach(function(x){var k=(x.klien||{}).idkd||(x.klien||{}).nama; if(k) uniq[k]=1;});
+    T('abs-c-sesi',ABS.length); T('abs-c-hadir',tot.length);
+    T('abs-c-kd',Object.keys(uniq).length);
+    T('abs-c-ttd',tot.filter(function(x){return !!x.ttd;}).length);
+    fillSel('abs-pl',[...new Set(ABS.map(function(r){return r.pl;}).filter(function(v){return v&&v!=='-';}))].sort());
+    absDraw();
+  };
+  function absDraw(){
+    var tb=el('abs-body'); if(!tb) return;
+    var q=(el('abs-q')&&el('abs-q').value||'').toLowerCase().trim();
+    var pl=(el('abs-pl')&&el('abs-pl').value)||'';
+    var rows=ABS.filter(function(r){
+      if(pl && r.pl!==pl) return false;
+      if(q){ var hay=[r.keg,r.lok,r.pl].concat(r.rows.map(function(x){return (x.klien||{}).nama||'';})).join(' ').toLowerCase();
+             if(hay.indexOf(q)<0) return false; }
+      return true;
+    });
+    tb.innerHTML = rows.length ? rows.map(function(r,i){
+      return '<tr><td>'+E(tgl(r.tgl))+'</td><td><b>'+E(r.keg)+'</b></td><td>'+E(r.lok)+'</td><td>'+E(r.pl)+'</td>'
+        +'<td style="text-align:center;"><b>'+r.rows.length+'</b></td>'
+        +'<td><button class="rb-btn" style="padding:6px 10px;font-size:11px;" onclick="absPrev('+ABS.indexOf(r)+')">👁️ Pratinjau</button></td></tr>';
+    }).join('') : '<tr><td colspan="6" class="rb-empty">Belum ada absensi masuk.</td></tr>';
+  }
+  window.absPrev=function(i){
+    var r=ABS[i]; if(!r) return;
+    T('absA4-keg',r.keg); T('absA4-lok',r.lok); T('absA4-pl',r.pl);
+    T('absA4-tgl',tgl(r.tgl)); T('absA4-n',r.rows.length);
+    T('absA4-no','No. ......../DH-SAHA/'+new Date().getFullYear()+' · Formulir F-ABS-01');
+    var th='<tr><th style="border:1px solid #7d2433;background:#7d2433;color:#fff;padding:4px;width:26px;">No</th>'
+      +'<th style="border:1px solid #7d2433;background:#7d2433;color:#fff;padding:4px;">Nama</th>'
+      +'<th style="border:1px solid #7d2433;background:#7d2433;color:#fff;padding:4px;">Alamat</th>'
+      +'<th style="border:1px solid #7d2433;background:#7d2433;color:#fff;padding:4px;width:82px;">No. Telepon</th>'
+      +'<th style="border:1px solid #7d2433;background:#7d2433;color:#fff;padding:4px;width:96px;">Tanda Tangan</th></tr>';
+    var body=r.rows.map(function(x,n){ var k=x.klien||{};
+      return '<tr><td style="border:1px solid #ccc;padding:3px;text-align:center;">'+(n+1)+'</td>'
+        +'<td style="border:1px solid #ccc;padding:3px;">'+E(k.nama||'')+'</td>'
+        +'<td style="border:1px solid #ccc;padding:3px;">'+E(k.alamat||'')+'</td>'
+        +'<td style="border:1px solid #ccc;padding:3px;">'+E(k.telp||'')+'</td>'
+        +'<td style="border:1px solid #ccc;padding:2px;height:26px;">'+(x.ttd?'<img src="'+x.ttd+'" style="height:22px;">':'')+'</td></tr>';
+    }).join('');
+    el('absA4-tbl').innerHTML=th+body;
+    modal('<h3>Pratinjau Daftar Hadir</h3><div style="font-size:12px;color:#6f6660;margin-bottom:10px;">'
+      +E(r.keg)+' · '+E(tgl(r.tgl))+' · '+E(r.lok)+' · <b>'+r.rows.length+' hadir</b></div>'
+      +'<div style="max-height:46vh;overflow:auto;border:1px solid #eee;border-radius:9px;padding:8px;font-size:12px;">'
+      +r.rows.map(function(x,n){var k=x.klien||{};return (n+1)+'. <b>'+E(k.nama||'-')+'</b> · '+E(k.alamat||'-')+' · '+E(k.telp||'-')+(x.ttd?' · ✍️':'');}).join('<br>')
+      +'</div><div style="display:flex;gap:8px;margin-top:12px;">'
+      +'<button class="rb-btn" onclick="absPrint()">🖨️ Cetak / PDF A4</button>'
+      +'<button class="rb-btn g" onclick="absCsvOne('+i+')">⬇️ CSV sesi ini</button>'
+      +'<button class="rb-btn g" onclick="rbCloseModal()">Tutup</button></div>');
+  };
+  window.absPrint=function(){ rbCloseModal(); document.body.classList.add('print-abs');
+    setTimeout(function(){ window.print(); setTimeout(function(){document.body.classList.remove('print-abs');},600); },120); };
+  window.absCsvOne=function(i){ var r=ABS[i]; if(!r) return;
+    var rows=[['No','Nama','Alamat','Telepon','Ada TTD','Kegiatan','Lokasi','PL','Tanggal']];
+    r.rows.forEach(function(x,n){var k=x.klien||{}; rows.push([n+1,k.nama||'',k.alamat||'',k.telp||'',x.ttd?'ya':'tidak',r.keg,r.lok,r.pl,tgl(r.tgl)]);});
+    csv(rows,'daftar-hadir-'+String(r.tgl).slice(0,10)+'.csv'); };
+
+  /* ---------- 2. RUJUKAN ---------- */
+  var RUJ=[];
+  window.SAHA_RENDER_RUJ=function(){
+    var tb=el('ruj-body'); if(!tb) return;
+    RUJ=(window.__SAHA_ALL||[]).filter(function(x){return x.form==='rujukan';})
+      .sort(function(a,b){return String(b.created_at||'').localeCompare(String(a.created_at||''));});
+    var now=Date.now(), pkm={}, kd={};
+    RUJ.forEach(function(x){ var d=x.data||{}; var p=d.puskesmas||x.puskesmas||'-'; if(p&&p!=='-')pkm[p]=1;
+      var k=(x.klien||{}).idkd||(x.klien||{}).nama; if(k)kd[k]=1; });
+    T('ruj-c-total',RUJ.length);
+    T('ruj-c-30',RUJ.filter(function(x){var d=new Date(x.created_at); return !isNaN(d)&&(now-d.getTime())<30*864e5;}).length);
+    T('ruj-c-pkm',Object.keys(pkm).length); T('ruj-c-kd',Object.keys(kd).length);
+    fillSel('ruj-pl',[...new Set(RUJ.map(function(x){return x.pl;}).filter(Boolean))].sort());
+    rujDraw();
+  };
+  function rujDraw(){
+    var tb=el('ruj-body'); if(!tb) return;
+    var q=(el('ruj-q')&&el('ruj-q').value||'').toLowerCase().trim();
+    var pl=(el('ruj-pl')&&el('ruj-pl').value)||'';
+    var rows=RUJ.filter(function(x){
+      if(pl && x.pl!==pl) return false;
+      if(q){ var k=x.klien||{},d=x.data||{};
+        var hay=[k.nama,k.julukan,k.idkd,d.puskesmas,x.puskesmas,(d.layanan||[]).join?(d.layanan||[]).join(' '):d.layanan,x.pl].join(' ').toLowerCase();
+        if(hay.indexOf(q)<0) return false; }
+      return true;
+    });
+    tb.innerHTML = rows.length ? rows.map(function(x){ var k=x.klien||{},d=x.data||{};
+      var lay=d.layanan; if(Array.isArray(lay)) lay=lay.join(', ');
+      return '<tr><td>'+E(tgl(x.created_at))+'</td><td><b>'+E(k.nama||'-')+'</b>'+(k.julukan?'<div style="font-size:10px;color:#6f6660;">'+E(k.julukan)+'</div>':'')+'</td>'
+        +'<td>'+E(k.idkd||'-')+'</td><td>'+E(d.puskesmas||x.puskesmas||'-')+'</td><td>'+E(lay||d.jenis||'-')+'</td><td>'+E(x.pl||'-')+'</td></tr>';
+    }).join('') : '<tr><td colspan="6" class="rb-empty">Belum ada rujukan yang dibuat lewat form Rujukan ke Puskesmas.</td></tr>';
+  }
+  window.rujCsv=function(){
+    var rows=[['Tanggal','Nama KD','Julukan','ID KD','Dirujuk ke','Layanan','PL']];
+    RUJ.forEach(function(x){var k=x.klien||{},d=x.data||{};var lay=d.layanan;if(Array.isArray(lay))lay=lay.join('; ');
+      rows.push([tgl(x.created_at),k.nama||'',k.julukan||'',k.idkd||'',d.puskesmas||x.puskesmas||'',lay||d.jenis||'',x.pl||'']);});
+    csv(rows,'rujukan-puskesmas.csv'); };
+
+  /* ---------- 4. GALERI ---------- */
+  function galLoad(){ var f=el('gal-frame'); if(f) f.src='https://drive.google.com/embeddedfolderview?id='+FOTO_FOLDER+'#grid'; }
+
+  /* ---------- wiring ---------- */
+  function wire(){
+    ['abs-q','abs-pl'].forEach(function(i){var e=el(i); if(e) e.addEventListener('input',absDraw);});
+    ['ruj-q','ruj-pl'].forEach(function(i){var e=el(i); if(e) e.addEventListener('input',rujDraw);});
+    var a=el('abs-csv'); if(a) a.onclick=function(){
+      var rows=[['Tanggal','Kegiatan','Lokasi','PL','Jumlah Hadir']];
+      ABS.forEach(function(r){rows.push([tgl(r.tgl),r.keg,r.lok,r.pl,r.rows.length]);});
+      csv(rows,'rekap-absensi.csv'); };
+    var rc=el('ruj-csv'); if(rc) rc.onclick=window.rujCsv;
+    var go=el('gal-open'); if(go) go.onclick=function(){ window.open('https://drive.google.com/drive/folders/'+FOTO_FOLDER,'_blank'); };
+    var gr=el('gal-reload'); if(gr) gr.onclick=galLoad;
+    galLoad();
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape') rbCloseModal(); });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',wire); else wire();
+})();
+</script>
+
+<script>
+/* ============ RUMAH REGISTRASI KTP — tabel klien x arsip KTP ============ */
+(function(){
+  var LIMIT=100, shown=LIMIT, ROWS=[];
+  var DRIVE='https://script.google.com/macros/s/AKfycbwBT5A0K_Nup3IUCxlh7tF63c2G8q1gAV59WpHguX56cHxpCqxotnbs_oJRMi0tDFxe/exec';
+  function el(i){return document.getElementById(i);}
+  function T(i,v){var e=el(i); if(e) e.textContent=v;}
+  function E(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  function sv(f,k){ var v=f&&f[k]; if(v==null) return ''; if(typeof v==='object') return v.stringValue||''; return String(v); }
+  function title(s){ return String(s||'').toLowerCase().split(/\s+/).map(function(w){return w?w[0].toUpperCase()+w.slice(1):w;}).join(' '); }
+
+  function build(){
+    var ktp=window.__SAHA_KTP||[];
+    var byId={}, byName={};
+    ktp.forEach(function(k){ if(k.idkd) byId[k.idkd]=k;
+      var n=String(k.nama||'').toUpperCase().replace(/[^A-Z]/g,''); if(n) byName[n+'|'+(k.tgllahir||'')]=k; });
+    var cl=(window.__SAHA_CLIENTS||[]);
+    var rows=[], seen={};
+    cl.forEach(function(c){
+      var nama=c.Nama_Lengkap||c.nama||'', id=c.ID_KD||c.idkd||'', pl=c.PL_Utama||c.pl||'';
+      var dob=String(c.Tgl_Lahir||'').slice(0,10);
+      var k=byId[id]||byName[String(nama).toUpperCase().replace(/[^A-Z]/g,'')+'|'+dob]||null;
+      if(k) seen[k.__id]=1;
+      rows.push({nama:title(nama), idkd:id||(k?k.idkd:''), nik:k?k.nik:'', pl:pl||(k?k.pl:''), ktp:k, src:'db'});
+    });
+    // KTP yang ada tapi kliennya belum terdaftar
+    ktp.forEach(function(k){ if(!seen[k.__id]) rows.push({nama:title(k.nama||''),idkd:k.idkd||'',nik:k.nik||'',pl:k.pl||'',ktp:k,src:'ktp'}); });
+    return rows;
+  }
+  function statusOf(r){
+    if(!r.ktp) return 'belum';
+    if(r.ktp.rusak) return 'rusak';
+    if((r.ktp.verif||'')!=='verified') return 'pending';
+    return 'ada';
+  }
+  window.SAHA_RENDER_KTP=function(){
+    if(!el('kt-body')) return;
+    ROWS=build();
+    var ada=0,blm=0,pend=0;
+    ROWS.forEach(function(r){var s=statusOf(r); if(s==='belum')blm++; else {if(r.ktp&&r.ktp.foto)ada++; if(s==='pending'||s==='rusak')pend++;}});
+    T('kt-c-klien',ROWS.length); T('kt-c-foto',ada); T('kt-c-blm',blm); T('kt-c-pend',pend);
+    var pls=[...new Set(ROWS.map(function(r){return r.pl;}).filter(function(v){return v&&v!=='BELUM';}))].sort();
+    var s=el('kt-pl'); if(s){var cur=s.value; s.innerHTML='<option value="">Semua PL</option>'+pls.map(function(v){return '<option>'+E(v)+'</option>';}).join(''); s.value=cur;}
+    shown=LIMIT; draw();
+  };
+  function filtered(){
+    var q=(el('kt-q')&&el('kt-q').value||'').toLowerCase().trim();
+    var pl=(el('kt-pl')&&el('kt-pl').value)||'';
+    var st=(el('kt-st')&&el('kt-st').value)||'';
+    return ROWS.filter(function(r){
+      if(pl && r.pl!==pl) return false;
+      if(st && statusOf(r)!==st) return false;
+      if(q){ var hay=[r.nama,r.idkd,r.nik,r.pl,r.ktp&&r.ktp.julukan].join(' ').toLowerCase();
+             if(hay.indexOf(q)<0) return false; }
+      return true;
+    });
+  }
+  function pill(s){
+    if(s==='ada') return '<span class="rb-pill ok">✅ lengkap</span>';
+    if(s==='pending') return '<span class="rb-pill pend">⏳ verifikasi</span>';
+    if(s==='rusak') return '<span class="rb-pill pend">🔄 perlu diganti</span>';
+    return '<span class="rb-pill no">⬜ belum ada</span>';
+  }
+  function draw(){
+    var tb=el('kt-body'); if(!tb) return;
+    var f=filtered(), page=f.slice(0,shown);
+    T('kt-info','Menampilkan '+page.length+' dari '+f.length+' baris'+(f.length!==ROWS.length?(' (difilter dari '+ROWS.length+')'):''));
+    tb.innerHTML = page.length ? page.map(function(r){
+      var idx=ROWS.indexOf(r), s=statusOf(r), k=r.ktp;
+      var foto = (k&&k.foto) ? '<img class="rb-thumb" src="'+k.foto+'" onclick="ktZoom('+idx+')" alt="KTP">'
+                             : '<div class="rb-nofoto">belum ada<br>foto KTP</div>';
+      return '<tr><td>'+foto+'</td><td><b>'+E(r.nama||'-')+'</b>'+(k&&k.julukan?'<div style="font-size:10px;color:#6f6660;">'+E(k.julukan)+'</div>':'')+'</td>'
+        +'<td style="font-size:11.5px;">'+E(r.idkd||'-')+'</td>'
+        +'<td style="font-size:11px;letter-spacing:.3px;">'+E(r.nik||'-')+'</td>'
+        +'<td>'+E(r.pl||'-')+'</td><td>'+pill(s)+'</td>'
+        +'<td style="white-space:nowrap;">'
+        +(k?'<button class="rb-btn g" style="padding:5px 9px;font-size:10.5px;" onclick="ktEdit('+idx+')">✏️ Edit</button> ':'')
+        +'<button class="rb-btn" style="padding:5px 9px;font-size:10.5px;" onclick="ktGanti('+idx+')">'+(k&&k.foto?'🔄 Ganti':'📷 Tambah')+'</button>'
+        +'</td></tr>';
+    }).join('') : '<tr><td colspan="7" class="rb-empty">Tidak ada baris yang cocok dengan filter.</td></tr>';
+    var mb=el('kt-more'); if(mb) mb.style.display=(f.length>shown)?'inline-block':'none';
+  }
+  window.ktZoom=function(i){ var k=ROWS[i]&&ROWS[i].ktp; if(!k||!k.foto) return;
+    rbCloseModal(); document.getElementById('rb-mcard').innerHTML='<h3>'+E(ROWS[i].nama)+'</h3>'
+      +'<div style="font-size:11.5px;color:#6f6660;margin-bottom:9px;">ID '+E(k.idkd||'-')+' · NIK '+E(k.nik||'-')+' · PL '+E(k.pl||'-')+'</div>'
+      +'<img src="'+k.foto+'" style="width:100%;border-radius:11px;border:1px solid #e6ddd2;">'
+      +'<div style="margin-top:11px;display:flex;gap:8px;"><button class="rb-btn g" onclick="rbCloseModal()">Tutup</button></div>';
+    document.getElementById('rb-modal').classList.add('on'); };
+
+  window.ktEdit=function(i){
+    var r=ROWS[i], k=r.ktp; if(!k) return;
+    document.getElementById('rb-mcard').innerHTML='<h3>Edit data KTP</h3>'
+      +'<div style="font-size:11.5px;color:#6f6660;margin-bottom:11px;">Perubahan tersimpan ke koleksi <code>ktp</code> — langsung terlihat juga di Portal PL.</div>'
+      +'<div class="rb-fld"><label>Nama Lengkap</label><input id="kt-e-nama" value="'+E(k.nama||'')+'"></div>'
+      +'<div class="rb-fld"><label>Julukan</label><input id="kt-e-jul" value="'+E(k.julukan||'')+'"></div>'
+      +'<div class="rb-fld"><label>NIK (16 digit)</label><input id="kt-e-nik" inputmode="numeric" value="'+E(k.nik||'')+'"></div>'
+      +'<div class="rb-fld"><label>Tanggal Lahir</label><input id="kt-e-tgl" type="date" value="'+E(k.tgllahir||'')+'"></div>'
+      +'<div class="rb-fld"><label>PL Pendamping</label><input id="kt-e-pl" value="'+E(k.pl==='BELUM'?'':(k.pl||''))+'" placeholder="mis. Nuri"></div>'
+      +'<div style="display:flex;gap:8px;margin-top:12px;"><button class="rb-btn" onclick="ktSave('+i+')">💾 Simpan</button>'
+      +'<button class="rb-btn g" onclick="rbCloseModal()">Batal</button></div><div id="kt-e-msg" style="font-size:11.5px;margin-top:8px;"></div>';
+    document.getElementById('rb-modal').classList.add('on');
+  };
+  window.ktSave=async function(i){
+    var r=ROWS[i], k=r.ktp, m=el('kt-e-msg');
+    var nik=(el('kt-e-nik').value||'').replace(/[^0-9]/g,'');
+    if(nik && nik.length!==16){ m.style.color='#bf3838'; m.textContent='NIK harus 16 digit (atau kosongkan).'; return; }
+    m.style.color='#6f6660'; m.textContent='Menyimpan…';
+    try{
+      await window.__SAHA_KTP_UPDATE(k.__id,{ nama:el('kt-e-nama').value.trim(), julukan:el('kt-e-jul').value.trim(),
+        nik:nik, tgllahir:el('kt-e-tgl').value, pl:(el('kt-e-pl').value.trim()||'BELUM'),
+        updated_at:new Date().toISOString(), updated_by:(window.SAHA_NAMA||window.SAHA_ROLE||'admin') });
+      m.style.color='#0a6d6d'; m.textContent='✓ Tersimpan.'; setTimeout(rbCloseModal,700);
+    }catch(e){ m.style.color='#bf3838'; m.textContent='Gagal: '+((e&&e.code)||(e&&e.message)||e); }
+  };
+
+  window.ktGanti=function(i){
+    var r=ROWS[i], k=r.ktp;
+    document.getElementById('rb-mcard').innerHTML='<h3>'+(k&&k.foto?'Ganti foto KTP':'Tambah foto KTP')+'</h3>'
+      +'<div style="font-size:11.5px;color:#6f6660;margin-bottom:11px;">'+E(r.nama||'')+' · ID '+E(r.idkd||'-')
+      +'<br>Foto lama digantikan; arsip lama tetap tersimpan di Google Drive.</div>'
+      +(k&&k.foto?'<img src="'+k.foto+'" style="width:100%;border-radius:10px;border:1px solid #e6ddd2;margin-bottom:10px;opacity:.55;">':'')
+      +'<input type="file" id="kt-g-file" accept="image/*" style="display:none;">'
+      +'<button class="rb-btn" onclick="document.getElementById(\'kt-g-file\').click()">📷 Pilih Foto KTP</button>'
+      +'<div id="kt-g-prev" style="display:none;margin-top:10px;"><img id="kt-g-img" style="width:100%;border-radius:10px;border:1px solid #e6ddd2;">'
+      +'<div id="kt-g-info" style="font-size:10.5px;color:#6f6660;margin-top:4px;"></div>'
+      +'<div class="rb-fld" style="margin-top:9px;"><label>NIK (koreksi bila perlu)</label><input id="kt-g-nik" inputmode="numeric" value="'+E((k&&k.nik)||'')+'"></div>'
+      +'<button class="rb-btn" onclick="ktGantiSave('+i+')">💾 Simpan Penggantian</button></div>'
+      +'<div style="margin-top:9px;"><button class="rb-btn g" onclick="rbCloseModal()">Tutup</button></div>'
+      +'<div id="kt-g-msg" style="font-size:11.5px;margin-top:8px;"></div>';
+    document.getElementById('rb-modal').classList.add('on');
+    el('kt-g-file').addEventListener('change',function(){
+      var f=this.files&&this.files[0]; if(!f) return;
+      var TW=1024,TH=645;
+      function draw2(src,w,hh){ var cv=document.createElement('canvas'); cv.width=TW; cv.height=TH;
+        var c=cv.getContext('2d'), ir=w/hh, tr=TW/TH, sw,sh,sx,sy;
+        if(ir>tr){sh=hh;sw=hh*tr;sx=(w-sw)/2;sy=0;} else {sw=w;sh=w/tr;sx=0;sy=(hh-sh)/2;}
+        c.drawImage(src,sx,sy,sw,sh,0,0,TW,TH);
+        var q=0.8,out=cv.toDataURL('image/jpeg',q);
+        while(out.length>300000&&q>0.4){q-=0.08;out=cv.toDataURL('image/jpeg',q);}
+        window.__ktGantiFoto=out; el('kt-g-prev').style.display='block'; el('kt-g-img').src=out;
+        el('kt-g-info').textContent='✓ siap: '+Math.round(out.length*3/4/1024)+' KB (1024×645)';
+      }
+      if(window.createImageBitmap) createImageBitmap(f,{imageOrientation:'from-image'}).then(function(b){draw2(b,b.width,b.height);}).catch(fb);
+      else fb();
+      function fb(){ var im=new Image(); im.onload=function(){draw2(im,im.naturalWidth,im.naturalHeight);}; im.src=URL.createObjectURL(f); }
+    });
+  };
+  window.ktGantiSave=async function(i){
+    var r=ROWS[i], k=r.ktp, m=el('kt-g-msg'), foto=window.__ktGantiFoto;
+    if(!foto){ m.style.color='#bf3838'; m.textContent='Belum ada foto.'; return; }
+    var nik=(el('kt-g-nik').value||'').replace(/[^0-9]/g,'');
+    if(nik && nik.length!==16){ m.style.color='#bf3838'; m.textContent='NIK harus 16 digit.'; return; }
+    if(!k && !r.idkd){ m.style.color='#bf3838'; m.textContent='Klien ini belum punya ID KD — daftarkan dulu lewat Portal PL.'; return; }
+    m.style.color='#6f6660'; m.textContent='Menyimpan…';
+    var id=k?k.__id:r.idkd, now=new Date().toISOString(), oleh=(window.SAHA_NAMA||window.SAHA_ROLE||'admin');
+    try{
+      var riw=((k&&k.riwayat_ganti)||[]).slice(0,9);
+      riw.unshift({pada:now,oleh:oleh,nik_lama:(k&&k.nik)||'',alasan:(k&&k.verif_flag==='rusak_perlu_ganti')?'KTP rusak':'ganti/tambah dari Monitoring'});
+      var upd={foto:foto,rusak:false,riwayat_ganti:riw,ganti_terakhir_pada:now,ganti_terakhir_oleh:oleh,updated_at:now,updated_by:oleh};
+      if(nik) upd.nik=nik;
+      if(k && (k.verif_flag||'')==='rusak_perlu_ganti'){ upd.verif_flag=''; upd.verif_note=''; }
+      if(!k){ upd.idkd=r.idkd; upd.nama=r.nama; upd.pl=r.pl||'BELUM'; upd.verif='pending'; upd.sumber='monitoring'; upd.created_at=now; }
+      await window.__SAHA_KTP_UPDATE(id,upd,!k);
+      m.style.color='#0a6d6d'; m.textContent='✓ Foto tersimpan. Menyalin ke Drive…';
+      try{
+        var nm=String(r.nama||'KTP').replace(/[^A-Za-z0-9]+/g,'_').replace(/^_|_$/g,'');
+        var res=await fetch(DRIVE,{method:'POST',body:JSON.stringify({type:'ktp',files:[{name:id+'_'+nm+'.jpg',mime:'image/jpeg',
+          data:foto.split(',')[1],idkd:id,nama:r.nama||'',pl:r.pl||'-',catatan:'Dari Monitoring oleh '+oleh+' '+now.slice(0,10)}]})});
+        var j=await res.json();
+        m.textContent=(j&&j.ok)?'✓ Tersimpan + arsip Drive diperbarui.':'✓ Tersimpan; arsip Drive gagal — lapor Adib.';
+      }catch(e){ m.style.color='#b8791e'; m.textContent='✓ Tersimpan; arsip Drive belum tersalin (offline?).'; }
+      window.__ktGantiFoto=null; setTimeout(rbCloseModal,1400);
+    }catch(e){ m.style.color='#bf3838'; m.textContent='Gagal: '+((e&&e.code)||(e&&e.message)||e); }
+  };
+  window.ktCsv=function(){
+    var rows=[['Nama KD','ID KD','NIK','PL','Status KTP','Ada Foto']];
+    filtered().forEach(function(r){ var s=statusOf(r);
+      rows.push([r.nama,r.idkd,r.nik,r.pl,{ada:'lengkap',pending:'menunggu verifikasi',rusak:'perlu diganti',belum:'belum ada KTP'}[s],(r.ktp&&r.ktp.foto)?'ya':'tidak']); });
+    var s=rows.map(function(x){return x.map(function(c){return '"'+String(c==null?'':c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+    var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['﻿'+s],{type:'text/csv;charset=utf-8'}));
+    a.download='kelengkapan-ktp.csv'; a.click(); };
+  function wire(){
+    ['kt-q','kt-pl','kt-st'].forEach(function(i){var e=el(i); if(e) e.addEventListener('input',function(){shown=LIMIT;draw();});});
+    var mb=el('kt-more'); if(mb) mb.onclick=function(){shown+=LIMIT;draw();};
+    var cb=el('kt-csv'); if(cb) cb.onclick=window.ktCsv;
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',wire); else wire();
 })();
 </script>
 </body>
