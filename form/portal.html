@@ -235,6 +235,7 @@
         <div class="ic" style="background:linear-gradient(135deg,#6b4d7a,#4e3859);">🔍</div>
         <div><b>Search ID KD</b><span>kartu identitas: NIK + preview KTP — <span id="mi-ktp-scope">dampingan Anda</span></span></div>
       </div>
+      <div class="menuitem" id="mi-verif"><div class="ic" style="background:linear-gradient(135deg,#0d8b8b,#0a6d6d);">✅</div><div><b>Verifikasi KTP <span id="verif-badge" style="display:none;background:#bf3838;color:#fff;border-radius:10px;padding:1px 8px;font-size:11px;margin-left:4px;vertical-align:middle;">0</span></b><span>cek &amp; sahkan data KTP hasil arsip — foto vs nama, NIK, tgl lahir</span></div></div>
       <div class="menuitem" id="mi-pending"><div class="ic" style="background:linear-gradient(135deg,#b8791e,#7a5313);">🕓</div><div><b>Pending KD <span id="pend-badge" style="display:none;background:#bf3838;color:#fff;border-radius:10px;padding:1px 8px;font-size:11px;margin-left:4px;vertical-align:middle;">0</span></b><span>entri penjangkauan yang belum lengkap — lengkapi nama &amp; tanggal lahir</span></div></div>
       <div class="menuitem" id="mi-jadwal">
         <div class="ic" style="background:linear-gradient(135deg,#34478c,#243056);">📅</div>
@@ -278,6 +279,16 @@
         <div style="font-size:11px;color:var(--slate);margin:4px 0 0;line-height:1.5;">Entri penjangkauan yang disimpan tanpa nama lengkap. Lengkapi <b>nama lengkap</b> &amp; <b>tanggal lahir</b> saat sudah bisa, lalu simpan — otomatis hilang dari daftar.</div>
       </div>
       <div id="pend-list"><div class="state"><div class="big">⏳</div>Memuat…</div></div>
+    </div>
+
+    <!-- VERIFIKASI KTP -->
+    <div class="view" id="v-verif">
+      <button class="back" id="bk-verif">← Menu</button>
+      <div class="card" style="padding:13px 15px;">
+        <div style="font-size:14px;font-weight:800;color:var(--clay-deep);">✅ Verifikasi KTP</div>
+        <div style="font-size:11px;color:var(--slate);margin:4px 0 0;line-height:1.5;">KTP hasil arsip back-office. Periksa <b>foto vs data</b> (nama, NIK, tanggal lahir). Bila sudah benar &amp; memang dampinganmu → tekan <b>Verifikasi</b>. Bila ada yang salah → <b>Koreksi</b> dulu. Baris bertanda ⚠️ perlu keputusan identitas.</div>
+      </div>
+      <div id="verif-list"><div class="state"><div class="big">⏳</div>Memuat…</div></div>
     </div>
 
     <!-- FORM RUJUKAN -->
@@ -452,7 +463,7 @@
 <script>
   var $ = function (id) { return document.getElementById(id); };
   function show(v) {
-    ['v-loading','v-login','v-menu','v-ktp','v-vct','v-dh','v-ruj','v-pending','v-jadwal'].forEach(function (x) { var _e=$(x); if(_e) _e.classList.remove('on'); });
+    ['v-loading','v-login','v-menu','v-ktp','v-vct','v-dh','v-ruj','v-pending','v-verif','v-jadwal'].forEach(function (x) { var _e=$(x); if(_e) _e.classList.remove('on'); });
     $(v).classList.add('on');
     /* header ikut view — Registrasi VCT adalah form tersendiri */
     var h1 = document.querySelector('header h1'), sub = document.querySelector('header .sub');
@@ -463,6 +474,7 @@
       else if (v === 'v-dh') { h1.textContent = 'Daftar Hadir'; sub.textContent = 'unduh absensi kegiatan · siap cetak A4 · terisi otomatis / blangko'; document.title = 'Daftar Hadir · Sadar Hati'; }
       else if (v === 'v-ruj') { h1.textContent = 'Form Rujukan'; sub.textContent = 'rujuk KD ke Puskesmas · skrining auto-tarik · cetak A4'; document.title = 'Form Rujukan · Sadar Hati'; }
       else if (v === 'v-pending') { h1.textContent = 'Pending KD'; sub.textContent = 'entri penjangkauan yang perlu dilengkapi nama & tanggal lahir'; document.title = 'Pending KD · Sadar Hati'; }
+      else if (v === 'v-verif') { h1.textContent = 'Verifikasi KTP'; sub.textContent = 'cek & sahkan data KTP hasil arsip · foto vs nama/NIK/tgl lahir'; document.title = 'Verifikasi KTP · Sadar Hati'; }
       else if (v === 'v-jadwal') { h1.textContent = 'Jadwal Aktivitas'; sub.textContent = 'agenda & kalender tim · lihat & tambah · realtime'; document.title = 'Jadwal Aktivitas · Sadar Hati'; }
       else { h1.textContent = 'Portal PL'; sub.textContent = 'khusus petugas lapangan · akses tercatat · bukan dashboard internal'; document.title = 'Portal PL · Sadar Hati'; }
     }
@@ -1123,6 +1135,76 @@ async function saveComplete(btn){
     msg.style.color='#0a6d6d'; msg.textContent='✓ Tersimpan';
     setTimeout(loadPending, 600);
   }catch(e){ btn.disabled=false; msg.style.color='#bf3838'; msg.textContent='Gagal: '+((e&&e.message)||e); }
+}
+
+/* ===== Verifikasi KTP (arsip back-office) ===== */
+(function(){
+  var mv=document.getElementById('mi-verif'); if(mv) mv.onclick=function(){ show('v-verif'); loadVerif(); };
+  var bv=document.getElementById('bk-verif'); if(bv) bv.onclick=function(){ show('v-menu'); };
+})();
+async function loadVerif(){
+  var host=document.getElementById('verif-list'); if(!host) return;
+  host.innerHTML='<div class="state"><div class="big">⏳</div>Memuat…</div>';
+  try{
+    var fs=fb.fs, col=fs.collection(fb.db,'ktp'), snap;
+    if(CTX.pl){ snap=await fs.getDocs(fs.query(col, fs.where('pl','==',CTX.pl))); }
+    else { snap=await fs.getDocs(fs.query(col, fs.where('verif','==','pending'))); }
+    var rows=[]; snap.forEach(function(d){ var x=d.data(); x.__id=d.id; if((x.verif||'')==='pending') rows.push(x); });
+    rows.sort(function(a,b){ var fa=a.verif_flag?0:1, fb2=b.verif_flag?0:1; if(fa!==fb2) return fa-fb2; return String(a.nama||'').localeCompare(String(b.nama||'')); });
+    var bdg=document.getElementById('verif-badge'); if(bdg){ bdg.textContent=rows.length; bdg.style.display=rows.length?'inline-block':'none'; }
+    if(!rows.length){ host.innerHTML='<div class="state"><div class="big">✅</div>Tidak ada KTP menunggu verifikasi.</div>'; return; }
+    host.innerHTML=rows.map(renderVerifCard).join('');
+  }catch(e){ host.innerHTML='<div class="state"><div class="big">⚠️</div>Gagal memuat: '+esc((e&&e.code)||(e&&e.message)||e)+'<br><span style="font-size:11px;">Bila permission-denied: cek rules ktp.</span></div>'; }
+}
+function renderVerifCard(x){
+  var nik=esc((x.nik||'').replace(/(\d{4})(?=\d)/g,'$1 '));
+  var flag=x.verif_flag?'<div style="background:#fff3cd;border:1px solid #ffe08a;border-radius:9px;padding:7px 9px;margin:8px 0;font-size:11px;color:#7a5313;line-height:1.5;">⚠️ <b>Perlu keputusan identitas.</b> '+esc(x.verif_note||'')+'</div>':'';
+  var dbline=x.client_docid?'<div style="font-size:10.5px;color:var(--slate);">DB: '+esc(x.client_docid)+(x.nama_db?' · '+esc(x.nama_db):'')+'</div>':'<div style="font-size:10.5px;color:#b8791e;">belum ketemu di database</div>';
+  return '<div class="card" style="padding:12px 14px;margin-bottom:12px;" data-id="'+esc(x.__id)+'">'
+    +'<div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;">'
+    +'<div><b style="font-size:13.5px;color:var(--clay-deep);">'+esc(x.nama||'(tanpa nama)')+'</b>'
+    +'<div style="font-size:11px;color:var(--slate);">ID '+esc(x.idkd||'-')+' · '+esc(x.tgllahir||'-')+' · PL '+esc(x.pl||'-')+'</div>'+dbline+'</div>'
+    +'<span style="font-size:9.5px;font-weight:800;color:#0a6d6d;background:#e6f4f4;border-radius:8px;padding:2px 7px;white-space:nowrap;">⏳ pending</span></div>'
+    +flag
+    +'<div style="position:relative;border-radius:11px;overflow:hidden;border:1px solid var(--border);background:#f0ebe4;margin:8px 0;">'
+    +(x.foto?'<img src="'+x.foto+'" alt="KTP" style="width:100%;display:block;">':'<div class="state">📄 foto tidak tersedia</div>')+'</div>'
+    +'<div style="font-size:11px;color:var(--slate);margin-bottom:8px;">NIK: <b>'+nik+'</b></div>'
+    +'<div style="display:flex;gap:8px;">'
+    +'<button class="btn" style="margin:0;background:linear-gradient(135deg,#0d8b8b,#0a6d6d);" onclick="doVerify(this)">✓ Verifikasi</button>'
+    +'<button class="btn" style="margin:0;width:auto;padding:9px 13px;background:#7d6b5c;" onclick="openVerifEdit(this)">✏️ Koreksi</button></div>'
+    +'<div class="vf-edit" style="display:none;margin-top:10px;border-top:1px dashed var(--line);padding-top:10px;">'
+    +'<div class="fld"><label class="fl">Nama Lengkap</label><input class="fi vf-nama" value="'+esc(x.nama||'')+'"></div>'
+    +'<div class="fld"><label class="fl">Julukan</label><input class="fi vf-jul" value="'+esc(x.julukan||'')+'"></div>'
+    +'<div class="fld"><label class="fl">Tanggal Lahir</label><input class="fi vf-tgl" type="date" value="'+esc(x.tgllahir||'')+'"></div>'
+    +'<div class="fld"><label class="fl">NIK (16 digit)</label><input class="fi vf-nik" value="'+esc(x.nik||'')+'" inputmode="numeric"></div>'
+    +'<button class="btn vf-save" style="margin:0;" onclick="saveVerif(this,true)">💾 Simpan &amp; Verifikasi</button>'
+    +'<button class="btn" style="margin:6px 0 0;background:#7d6b5c;" onclick="saveVerif(this,false)">💾 Simpan koreksi (tetap pending)</button>'
+    +'<div class="vf-msg" style="font-size:11px;margin-top:6px;"></div></div></div>';
+}
+function openVerifEdit(btn){ var c=btn.closest('.card'); var ed=c.querySelector('.vf-edit'); ed.style.display=(!ed.style.display||ed.style.display==='none')?'block':'none'; }
+async function doVerify(btn){
+  var c=btn.closest('.card'); var id=c.getAttribute('data-id');
+  btn.disabled=true; btn.textContent='…';
+  try{
+    await fb.fs.updateDoc(fb.fs.doc(fb.db,'ktp',id), { verif:'verified', verif_by:(CTX.nama||CTX.pl||CTX.role||''), verif_at:new Date().toISOString() });
+    c.style.transition='opacity .3s'; c.style.opacity='.4'; setTimeout(loadVerif, 600);
+  }catch(e){ btn.disabled=false; btn.textContent='✓ Verifikasi'; alert('Gagal verifikasi: '+((e&&e.code)||(e&&e.message)||e)); }
+}
+async function saveVerif(btn, alsoVerify){
+  var c=btn.closest('.card'); var id=c.getAttribute('data-id'); var msg=c.querySelector('.vf-msg');
+  var nama=c.querySelector('.vf-nama').value.trim(), jul=c.querySelector('.vf-jul').value.trim();
+  var tgl=c.querySelector('.vf-tgl').value, nik=c.querySelector('.vf-nik').value.replace(/[^0-9]/g,'');
+  if(!nama){ msg.style.color='#bf3838'; msg.textContent='Nama wajib diisi.'; return; }
+  if(nik && nik.length!==16){ msg.style.color='#bf3838'; msg.textContent='NIK harus 16 digit.'; return; }
+  btn.disabled=true; msg.style.color='var(--slate)'; msg.textContent='Menyimpan…';
+  try{
+    var upd={ nama:nama, julukan:jul, tgllahir:tgl, nik:nik, updated_at:new Date().toISOString(), updated_by:(CTX.nama||CTX.pl||CTX.role||'') };
+    if(alsoVerify){ upd.verif='verified'; upd.verif_by=(CTX.nama||CTX.pl||CTX.role||''); upd.verif_at=new Date().toISOString(); }
+    await fb.fs.updateDoc(fb.fs.doc(fb.db,'ktp',id), upd);
+    msg.style.color='#0a6d6d'; msg.textContent=alsoVerify?'✓ Tersimpan & terverifikasi':'✓ Koreksi tersimpan';
+    if(alsoVerify){ c.style.transition='opacity .3s'; c.style.opacity='.4'; }
+    setTimeout(loadVerif, 700);
+  }catch(e){ btn.disabled=false; msg.style.color='#bf3838'; msg.textContent='Gagal: '+((e&&e.code)||(e&&e.message)||e); }
 }
 </script>
 <style id="jdw-css">
