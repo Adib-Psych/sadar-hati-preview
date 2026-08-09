@@ -42,7 +42,7 @@
 <body><div class="container">
   <div class="saha-letterhead" style="display:flex;justify-content:center;padding:16px 0 6px;"><img src="logo.png" alt="Yayasan Sadar Hati" style="height:48px;width:auto;"></div>
 
-  <div class="top-bar"><a href="index.html" onclick="return sahaBack(event)">← Kembali</a><a href="../" style="color:var(--slate);text-decoration:none;font-weight:700;">🏠 Dashboard</a></div>
+  <div class="top-bar"><a href="index.html" onclick="return sahaBack(event)">← Kembali</a><span data-saha-home></span></div>
   <div class="hero"><div class="eyebrow">💬 Laporan Konseling · Formulir</div><h1>Konseling</h1><p>Laporan konseling oleh konselor. Isi setelah sesi. <strong>Bersifat rahasia</strong> — hanya untuk M&E internal.</p></div>
   <div class="note priv" style="max-width:480px;margin:0 auto 14px;">🔒 Isi konseling bersifat sangat sensitif. Data disimpan terlindungi (akses M&E internal), tidak ditampilkan di halaman agregat/publik.</div>
   <div class="section"><div id="saha-identity"></div></div>
@@ -107,4 +107,5 @@ function submitForm(){
   else done(false);
 }
 </script><script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}</script>
+<script src="saha-nav.js" defer></script>
 </body></html>

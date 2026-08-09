@@ -747,6 +747,7 @@
           try { au.signOut(fb.auth); } catch (e) {}
           return;
         }
+        try{ localStorage.setItem('saha_ctx', JSON.stringify({role:CTX.role,t:Date.now()})); }catch(e){}
         $('uchip').textContent = '👤 ' + (CTX.nama || CTX.pl || CTX.role);
         $('userbar').style.display = 'flex';
         var go = new URLSearchParams(location.search).get('go');
@@ -773,7 +774,7 @@
     }
     this.disabled = false; this.textContent = '🔓 Masuk';
   });
-  $('btn-logout').addEventListener('click', function () { if (fb.au) fb.au.signOut(fb.auth); });
+  $('btn-logout').addEventListener('click', function () { try{ localStorage.removeItem('saha_ctx'); }catch(e){} if (fb.au) fb.au.signOut(fb.auth); });
 
   /* ---------- KTP data ---------- */
   window.__logAkses = function (x) {

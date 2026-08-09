@@ -42,7 +42,7 @@
 <body><div class="container">
   <div class="saha-letterhead" style="display:flex;justify-content:center;padding:16px 0 6px;"><img src="logo.png" alt="Yayasan Sadar Hati" style="height:48px;width:auto;"></div>
 
-  <div class="top-bar"><a href="index.html" onclick="return sahaBack(event)">← Kembali</a><a href="../" style="color:var(--slate);text-decoration:none;font-weight:700;">🏠 Dashboard</a></div>
+  <div class="top-bar"><a href="index.html" onclick="return sahaBack(event)">← Kembali</a><span data-saha-home></span></div>
   <div class="hero"><div class="eyebrow">⚕️ Penilaian Risiko Pribadi · Formulir</div><h1>IRA</h1><p>Individual Risk Assessment. Isi bersama dampingan. Perilaku berisiko dalam <strong>1 bulan terakhir</strong>.</p></div>
   <div class="section"><div id="saha-identity"></div></div>
   <div class="section"><div class="section-title">🩺 Konteks Klinis</div><div class="qb"><div class="qlbl">Tipe Penggunaan Napza <span class="rq">*</span></div><div class="chips" data-single="tipe_drugs"><div class="chip" data-v="PWUM (Sabu)">PWUM (Sabu)</div><div class="chip" data-v="PWID (Injecting)">PWID (Injecting)</div><div class="chip" data-v="Non-Sabu">Non-Sabu</div></div></div><div class="qb"><div class="qlbl">Tipe Kelompok Sasaran <span class="rq">*</span></div><div class="chips" data-single="kelompok_sasaran"><div class="chip" data-v="Risti / Umum">Risti / Umum</div><div class="chip" data-v="PSP">PSP</div><div class="chip" data-v="LSL">LSL</div><div class="chip" data-v="WPS">WPS</div><div class="chip" data-v="Transgender">Transgender</div></div></div><div class="qb"><div class="qlbl">Tanggal Pertemuan Pertama </div><input type="date" class="in" data-in="tgl_pertemuan1" placeholder=""></div><div class="qb"><div class="qlbl">Tanggal Pertemuan Berikutnya </div><input type="date" class="in" data-in="tgl_pertemuan2" placeholder=""></div></div><div class="section"><div class="section-title">💉 Perilaku Berbagi Alat</div><div class="qb"><div class="qlbl">Meminjamkan jarum / alat hisap ke orang lain? </div><div class="chips" data-yn="lend">
@@ -111,4 +111,5 @@ function submitForm(){
   else done(false);
 }
 </script><script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}</script>
+<script src="saha-nav.js" defer></script>
 </body></html>

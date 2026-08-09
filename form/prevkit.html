@@ -42,7 +42,7 @@
 <body><div class="container">
   <div class="saha-letterhead" style="display:flex;justify-content:center;padding:16px 0 6px;"><img src="logo.png" alt="Yayasan Sadar Hati" style="height:48px;width:auto;"></div>
 
-  <div class="top-bar"><a href="index.html" onclick="return sahaBack(event)">← Kembali</a><a href="../" style="color:var(--slate);text-decoration:none;font-weight:700;">🏠 Dashboard</a></div>
+  <div class="top-bar"><a href="index.html" onclick="return sahaBack(event)">← Kembali</a><span data-saha-home></span></div>
 
   <div class="hero"><div class="eyebrow">🎒 Logistik · Alat Pencegahan</div><h1>Form Prevention Kit</h1><p>Pencatatan jumlah pengambilan prevention kit (alat pencegahan) oleh petugas lapangan. Tersimpan ke database.</p></div>
 
@@ -130,4 +130,5 @@ function submitForm(){
   else done(false);
 }
 </script><script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}</script>
+<script src="saha-nav.js" defer></script>
 </body></html>

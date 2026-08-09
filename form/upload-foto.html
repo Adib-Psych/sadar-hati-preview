@@ -54,7 +54,7 @@
   <p>Kirim foto kegiatan lapangan ke arsip Drive Sadar Hati.</p>
 </header>
 
-<div class="saha-topbar"><a href="index.html" onclick="return sahaBack(event)">← Kembali</a><a href="../" style="color:var(--mut);text-decoration:none;font-weight:700;">🏠 Dashboard</a></div>
+<div class="saha-topbar"><a href="index.html" onclick="return sahaBack(event)">← Kembali</a><span data-saha-home></span></div>
 <div class="wrap">
   <div class="card">
     <label class="fl" for="f-keg">Kegiatan <span class="req">*</span></label>
@@ -203,5 +203,6 @@
   });
 </script>
 <script>function sahaBack(e){ if(window.self!==window.top){ if(e) e.preventDefault(); window.parent.postMessage({saha:'nav',to:'l3-master'},'*'); return false; } return true; }</script>
+<script src="saha-nav.js" defer></script>
 </body>
 </html>
