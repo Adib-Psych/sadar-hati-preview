@@ -1052,7 +1052,7 @@
         <span class="current">🔒 Login Staf diperlukan</span>
       </div>
       <div class="topbar-actions">
-        <span class="saha-authbar saha-authed-only">🔓 <span id="saha-rolechip">Staf</span> <span class="saha-user"></span></span>
+        <span class="saha-authbar saha-authed-only">🔓 <span id="saha-rolechip">…</span> <span class="saha-user"></span></span>
         <button class="btn saha-authed-only" id="saha-chpw-btn" style="background:var(--gold,#6b4d7a);color:#fff;">🔑 Ganti Password</button>
         <button class="btn saha-logout saha-authed-only">Logout</button>
       </div>
@@ -2543,7 +2543,9 @@ function sahaSetActive(sectionId){
         window.__ktpAutoLoad = 1;
         var mk = document.getElementById('kt-body');
         if (mk) mk.innerHTML = '<tr><td colspan="7" style="padding:22px;text-align:center;color:#6f6660;">\u23F3 Memuat data klien &amp; arsip KTP\u2026</td></tr>';
-        Promise.resolve(window.SAHA_LOAD_CLIENTS(true)).catch(function(){}).then(function(){
+        /* force=false: pakai simpanan 24 jam bila ada — memaksa baca ulang 3.155 dokumen
+           tiap buka halaman adalah pemboros kuota terbesar & pemicu error 429. */
+        Promise.resolve(window.SAHA_LOAD_CLIENTS(false)).catch(function(){}).then(function(){
           window.__ktpAutoLoad = 0;
           try { if (window.SAHA_RENDER_KTP) window.SAHA_RENDER_KTP(); } catch (e) {}
         });
@@ -2741,7 +2743,7 @@ function updateBreadcrumb(item) {
   function sahaLock(){
     window.SAHA_AUTH=false;
     window.SAHA_ROLE='staff'; document.body.classList.remove('role-admin','role-me','role-staff','role-cm');
-    const chip=document.getElementById('saha-rolechip'); if(chip){ chip.textContent='Staf'; chip.style.color=''; }
+    const chip=document.getElementById('saha-rolechip'); if(chip){ chip.textContent='belum masuk'; chip.style.color=''; }
     document.body.classList.remove('saha-authed');
     document.querySelectorAll('[data-zone="2B"]').forEach(z=>z.classList.add('zone-locked'));
     if($('lh-data')) $('lh-data').style.display='none';
@@ -2872,6 +2874,12 @@ function updateBreadcrumb(item) {
   async function loadRole(user){
     const CK='saha_role_'+user.uid;
     const old=document.getElementById('saha-role-err'); if(old) old.remove();
+    /* 15 Agu (lanjutan) — peran yang pernah berhasil dibaca dipasang SEKETIKA supaya
+       layar tidak sempat menampilkan peran keliru sementara menunggu server. Server
+       tetap diperiksa di belakang; kalau hasilnya beda, tampilan langsung dikoreksi. */
+    let awal=null; try{ awal=JSON.parse(localStorage.getItem(CK)||'null'); }catch(e){}
+    if(awal&&awal.role){ sahaPasangPeran(awal.role, awal.nama, ''); }
+    else { const c0=document.getElementById('saha-rolechip'); if(c0){ c0.textContent='memeriksa peran…'; c0.style.color='#6f6660'; } }
     let lastErr=null;
     for(let i=0;i<3;i++){
       try{
