@@ -1494,7 +1494,7 @@
         <div class="hs-note">📌 Satu baris = satu hotspot unik (entri terbaru yang dipakai; jumlah entri tercatat di kolom update). Nama CP &amp; detail lokasi bersifat <strong>internal</strong> — jangan dibagikan keluar tim.</div>
       </section>
 
-      <!-- ====== 2B · RUMAH OUTPUT: REGISTRASI VCT ====== -->
+      <!-- ====== 2B · RUMAH OUTPUT: REGISTRASI KTP (nilai form di database masih 'vct' — label lama, JANGAN diubah tanpa migrasi data) ====== -->
       <section class="section" id="l2-out-vct">
         <style>
           .vct-chips{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:2px 0 14px;}
@@ -3252,7 +3252,7 @@ window.SAHA_QR_DL = function(){
     n.addEventListener('click',function(){ setTimeout(hsInitMap,140); });
   });
 
-  /* ---------- REGISTRASI VCT ---------- */
+  /* ---------- REGISTRASI KTP (form==='vct' = label lama di database) ---------- */
   function vctRender(){
     var tb=document.getElementById('vct-body'); if(!tb) return;
     var rows=(window.__SAHA_ALL||[]).filter(function(x){return x.form==='vct';})
@@ -3814,12 +3814,12 @@ window.SAHA_QR_DL = function(){
     var kpi=el('mv-live-kpi');
     kpi.innerHTML='<div class="card" style="background:linear-gradient(135deg,var(--clay) 0%,var(--clay-deep) 100%);color:#fff;border-color:var(--clay-deep);"><div class="label" style="color:#fff;opacity:.85;">Kontak Penjangkauan</div><div class="value" style="color:#fff;">'+pj.length+'</div><div class="desc" style="color:#fff;opacity:.9;">← form Penjangkauan</div></div>'+
       '<div class="card"><div class="label">Skrining DAST + SRQ</div><div class="value">'+skrin+'</div><div class="desc">'+da.length+' DAST · '+sq.length+' SRQ</div></div>'+
-      '<div class="card"><div class="label">Tes HIV (VCT)</div><div class="value">'+vc.length+'</div><div class="desc">← form Registrasi KTP</div></div>'+
+      '<div class="card"><div class="label">🪪 Registrasi KTP</div><div class="value">'+vc.length+'</div><div class="desc">← form Registrasi KTP · <b>bukan</b> jumlah tes HIV</div></div>'+
       '<div class="card" style="background:var(--sage-light);border-color:var(--sage);"><div class="label">Dukungan Psikososial</div><div class="value" style="color:var(--sage-deep);">'+ko.length+'</div><div class="desc">← form Konseling</div></div>';
     var g=el('mv-live-grid');var tot=pj.length+skrin+vc.length+ko.length;
     if(!tot){g.innerHTML='<div class="me-cc" style="grid-column:1/-1;"><div class="me-empty"><div class="big">🗂️</div>Belum ada entri live untuk '+esc(P.big())+'.<br>Kartu terisi otomatis begitu tim mengentri form apa pun.</div></div>';return;}
     g.innerHTML=cardHTML('mvl1','c1','🔗 Kaskade Live','MEV_Live_Kaskade','M&E ViiV · Sadar Hati')+cardHTML('mvl2','c2','📦 Komoditas Live','MEV_Live_Komoditas','M&E ViiV · Sadar Hati')+cardHTML('mvl3','c3','🧠 Keswa Live','MEV_Live_Keswa','M&E ViiV · Sadar Hati');
-    U.vbars('mvl1-ch','mvl1-lb',[pj.length,skrin,vc.length,ruj],['Jangkau','Skrining','Tes HIV','Rujukan'],['#a83244','#94395c','#8a5a74','#6b4d7a'],[pj.length,skrin,vc.length,ruj].map(function(v){return String(v);}),['chemsex','DAST+SRQ','VCT','DAST ≥3']);
+    U.vbars('mvl1-ch','mvl1-lb',[pj.length,skrin,vc.length,ruj],['Jangkau','Skrining','Reg. KTP','Rujukan'],['#a83244','#94395c','#8a5a74','#6b4d7a'],[pj.length,skrin,vc.length,ruj].map(function(v){return String(v);}),['chemsex','DAST+SRQ','Registrasi KTP','DAST ≥3']);
     el('mvl1-ins').innerHTML='Alur layanan dari entri live '+esc(P.big())+'.';el('mvl1-ft').textContent='sumber: 4 form';
     U.vbars('mvl2-ch','mvl2-lb',[kondom,kie,jarum],['Kondom','KIE','Jarum'],['#a83244','#c47a3b','#6b4d7a'],[kondom,kie,jarum].map(function(v){return v.toLocaleString('id-ID');}),['unit','unit','unit']);
     el('mvl2-ins').innerHTML='Komoditas terdistribusi (form Penjangkauan).';el('mvl2-ft').textContent='n='+pj.length+' kontak';

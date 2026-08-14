@@ -355,7 +355,7 @@
       <div class="note">🔒 Foto hanya <strong>preview</strong> — tombol unduh tidak ada, tekan-lama diblokir, dan setiap kali foto dibuka tercatat (siapa &amp; kapan). Tunjukkan layar ke petugas puskesmas, jangan kirim file.</div>
     </div>
 
-    <!-- VCT FORM -->
+    <!-- FORM REGISTRASI KTP (id view & nilai form di database masih 'vct' — warisan nama lama) -->
     <div class="view" id="v-vct">
       <button class="back" id="bk-vct">← Menu</button>
       <div class="card">
@@ -479,7 +479,7 @@
   function show(v) {
     ['v-loading','v-login','v-menu','v-ktp','v-vct','v-dh','v-ruj','v-pending','v-verif','v-jadwal'].forEach(function (x) { var _e=$(x); if(_e) _e.classList.remove('on'); });
     $(v).classList.add('on');
-    /* header ikut view — Registrasi VCT adalah form tersendiri */
+    /* header ikut view — Registrasi KTP adalah form tersendiri */
     var h1 = document.querySelector('header h1'), sub = document.querySelector('header .sub');
     var GO = ''; try { GO = new URLSearchParams(location.search).get('go') || ''; } catch (e) {}
     if (h1 && sub) {
@@ -822,7 +822,7 @@
   $('k-q').addEventListener('input', function () { renderKtpList(CTX.ktp, this.value); });
   $('bk-ktp').addEventListener('click', function () { show('v-menu'); });
 
-  /* ---------- VCT submit ---------- */
+  /* ---------- SIMPAN REGISTRASI KTP (menulis form:'vct' — label lama, dipakai sbg kunci filter di monitoring) ---------- */
   $('bk-vct').addEventListener('click', function () { show('v-menu'); });
   $('btn-vct').addEventListener('click', async function () {
     var er = $('f-err'), ok = $('f-ok');
