@@ -83,6 +83,8 @@
   </header>
   <main>
     <div class="note24">🔒 Hanya <strong>24 jam terakhir</strong>: nama/julukan &amp; jam masuk — tanpa hasil tes &amp; data pribadi lain. <span id="scope-note"></span></div>
+    <div class="note24" id="sumber-note" style="margin-top:6px;background:#edf1ea;border-left:3px solid #5b7553;">📡 Papan membaca <strong>dua sumber sekaligus</strong>: struk form yang diisi PL <em>dan</em> entri mandiri KD lewat QR (absensi, DAST-10, SRQ-29). Tanpa filter gender, tanpa filter PL — semua akun melihat isi yang sama.</div>
+    <div class="note24" id="warn-note" style="display:none;margin-top:6px;background:#fbedef;border-left:3px solid #a83244;"></div>
     <div id="board"><div class="state" id="loading"><div class="big">⏳</div>Memuat…</div></div>
   </main>
   <footer>Yayasan Sadar Hati · akses papan wajib login · terkunci otomatis 24 jam<br>form: dashboard.sadarhati.org/form</footer>
@@ -113,7 +115,7 @@
     appId: "1:576423718259:web:76600bbdf4f06892b36906"
   };
 
-  const LBL = { chemsex:'🔥 Penjangkauan', dast10:'💊 DAST', srq29:'🧠 SRQ', ira:'⚕️ IRA', gra:'👥 GRA', konseling:'💬 Konseling', 'bulanan-kl':'📆 Bulanan', prevkit:'🎒 Kit', checkin:'📍 Hotspot', vct:'🩺 VCT', rujukan:'📄 Rujukan' };
+  const LBL = { absensi:'✍️ Absensi', chemsex:'🔥 Penjangkauan', dast10:'💊 DAST', srq29:'🧠 SRQ', ira:'⚕️ IRA', gra:'👥 GRA', konseling:'💬 Konseling', 'bulanan-kl':'📆 Bulanan', prevkit:'🎒 Kit', checkin:'📍 Hotspot', vct:'🩺 VCT', rujukan:'📄 Rujukan' };
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const $ = id => document.getElementById(id);
   // PL yang menangani dampingan PEREMPUAN (sisanya = laki-laki). PM/pengurus = semua.
@@ -125,7 +127,7 @@
     const board = $('board');
     $('tot').textContent = rows.length;
     if (!rows.length) {
-      board.innerHTML = '<div class="state"><div class="big">📭</div><strong>Belum ada entry dalam 24 jam terakhir.</strong><br>Begitu ada yang submit form, kartunya muncul di sini otomatis.</div>';
+      board.innerHTML = '<div class="state"><div class="big">📭</div><strong>Belum ada entry dalam 24 jam terakhir.</strong><br>Begitu ada yang submit form — dari HP PL maupun HP KD lewat QR — kartunya muncul di sini otomatis.</div>';
       return;
     }
     const byPL = {};
@@ -159,7 +161,7 @@
   function showLogin() { $('login-ov').style.display = 'flex'; $('ubar').style.display = 'none'; $('board').innerHTML = ''; $('tot').textContent = '0'; $('scope-note').textContent = ''; }
   function hideLogin() { $('login-ov').style.display = 'none'; $('ubar').style.display = 'flex'; }
 
-  let AUTH, DB, FX, _signIn, _signOut, _unsub = null;
+  let AUTH, DB, FX, _signIn, _signOut, _unsub = null, _unsub2 = null;
 
   (async () => {
     try {
@@ -176,6 +178,7 @@
 
       A.onAuthStateChanged(AUTH, async (user) => {
         if (_unsub) { try { _unsub(); } catch (e) {} _unsub = null; }
+        if (_unsub2) { try { _unsub2(); } catch (e) {} _unsub2 = null; }
         if (!user) { showLogin(); return; }
         hideLogin();
         $('board').innerHTML = '<div class="state"><div class="big">⏳</div>Memuat papan…</div>';
@@ -205,38 +208,87 @@
     b.disabled = false; b.textContent = 'Masuk';
   }
 
+  /* ==================================================================
+     14 Agu 2026 — PAPAN DIBUKA PENUH (permintaan Adib).
+     SEBELUMNYA: (a) akun PL disaring per gender lewat where('g','in',[...]),
+     dan Firestore MELEWATKAN dokumen yang tidak punya field `g` sama sekali
+     — 64 dari 69 struk tidak punya field itu, jadi praktis tak terlihat;
+     (b) papan hanya membaca `entry_log`, padahal entri mandiri KD lewat QR
+     (absensi + DAST + SRQ) TIDAK PERNAH sampai ke sana karena penulisannya
+     ditolak server untuk pengguna tanpa login.
+     SEKARANG: semua akun yang berhasil login melihat papan yang sama, tanpa
+     filter apa pun, dan papan membaca DUA sumber lalu menggabungkannya:
+       • entry_log  -> form yang dikerjakan PL (prevkit, checkin, konseling,
+                       ira, gra, bulanan, vct, rujukan, chemsex ...)
+       • submissions-> entri mandiri KD lewat QR (absensi, dast10, srq29)
+     Entri kembar disatukan lewat kunci: jenis form + nama + menit yang sama.
+     ================================================================== */
   function startBoard(role, pl, email) {
-    const isPM = ['admin', 'me', 'manager', 'pm'].indexOf(role) >= 0;
-    const col = FX.collection(DB, 'entry_log');
+    const batasMs = Date.now() - 24 * 3600 * 1000;
+    const isoBatas = new Date(batasMs).toISOString();
+    const SRC = { log: [], sub: [] };
+    const warn = [];
 
-    if (isPM) {
-      $('who').innerHTML = esc(pl || 'Pengurus') + '<small>akses penuh · semua entri</small>';
-      $('scope-note').innerHTML = '<span class="scopebadge">semua entri</span>';
-      const batas = FX.Timestamp.fromMillis(Date.now() - 24 * 3600 * 1000);
-      const q = FX.query(col, FX.where('ts', '>', batas), FX.orderBy('ts', 'desc'));
-      _unsub = FX.onSnapshot(q, snap => { const rows = []; snap.forEach(d => rows.push(d.data())); render(rows); }, onErr);
-      return;
+    $('who').innerHTML = esc(pl || email || 'Pengguna') + '<small>papan penuh · semua entri, tanpa filter</small>';
+    $('scope-note').innerHTML = '<span class="scopebadge">semua akun · semua PL · semua form</span>';
+
+    const kunci = r => [r.form || '-', String(r.nm || '-').trim().toLowerCase(), String(r.jam || '').slice(0, 16)].join('|');
+
+    function paint() {
+      const seen = {}, rows = [];
+      SRC.log.concat(SRC.sub).forEach(r => {
+        const t = (r.ts && r.ts.toMillis) ? r.ts.toMillis() : (r.jam ? Date.parse(r.jam) : 0);
+        if (!(t >= batasMs)) return;
+        const k = kunci(r);
+        if (seen[k]) return;
+        seen[k] = 1; rows.push(r);
+      });
+      rows.sort((a, b) => {
+        const ta = (a.ts && a.ts.toMillis) ? a.ts.toMillis() : Date.parse(a.jam || 0);
+        const tb = (b.ts && b.ts.toMillis) ? b.ts.toMillis() : Date.parse(b.jam || 0);
+        return tb - ta;
+      });
+      render(rows);
+      const w = $('warn-note');
+      if (w) { w.innerHTML = warn.join(' '); w.style.display = warn.length ? 'block' : 'none'; }
     }
-    if (role === 'pl') {
-      const scope = (FEMALE_PL.indexOf(email) >= 0 || /nuri/i.test(pl)) ? 'P' : 'L';
-      const lblS = scope === 'P' ? 'dampingan perempuan' : 'dampingan laki-laki';
-      $('who').innerHTML = esc(pl || email) + '<small>' + lblS + '</small>';
-      $('scope-note').innerHTML = '<span class="scopebadge">' + (scope === 'P' ? '♀ perempuan' : '♂ laki-laki') + '</span>';
-      // in [scope,'X']: X = gender tak diketahui (mis. tanpa NIK) → tetap terlihat semua PL
-      const q = FX.query(col, FX.where('g', 'in', [scope, 'X']));
-      _unsub = FX.onSnapshot(q, snap => {
-        const batasMs = Date.now() - 24 * 3600 * 1000;
-        let rows = [];
-        snap.forEach(d => rows.push(d.data()));
-        rows = rows.filter(r => { const t = (r.ts && r.ts.toMillis) ? r.ts.toMillis() : (r.jam ? Date.parse(r.jam) : 0); return t >= batasMs; });
-        rows.sort((a, b) => { const ta = (a.ts && a.ts.toMillis) ? a.ts.toMillis() : Date.parse(a.jam || 0); const tb = (b.ts && b.ts.toMillis) ? b.ts.toMillis() : Date.parse(b.jam || 0); return tb - ta; });
-        render(rows);
-      }, onErr);
-      return;
-    }
-    // role lain / kosong
-    $('who').innerHTML = esc(email) + '<small>tanpa akses papan</small>';
-    $('board').innerHTML = errHTML('Akun ini belum punya akses Papan Entry.', '🔒', 'Hubungi admin bila ini keliru.');
+    window.__PAPAN_PAINT = paint;
+
+    /* --- sumber 1: entry_log (struk dari form yang diisi PL) --- */
+    try {
+      const qLog = FX.query(FX.collection(DB, 'entry_log'),
+        FX.where('ts', '>', FX.Timestamp.fromMillis(batasMs)), FX.orderBy('ts', 'desc'));
+      _unsub = FX.onSnapshot(qLog, snap => {
+        SRC.log = []; snap.forEach(d => SRC.log.push(d.data())); paint();
+      }, err => {
+        console.warn('[Papan] entry_log ditolak:', err && err.code);
+        warn.push('⚠️ Sebagian sumber papan (<b>entry_log</b>) tidak bisa dibaca akun ini.');
+        paint();
+      });
+    } catch (e) { console.warn('[Papan] entry_log:', e); }
+
+    /* --- sumber 2: submissions (entri mandiri KD lewat QR) --- */
+    try {
+      const qSub = FX.query(FX.collection(DB, 'submissions'), FX.where('created_at', '>=', isoBatas));
+      _unsub2 = FX.onSnapshot(qSub, snap => {
+        const out = [];
+        snap.forEach(d => {
+          const v = d.data() || {}, k = v.klien || {};
+          out.push({
+            form: v.form || '-',
+            pl: (v.pl && String(v.pl).trim()) ? String(v.pl).trim() : '(PL belum diisi)',
+            nm: String(k.julukan || k.nama || v.idkd || '-').slice(0, 50),
+            jam: v.created_at || '',
+            krx: false
+          });
+        });
+        SRC.sub = out; paint();
+      }, err => {
+        console.warn('[Papan] submissions ditolak:', err && err.code);
+        warn.push('⚠️ Entri mandiri KD (<b>submissions</b>) tidak bisa dibaca akun ini — minta admin buka aksesnya.');
+        paint();
+      });
+    } catch (e) { console.warn('[Papan] submissions:', e); }
   }
 
   function onErr(err) {
