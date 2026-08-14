@@ -118,6 +118,8 @@
     body.print-dh #dh-sheet{display:block !important;}
     body.print-dh #dh-sheet .a4{margin:0;width:auto;min-height:auto;padding:12mm;box-shadow:none;}
     @page{size:A4 portrait;margin:0;}
+    body.print-dh #dh-sheet .a4{break-after:page;page-break-after:always;height:auto!important;transform:none!important;margin-left:0!important;}
+    body.print-dh #dh-sheet .a4:last-child{break-after:auto;page-break-after:auto;}
   }
 
   /* ===== Form Rujukan — UI (screen) ===== */
@@ -877,7 +879,7 @@
       er.style.display = 'block';
       er.textContent = 'Gagal menyimpan: ' + (e.code || e.message) + (String(e.code).indexOf('permission') >= 0 ? ' — rules v6 belum dipasang.' : '');
     }
-    this.disabled = false; this.textContent = '\U0001F4BE Simpan Registrasi';
+    this.disabled = false; this.textContent = '💾 Simpan Registrasi';
   });
 
   /* ================= DAFTAR HADIR (output absensi) ================= */
@@ -896,7 +898,7 @@
     show('v-dh'); $('dh-sel').style.display='none';
     var lst=$('dh-list'); lst.style.display='block';
     lst.innerHTML='<div class="state"><div class="big">⏳</div>Memuat kegiatan…</div>';
-    if(!fb.fs || !CTX.user){ lst.innerHTML='<div class="state"><div class="big">\U0001F4F4</div>Belum terhubung — cek jaringan lalu coba lagi.</div>'; return; }
+    if(!fb.fs || !CTX.user){ lst.innerHTML='<div class="state"><div class="big">📴</div>Belum terhubung — cek jaringan lalu coba lagi.</div>'; return; }
     try{
       var fs=fb.fs, col=fs.collection(fb.db,'submissions'), qy;
       qy = CTX.pl ? fs.query(col, fs.where('pl','==',CTX.pl)) : fs.query(col, fs.where('form','==','absensi'));
@@ -905,23 +907,39 @@
       snap.forEach(function(d){ var x=d.data(); if(x.form!=='absensi') return; x.__id=d.id; rows.push(x); });
       var map={};
       rows.forEach(function(x){
+        /* 15 Agu 2026 — permintaan Adib: SATU file absen untuk seluruh kegiatan hari itu.
+           DULU dikelompokkan [pl|kegiatan|hotspot|tanggal], sehingga 14 Agt pecah jadi 5 lembar
+           hanya karena tiap peserta mengetik hotspot sendiri (4 ejaan) & ada 2 nama kegiatan.
+           SEKARANG kuncinya TANGGAL saja; keterangan kegiatan/hotspot/PL diambil dari nilai
+           yang paling sering muncul hari itu. */
         var date=String(x.created_at||'').slice(0,10);
-        var pl=x.pl||'-', keg=x.kegiatan||'Penjangkauan / Mobile Outreach', hot=x.hotspot||'';
-        var key=[pl,keg,hot,date].join('||');
-        if(!map[key]) map[key]={pl:pl,kegiatan:keg,hotspot:hot,date:date,rows:[]};
-        map[key].rows.push(x);
+        if(!map[date]) map[date]={date:date,rows:[],_keg:{},_hot:{},_pl:{}};
+        var g=map[date];
+        var keg=String(x.kegiatan||'').trim(), hot=String(x.hotspot||'').trim(), pl=String(x.pl||'').trim();
+        if(keg) g._keg[keg]=(g._keg[keg]||0)+1;
+        if(hot) g._hot[hot]=(g._hot[hot]||0)+1;
+        if(pl && pl!=='-') g._pl[pl]=(g._pl[pl]||0)+1;
+        g.rows.push(x);
       });
-      DH.events=Object.keys(map).map(function(k){return map[k];});
+      function tersering(o){ var b='',n=0; Object.keys(o||{}).forEach(function(k){ if(o[k]>n){n=o[k];b=k;} }); return b; }
+      DH.events=Object.keys(map).map(function(k){
+        var e=map[k];
+        e.kegiatan = tersering(e._keg) || 'Penjangkauan / Mobile Outreach';
+        e.hotspot  = tersering(e._hot) || '';
+        e.pl       = tersering(e._pl)  || '';
+        e.variasi  = { keg:Object.keys(e._keg).length, hot:Object.keys(e._hot).length, pl:Object.keys(e._pl).length };
+        return e;
+      });
       DH.events.forEach(function(e){ e.rows.sort(function(a,b){return String(a.created_at).localeCompare(String(b.created_at));}); });
       DH.events.sort(function(a,b){ return String(b.date).localeCompare(String(a.date)) || String((b.rows[0]||{}).created_at||'').localeCompare(String((a.rows[0]||{}).created_at||'')); });
       renderDHList();
     }catch(e){
-      lst.innerHTML='<div class="state"><div class="big">\U0001F527</div>Gagal memuat: '+esc(e.code||e.message)+'</div>';
+      lst.innerHTML='<div class="state"><div class="big">🔧</div>Gagal memuat: '+esc(e.code||e.message)+'</div>';
     }
   }
   function renderDHList(){
     var lst=$('dh-list'); $('dh-sel').style.display='none'; lst.style.display='block';
-    if(!DH.events.length){ lst.innerHTML='<div class="state"><div class="big">\U0001F5D3️</div>Belum ada kegiatan absensi tercatat.<br><span style="font-size:11px;">Absensi digital yang masuk saat kegiatan akan otomatis muncul di sini.</span></div>'; return; }
+    if(!DH.events.length){ lst.innerHTML='<div class="state"><div class="big">🗓️</div>Belum ada kegiatan absensi tercatat.<br><span style="font-size:11px;">Absensi digital yang masuk saat kegiatan akan otomatis muncul di sini.</span></div>'; return; }
     lst.innerHTML=DH.events.map(function(e,i){
       var p=e.date.split('-'); var dd=p.length>2?(+p[2]):'—', mm=p.length>1?((BULAN[+p[1]-1]||'').slice(0,3)):'';
       return '<div class="dh-ev" data-i="'+i+'"><div class="dot"><b>'+dd+'</b><span>'+esc(mm)+'</span></div>'+
@@ -930,31 +948,58 @@
     }).join('');
     lst.querySelectorAll('.dh-ev').forEach(function(it){ it.addEventListener('click', function(){ selectDH(+it.dataset.i); }); });
   }
+  /* ==================================================================
+     15 Agu 2026 — CETAK KEMBALI 10 NAMA PER HALAMAN (permintaan Adib).
+     Sebelumnya semua peserta ditumpuk di SATU lembar .a4, jadi kalau 24
+     orang hadir tabelnya melimpah keluar halaman dan kop/tanda tangan
+     tidak ikut berulang. Kini lembar .a4 asli dipakai sbg CETAKAN lalu
+     digandakan per 10 baris; tiap halaman punya kop, keterangan, tabel,
+     jumlah hadir & blok tanda tangan sendiri + penanda "Halaman x dari y".
+     ================================================================== */
+  var DH_PER_HAL = 10;
   function fillSheet(ev, blank){
     var isB=!!blank;
-    var pl = ev ? ev.pl : (CTX.pl||'');
-    $('dh-keg').textContent = isB ? '' : (ev.kegiatan||'');
-    $('dh-hot').textContent = isB ? '' : (ev.hotspot||'(umum)');
-    $('dh-tgl').textContent = isB ? '' : fmtTglID(ev.date);
-    $('dh-pl').textContent  = pl || '';
+    var host=$('dh-sheet');
+    if(!DH.tpl){ var t=host.querySelector('.a4'); if(!t) return; DH.tpl=t.cloneNode(true); }
+    var pl   = ev ? (ev.pl||'') : (CTX.pl||'');
+    var rows = isB ? [] : (ev.rows||[]);
+    var nHal = isB ? 2 : Math.max(1, Math.ceil(rows.length/DH_PER_HAL));
     var dnow = ev ? ev.date : (new Date().toISOString().slice(0,10));
-    $('dh-rom').textContent = romMonthYear(dnow);
-    $('dh-signloc').textContent = 'Malang, ' + (isB ? '.........................' : (fmtTglID(ev.date).split(', ')[1]||''));
-    $('dh-signnm').textContent = '( ' + (pl || '.........................') + ' )';
-    var tb=$('dh-tbody'); tb.innerHTML='';
-    if(isB){
-      for(var i=1;i<=20;i++){
-        var z=(i%2===1)?'<div class="ttdcell"><span class="zn">'+i+'.</span><span></span></div>':'<div class="ttdcell"><span></span><span class="zn">'+i+'.</span></div>';
-        tb.insertAdjacentHTML('beforeend','<tr><td class="c-no">'+i+'</td><td class="c-nama"></td><td class="c-alamat"></td><td class="c-telp"></td><td class="c-ttd">'+z+'</td></tr>');
+    var tglTeks = ev ? fmtTglID(ev.date) : '';
+    host.innerHTML='';
+    for(var h=0; h<nHal; h++){
+      var a4  = DH.tpl.cloneNode(true);
+      var q   = function(id){ return a4.querySelector('#'+id); };
+      var set = function(id,val){ var e=q(id); if(e) e.textContent=val; };
+      set('dh-keg', isB ? '' : (ev.kegiatan||''));
+      set('dh-hot', isB ? '' : (ev.hotspot||'(umum)'));
+      set('dh-tgl', isB ? '' : tglTeks);
+      set('dh-pl',  pl || (isB ? '' : '\u2014'));
+      set('dh-rom', romMonthYear(dnow));
+      set('dh-signloc', 'Malang, ' + (isB ? '.........................' : (tglTeks.split(', ')[1]||'')));
+      set('dh-signnm', '( ' + (pl || '.........................') + ' )');
+      var dt=a4.querySelector('.docmeta');
+      if(dt && nHal>1) dt.insertAdjacentHTML('beforeend', ' \u00B7 <b>Halaman '+(h+1)+' dari '+nHal+'</b>');
+      var tb=q('dh-tbody'); if(tb) tb.innerHTML='';
+      var mulai=h*DH_PER_HAL;
+      if(isB){
+        for(var i=mulai+1; i<=mulai+DH_PER_HAL; i++){
+          var z=(i%2===1)?'<div class="ttdcell"><span class="zn">'+i+'.</span><span></span></div>'
+                         :'<div class="ttdcell"><span></span><span class="zn">'+i+'.</span></div>';
+          if(tb) tb.insertAdjacentHTML('beforeend','<tr><td class="c-no">'+i+'</td><td class="c-nama"></td><td class="c-alamat"></td><td class="c-telp"></td><td class="c-ttd">'+z+'</td></tr>');
+        }
+        set('dh-sum','____');
+      }else{
+        rows.slice(mulai, mulai+DH_PER_HAL).forEach(function(x,j){
+          var k=x.klien||{};
+          var sig = x.ttd ? '<img class="sigimg" src="'+x.ttd+'" alt="ttd">' : '<span class="zn">\u2014</span>';
+          if(tb) tb.insertAdjacentHTML('beforeend','<tr><td class="c-no">'+(mulai+j+1)+'</td><td class="c-nama">'+esc(k.nama||'')+'</td><td class="c-alamat">'+esc(k.alamat||'')+'</td><td class="c-telp">'+esc(k.telp||'')+'</td><td class="c-ttd"><div class="ttdcell">'+sig+'<span class="digi">\u2713 digital</span></div></td></tr>');
+        });
+        set('dh-sum', rows.length + (nHal>1 ? ' (hal. '+(h+1)+': '+Math.min(DH_PER_HAL, rows.length-mulai)+')' : ''));
       }
-      $('dh-sum').textContent='____';
-    }else{
-      ev.rows.forEach(function(x,i){
-        var k=x.klien||{};
-        var sig = x.ttd ? '<img class="sigimg" src="'+x.ttd+'" alt="ttd">' : '<span class="zn">—</span>';
-        tb.insertAdjacentHTML('beforeend','<tr><td class="c-no">'+(i+1)+'</td><td class="c-nama">'+esc(k.nama||'')+'</td><td class="c-alamat">'+esc(k.alamat||'')+'</td><td class="c-telp">'+esc(k.telp||'')+'</td><td class="c-ttd"><div class="ttdcell">'+sig+'<span class="digi">✓ digital</span></div></td></tr>');
-      });
-      $('dh-sum').textContent=ev.rows.length;
+      a4.querySelectorAll('[id]').forEach(function(e){ e.removeAttribute('id'); });
+      if(h < nHal-1) a4.style.pageBreakAfter='always';
+      host.appendChild(a4);
     }
   }
   function selectDH(i){
@@ -965,11 +1010,11 @@
     sel.innerHTML='<button class="back" id="bk-sel">← daftar kegiatan</button>'+
       '<div class="dh-selbox">'+
       '<div class="kv"><b>'+esc(ev.kegiatan)+'</b></div>'+
-      '<div class="kv">\U0001F4C5 '+esc(fmtTglID(ev.date))+'</div>'+
-      '<div class="kv">\U0001F4CD '+(ev.hotspot?esc(ev.hotspot):'(umum)')+'</div>'+
-      '<div class="kv">\U0001F465 '+ev.rows.length+' orang hadir · PL '+esc(ev.pl)+'</div>'+
+      '<div class="kv">📅 '+esc(fmtTglID(ev.date))+'</div>'+
+      '<div class="kv">📍 '+(ev.hotspot?esc(ev.hotspot):'(umum)')+'</div>'+
+      '<div class="kv">👥 '+ev.rows.length+' orang hadir · PL '+esc(ev.pl)+'</div>'+
       '</div>'+
-      '<button class="btn clay" id="dh-print">\U0001F441️ Pratinjau &amp; Cetak (Terisi)</button>'+
+      '<button class="btn clay" id="dh-print">👁️ Pratinjau &amp; Cetak (Terisi)</button>'+
       '<div class="note">Tombol di atas membuka <b>pratinjau A4</b> dulu — periksa isinya, baru tekan <b>Cetak / PDF</b>. Daftar sudah lengkap dengan tanda tangan digital tiap KD.</div>';
     $('bk-sel').addEventListener('click', renderDHList);
     $('dh-print').addEventListener('click', function(){ sahaPreview('dh-sheet','Pratinjau · Daftar Hadir (terisi)','print-dh'); });
@@ -1108,15 +1153,22 @@
   function fit(){
     if(!cur) return;
     var s=document.getElementById(cur); if(!s) return;
-    var a4=s.querySelector('.a4'); if(!a4) return;
-    a4.style.transform='none'; a4.style.margin='0';
-    var w=a4.offsetWidth||794, h0=a4.offsetHeight||1123;
-    var avail=Math.max(240, window.innerWidth-24);
-    var sc=Math.min(1, avail/w);
-    a4.style.transformOrigin='top left';
-    a4.style.marginLeft=Math.max(0,(window.innerWidth-w*sc)/2)+'px';
-    a4.style.transform='scale('+sc+')';
-    s.style.height=(h0*sc+80)+'px';
+    var semua=s.querySelectorAll('.a4'); if(!semua.length) return;   /* 15 Agu: Daftar Hadir bisa >1 halaman */
+    var total=0, w=794;
+    for(var i=0;i<semua.length;i++){
+      var a4=semua[i];
+      a4.style.transform='none'; a4.style.margin='0';
+      w=a4.offsetWidth||794;
+      var h0=a4.offsetHeight||1123;
+      var avail=Math.max(240, window.innerWidth-24);
+      var sc=Math.min(1, avail/w);
+      a4.style.transformOrigin='top left';
+      a4.style.marginLeft=Math.max(0,(window.innerWidth-w*sc)/2)+'px';
+      a4.style.transform='scale('+sc+')';
+      a4.style.height=(h0*sc)+'px';   /* ruang nyata sesudah diperkecil */
+      total += h0*sc + 14;
+    }
+    s.style.height=(total+80)+'px';
   }
   window.sahaPreview=function(sheetId, title, printClass){
     var s=document.getElementById(sheetId); if(!s){ alert('Lembar belum siap.'); return; }
@@ -1171,7 +1223,7 @@ async function loadPending(){
         +'<div class="pend-edit" style="display:none;margin-top:10px;border-top:1px dashed var(--line);padding-top:10px;">'
         +'<div class="fld"><label class="fl">Nama Lengkap</label><input class="fi pe-nama" placeholder="nama lengkap sesuai KTP"></div>'
         +'<div class="fld"><label class="fl">Tanggal Lahir</label><input class="fi pe-tgl" type="date"></div>'
-        +'<button class="btn pe-save" style="margin:0;" onclick="saveComplete(this)">\U0001F4BE Simpan &amp; Lengkapi</button>'
+        +'<button class="btn pe-save" style="margin:0;" onclick="saveComplete(this)">💾 Simpan &amp; Lengkapi</button>'
         +'<div class="pe-msg" style="font-size:11px;margin-top:6px;"></div></div></div>';
     }).join('');
   }catch(e){ host.innerHTML='<div class="state"><div class="big">⚠️</div>Gagal memuat: '+esc((e&&e.message)||e)+'</div>'; }
