@@ -115,6 +115,11 @@
     appId: "1:576423718259:web:76600bbdf4f06892b36906"
   };
 
+  (function(){ var st=document.createElement('style');
+    st.textContent='.rows{max-height:230px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-right:2px}'
+      + '.rows::-webkit-scrollbar{width:5px}.rows::-webkit-scrollbar-thumb{background:#d8cfc5;border-radius:3px}'
+      + '.plcard .more{position:sticky;bottom:0;background:linear-gradient(transparent,#fff 45%);padding-top:7px;font-size:10.5px;color:#8a7f74;text-align:center;font-weight:700}';
+    document.head.appendChild(st); })();
   const LBL = { absensi:'✍️ Absensi', chemsex:'🔥 Penjangkauan', dast10:'💊 DAST', srq29:'🧠 SRQ', ira:'⚕️ IRA', gra:'👥 GRA', konseling:'💬 Konseling', 'bulanan-kl':'📆 Bulanan', prevkit:'🎒 Kit', checkin:'📍 Hotspot', vct:'🪪 Registrasi KTP', rujukan:'📄 Rujukan' };
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const $ = id => document.getElementById(id);
@@ -139,13 +144,13 @@
       list.forEach(r => { const f = r.form || '-'; byForm[f] = (byForm[f] || 0) + 1; });
       const chips = Object.entries(byForm).sort((a, b) => b[1] - a[1])
         .map(([f, n]) => '<span class="fc">' + (LBL[f] || esc(f)) + ' ×' + n + '</span>').join('');
-      const shown = list.slice(0, 8);
+      const shown = list;   /* 15 Agu: tampilkan SEMUA (dulu dipotong 8 -> '+64 entry lain' tak terbaca) */
       const items = shown.map(r => {
         const d = new Date(r.jam);
         const t = isNaN(d) ? '' : d.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
         return '<div class="er"><span>' + (LBL[r.form] ? LBL[r.form].split(' ')[0] : '📄') + ' ' + esc(r.nm || r.ini || '-') + (r.krx ? '<span class="krx">↻</span>' : '') + '</span><span class="t">' + t + '</span></div>';
       }).join('');
-      const more = list.length > 8 ? '<div class="more">+ ' + (list.length - 8) + ' entry lain…</div>' : '';
+      const more = list.length > 8 ? '<div class="more">\u2195 ' + list.length + ' entry — geser untuk melihat semua</div>' : '';
       html += '<div class="plcard' + (gi === 0 ? ' top1' : '') + '">'
         + '<div class="plhead"><span class="plname">' + (gi === 0 ? '⭐ ' : '') + esc(pl) + '</span><span class="plnum">' + list.length + '<small>ENTRY</small></span></div>'
         + '<div class="chips">' + chips + '</div>'

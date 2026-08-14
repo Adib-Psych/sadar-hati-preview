@@ -2532,6 +2532,25 @@ function sahaSetActive(sectionId){
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   const section = document.getElementById(sectionId);
   if (section) { section.classList.add('active'); const c=document.querySelector('.content'); if(c) c.scrollTop = 0; }
+  /* 15 Agu 2026 - PERBAIKAN: tabel kelengkapan Rumah 11 membaca window.__SAHA_CLIENTS, yang DULU
+     hanya terisi kalau halaman "Clients Database" kebetulan dibuka lebih dulu. Kalau langsung ke
+     Rumah 11, tabelnya kosong (0 dari 0 baris) padahal datanya ada. Kini memuat sendiri. */
+  if (sectionId === 'l2-out-vct') {
+    try {
+      var perluKlien = !window.__SAHA_CLIENTS || !window.__SAHA_CLIENTS.length;
+      if (perluKlien && typeof window.SAHA_LOAD_CLIENTS === 'function' && !window.__ktpAutoLoad) {
+        window.__ktpAutoLoad = 1;
+        var mk = document.getElementById('kt-body');
+        if (mk) mk.innerHTML = '<tr><td colspan="7" style="padding:22px;text-align:center;color:#6f6660;">\u23F3 Memuat data klien &amp; arsip KTP\u2026</td></tr>';
+        Promise.resolve(window.SAHA_LOAD_CLIENTS(true)).catch(function(){}).then(function(){
+          window.__ktpAutoLoad = 0;
+          try { if (window.SAHA_RENDER_KTP) window.SAHA_RENDER_KTP(); } catch (e) {}
+        });
+      } else {
+        try { if (window.SAHA_RENDER_KTP) window.SAHA_RENDER_KTP(); } catch (e) {}
+      }
+    } catch (e) { console.warn('[Rumah11]', e); }
+  }
 }
 document.querySelectorAll('.nav-item').forEach(item => {
   item.addEventListener('click', e => {
@@ -3032,6 +3051,7 @@ async function load(force){
     cfAge(Date.now()); }
   catch(e){ const l=$('cf-locked'); if(l){ l.style.display='block'; l.innerHTML='<span class="icon">⚠️</span><div>Gagal memuat data klien: '+esc(e.code||e.message)+'. Bisa jadi kuota baca harian gratis habis — coba lagi setelah ~jam 14-15 WIB, atau pakai data lokal (💾) bila ada.</div>'; } }
 }
+window.SAHA_LOAD_CLIENTS = load;   /* 15 Agu: dipakai Rumah 11 supaya tak bergantung halaman Clients dibuka dulu */
 const cfR=$('cf-refresh');
 if(cfR) cfR.addEventListener('click', ()=>{ cfR.disabled=true; cfR.textContent='…'; load(true).finally(()=>{ cfR.disabled=false; cfR.textContent='🔄'; }); });
 onAuthStateChanged(auth, u=>{
@@ -4342,7 +4362,11 @@ tr.me-rawclick{cursor:pointer;}
   function absGroup(all){
     var g={};
     all.filter(function(x){return x.form==='absensi';}).forEach(function(x){
-      var key=x.sesi||x.created_at||'-';
+      /* 15 Agu 2026 - permintaan Adib: "1 halaman berisi semua KD, jadi kita hanya punya 1 file absen".
+         DULU key=x.sesi = jam kirim tiap HP, jadi TIAP PESERTA jadi daftar hadir sendiri.
+         Sengaja TIDAK memakai kegiatan/hotspot sbg kunci: 14 Agt terbukti tertulis 4 ejaan hotspot
+         & 2 nama kegiatan berbeda karena tiap peserta mengetik sendiri. Satu HARI = satu daftar hadir. */
+      var key=String(x.created_at||x.sesi||'').slice(0,10)||'-';
       if(!g[key]) g[key]={sesi:key, tgl:x.created_at||key, keg:x.kegiatan||'-', lok:x.hotspot||x.lokasi||'-', pl:x.pl||'-', rows:[]};
       if(x.kegiatan&&g[key].keg==='-') g[key].keg=x.kegiatan;
       if((x.pl||'-')!=='-') g[key].pl=x.pl;
