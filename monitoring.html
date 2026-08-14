@@ -980,6 +980,7 @@
         </div>
         <div class="nav-layer-body">
               <a class="nav-item" data-section="l1-loghari"><span class="icon">🗂️</span> Log Harian (Absensi + Jangkauan)</a>
+              <a class="nav-item nav-ext" href="form/papan.html"><span class="icon">📣</span> Papan Entry Hari Ini</a>
               <a class="nav-item" data-section="l2-me-dashboard"><span class="icon">📊</span> M&E · Project ViiV</a>
           <div class="donor-group expanded">
             <div class="donor-header">
@@ -2532,7 +2533,7 @@ function sahaSetActive(sectionId){
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   const section = document.getElementById(sectionId);
   if (section) { section.classList.add('active'); const c=document.querySelector('.content'); if(c) c.scrollTop = 0; }
-  /* 15 Agu 2026 - PERBAIKAN: tabel kelengkapan Rumah 11 membaca window.__SAHA_CLIENTS, yang DULU
+  /* 15 Agu 2026 — PERBAIKAN: tabel kelengkapan Rumah 11 membaca window.__SAHA_CLIENTS, yang DULU
      hanya terisi kalau halaman "Clients Database" kebetulan dibuka lebih dulu. Kalau langsung ke
      Rumah 11, tabelnya kosong (0 dari 0 baris) padahal datanya ada. Kini memuat sendiri. */
   if (sectionId === 'l2-out-vct') {
@@ -2554,6 +2555,8 @@ function sahaSetActive(sectionId){
 }
 document.querySelectorAll('.nav-item').forEach(item => {
   item.addEventListener('click', e => {
+    /* 15 Agu: item ber-href tanpa data-section = tautan halaman lain (mis. Papan Entry) -> biarkan pindah halaman */
+    if (!item.dataset.section && item.getAttribute('href')) { e.stopPropagation(); return; }
     e.preventDefault();
     e.stopPropagation();
     const sectionId = item.dataset.section;
@@ -2831,18 +2834,61 @@ function updateBreadcrumb(item) {
     }
     renderAdmin();
   }
-  async function loadRole(user){
+  /* ================================================================
+     15 Agu 2026 — PERBAIKAN BUG "Adib kebaca sebagai Staf".
+     AKAR: dulu SETIAP kegagalan membaca roles/{uid} — termasuk error
+     sementara seperti kuota baca harian habis (HTTP 429) atau jaringan
+     goyah — langsung menurunkan peran jadi 'staff' TANPA memberi tahu.
+     Akibatnya akun admin kehilangan Panel Admin seolah memang bukan admin.
+     SEKARANG: dicoba 3x dgn jeda; peran terakhir yang berhasil disimpan
+     di HP; kalau server tetap tak terbaca dipakai peran tersimpan itu
+     (ditandai jelas), dan kalau tak ada sama sekali muncul pesan galat +
+     tombol coba lagi — TIDAK PERNAH lagi diam-diam turun jadi Staf.
+     ================================================================ */
+  const ROLE_M={admin:['ADMIN','#7d2433','#f7e9ec'],manager:['DIREKTUR','#2f4256','#e3eaf1'],me:['M&E','#2f6d9e','#e7f0f7'],staff:['STAF','#7a746e','#f1ede8'],pm:['PROGRAM MANAGER','#5f3b50','#efe9f4'],case_manager:['CASE MANAGER','#1f4a6e','#e7f0f7']};
+  function sahaPasangPeran(r, nama, catatan){
+    const badge=$('adm-role'); const m=ROLE_M[r]||ROLE_M.staff;
+    if(badge){ badge.textContent=m[0]+(nama?' · '+nama:'')+(catatan?' · '+catatan:''); badge.style.color=m[1]; badge.style.background=m[2]; }
+    const chip=document.getElementById('saha-rolechip');
+    if(chip){ chip.textContent=(r==='me')?'M&E':(r==='manager')?'Direktur':(r==='pm')?'Program Manager':(r==='case_manager')?'Case Manager':(m[0].charAt(0)+m[0].slice(1).toLowerCase()); chip.style.fontWeight='800'; chip.style.color=m[1]; }
+    window.SAHA_ROLE=r; applyRoleUI();
+  }
+  function sahaPeranGagal(user, kode){
     const badge=$('adm-role');
-    try{
-      const snap=await getDoc(doc(db,'roles',user.uid));
-      if(snap.exists()){
-        const r=(snap.data().role||'staff').toLowerCase();
-        const M={admin:['ADMIN','#7d2433','#f7e9ec'],manager:['DIREKTUR','#2f4256','#e3eaf1'],me:['M&E','#2f6d9e','#e7f0f7'],staff:['STAF','#7a746e','#f1ede8'],pm:['PROGRAM MANAGER','#5f3b50','#efe9f4'],case_manager:['CASE MANAGER','#1f4a6e','#e7f0f7']};
-        const m=M[r]||M.staff; if(badge){ badge.textContent=m[0]+(snap.data().nama?' · '+snap.data().nama:''); badge.style.color=m[1]; badge.style.background=m[2]; }
-        const chip=document.getElementById('saha-rolechip'); if(chip){ chip.textContent=(r==='me')?'M&E':(r==='manager')?'Direktur':(r==='pm')?'Program Manager':(r==='case_manager')?'Case Manager':(m[0].charAt(0)+m[0].slice(1).toLowerCase()); chip.style.fontWeight='800'; chip.style.color=m[1]; }
-        window.SAHA_ROLE=r; applyRoleUI();
-      } else { if(badge) badge.textContent='Staf (default — dok roles belum dibuat)'; const chip=document.getElementById('saha-rolechip'); if(chip){ chip.textContent='Staf'; chip.style.color=''; } window.SAHA_ROLE='staff'; applyRoleUI(); }
-    }catch(e){ if(badge) badge.textContent='Staf (default — rule roles belum di-apply)'; window.SAHA_ROLE='staff'; applyRoleUI(); }
+    if(badge){ badge.textContent='⚠️ PERAN GAGAL DIBACA'; badge.style.color='#7d2433'; badge.style.background='#fbedef'; }
+    const chip=document.getElementById('saha-rolechip');
+    if(chip){ chip.textContent='peran tak terbaca'; chip.style.color='#a83244'; chip.style.fontWeight='800'; }
+    window.SAHA_ROLE=''; applyRoleUI();
+    let bar=document.getElementById('saha-role-err');
+    if(!bar){ bar=document.createElement('div'); bar.id='saha-role-err';
+      bar.style.cssText='position:fixed;left:0;right:0;bottom:0;z-index:9999;background:#7d2433;color:#fff;padding:11px 16px;font-size:13px;line-height:1.45;display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap';
+      document.body.appendChild(bar); }
+    bar.innerHTML='⚠️ <b>Peran akun belum bisa dibaca dari server</b> — menu sesuai peran sementara disembunyikan. '
+      +'<span style="opacity:.85">Ini BUKAN berarti akun Anda diturunkan.</span> <span style="opacity:.7;font-size:11.5px">('+(kode||'tidak diketahui')+')</span>'
+      +' <button id="saha-role-retry" style="background:#fff;color:#7d2433;border:0;border-radius:8px;padding:6px 14px;font-weight:800;cursor:pointer;font-family:inherit">Coba lagi</button>';
+    const rb=document.getElementById('saha-role-retry');
+    if(rb) rb.addEventListener('click',()=>{ bar.remove(); loadRole(user); });
+  }
+  async function loadRole(user){
+    const CK='saha_role_'+user.uid;
+    const old=document.getElementById('saha-role-err'); if(old) old.remove();
+    let lastErr=null;
+    for(let i=0;i<3;i++){
+      try{
+        const snap=await getDoc(doc(db,'roles',user.uid));
+        if(snap.exists()){
+          const d=snap.data(); const r=(d.role||'staff').toLowerCase();
+          try{ localStorage.setItem(CK, JSON.stringify({role:r,nama:d.nama||'',t:Date.now()})); }catch(e){}
+          sahaPasangPeran(r, d.nama, ''); return;
+        }
+        /* dokumen memang belum dibuat — ini bukan kegagalan baca */
+        sahaPasangPeran('staff','','dok roles belum dibuat'); return;
+      }catch(e){ lastErr=e; if(i<2) await new Promise(s=>setTimeout(s,500*(i+1)*(i+1))); }
+    }
+    let c=null; try{ c=JSON.parse(localStorage.getItem(CK)||'null'); }catch(e){}
+    const kode=String((lastErr&&(lastErr.code||lastErr.message))||'');
+    if(c&&c.role){ sahaPasangPeran(c.role, c.nama, '⚠️ dari simpanan HP — server tak terbaca'); console.warn('[peran] pakai cache:',c.role,kode); }
+    else { sahaPeranGagal(user, kode); }
   }
   const copyBtn=document.getElementById('adm-uid-copy');
   if(copyBtn) copyBtn.addEventListener('click',()=>{ const t=$('adm-uid').textContent; if(navigator.clipboard) navigator.clipboard.writeText(t); copyBtn.textContent='✓'; setTimeout(()=>copyBtn.textContent='salin',1200); });
@@ -4362,9 +4408,9 @@ tr.me-rawclick{cursor:pointer;}
   function absGroup(all){
     var g={};
     all.filter(function(x){return x.form==='absensi';}).forEach(function(x){
-      /* 15 Agu 2026 - permintaan Adib: "1 halaman berisi semua KD, jadi kita hanya punya 1 file absen".
+      /* 15 Agu 2026 — permintaan Adib: "1 halaman berisi semua KD, jadi kita hanya punya 1 file absen".
          DULU key=x.sesi = jam kirim tiap HP, jadi TIAP PESERTA jadi daftar hadir sendiri.
-         Sengaja TIDAK memakai kegiatan/hotspot sbg kunci: 14 Agt terbukti tertulis 4 ejaan hotspot
+         Sengaja TIDAK memakai kegiatan/hotspot sbg kunci: semalam terbukti tertulis 4 ejaan hotspot
          & 2 nama kegiatan berbeda karena tiap peserta mengetik sendiri. Satu HARI = satu daftar hadir. */
       var key=String(x.created_at||x.sesi||'').slice(0,10)||'-';
       if(!g[key]) g[key]={sesi:key, tgl:x.created_at||key, keg:x.kegiatan||'-', lok:x.hotspot||x.lokasi||'-', pl:x.pl||'-', rows:[]};

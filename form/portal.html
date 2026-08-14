@@ -751,7 +751,7 @@
         } catch (e) { CTX.role = ''; }
         if (CTX.role === 'pl' && CTX.pl) {
           $('mi-ktp-scope').textContent = 'dampingan ' + CTX.pl;
-        } else if (['admin', 'me', 'manager'].indexOf(CTX.role) >= 0) {
+        } else if (['admin', 'me', 'manager', 'pm'].indexOf(CTX.role) >= 0) {   /* 15 Agu: 'pm' ikut internal — akun Tim dinaikkan ke PM */
           CTX.pl = null; $('mi-ktp-scope').textContent = 'semua PL (akses internal)';
           if (CTX.role === 'admin') { var ah = document.getElementById('adm-home'); if (ah) ah.style.display = 'block'; } var ubh = document.getElementById('ub-home'); if (ubh) ubh.style.display = 'inline-block';
         } else {
