@@ -105,6 +105,8 @@
   #dh-sheet .ttdcell .zn{font-size:10px;color:#b8aca1;font-weight:700;}
   #dh-sheet .sigimg{height:30px;max-width:30mm;object-fit:contain;display:block;}
   #dh-sheet .digi{font-size:7.5px;color:#6b4d7a;border:1px solid #d9cce4;border-radius:8px;padding:1px 5px;background:#f6f1fa;white-space:nowrap;flex:none;}
+  #dh-sheet .digi.kertas{color:#7d5a20;border-color:#e6d7b8;background:#fbf5e9;}
+  #dh-sheet .ttdline{flex:1;border-bottom:1px solid #cfc6bd;height:22px;margin-right:4px;}
   #dh-sheet .foot{display:flex;justify-content:space-between;align-items:flex-end;margin-top:14px;}
   #dh-sheet .foot .sum{font-size:11px;} #dh-sheet .foot .sum b{font-size:13px;color:#7d2433;}
   #dh-sheet .foot .sign{text-align:center;font-size:11px;}
@@ -201,7 +203,29 @@
   body.saha-prev #saha-prevbar{display:flex;}
   body.saha-prev .prev-on{display:block !important;position:absolute;top:52px;left:0;right:0;z-index:9100;padding-bottom:40px;}
   body.saha-prev .prev-on .a4{transform-origin:top left;box-shadow:0 12px 34px rgba(0,0,0,.45);}
-  @media print{ #saha-prevbar{display:none !important;} }
+  @media print{
+    #saha-prevbar{display:none !important;}
+    /* ------------------------------------------------------------------
+       15 Agu 2026 (perbaikan ke-2). Perbaikan pertama hanya melepas style
+       INLINE (transform/tinggi) dan itu tidak cukup, karena perancah
+       pratinjau dipasang lewat KELAS, bukan inline:
+         body.saha-prev        -> overflow:hidden  + latar #6b615a
+         body.saha-prev .prev-on -> position:absolute; top:52px
+       Akibatnya saat dicetak:
+         (a) kontainer absolut = anak-anaknya tidak bisa dipecah antar
+             halaman, jadi `page-break-after` pada .a4 DIABAIKAN;
+         (b) overflow:hidden pada body ikut mematikan pemecahan halaman;
+         (c) celah 52px + latar gelap tercetak jadi PITA COKELAT di kepala
+             halaman pertama.
+       Blok ini sengaja diletakkan PALING AKHIR supaya menang urutan
+       melawan aturan pratinjau di atasnya.
+       ------------------------------------------------------------------ */
+    body.saha-prev{overflow:visible !important;background:#fff !important;}
+    body.saha-prev .prev-on{position:static !important;top:auto !important;left:auto !important;
+      right:auto !important;z-index:auto !important;padding-bottom:0 !important;height:auto !important;}
+    body.saha-prev .prev-on .a4{transform:none !important;box-shadow:none !important;
+      margin:0 !important;height:auto !important;}
+  }
 </style>
 </head>
 <body>
@@ -415,7 +439,7 @@
     <th class="c-no">No</th><th class="c-nama">Nama</th><th class="c-alamat">Alamat</th><th class="c-telp">No. Telepon</th><th class="c-ttd">Tanda Tangan</th>
   </tr></thead><tbody id="dh-tbody"></tbody></table>
   <div class="foot">
-    <div class="sum">Jumlah hadir: <b id="dh-sum">—</b> orang</div>
+    <div class="sum">Jumlah hadir: <b id="dh-sum">—</b></div>
     <div class="sign"><span id="dh-signloc">Malang, —</span><br>Petugas Pendamping,<div class="sp"></div><span class="nm" id="dh-signnm">(  )</span></div>
   </div>
   <div class="pnote"><b>Dokumen rahasia — memuat data pribadi klien.</b> Simpan terbatas &amp; musnahkan sesuai SOP perlindungan data Yayasan Sadar Hati. Alamat dapat dibatasi sampai tingkat kecamatan bila diperlukan untuk melindungi privasi populasi kunci.</div>
@@ -926,7 +950,14 @@
         var e=map[k];
         e.kegiatan = tersering(e._keg) || 'Penjangkauan / Mobile Outreach';
         e.hotspot  = tersering(e._hot) || '';
-        e.pl       = tersering(e._pl)  || '';
+        /* PL TIDAK boleh diambil dari suara terbanyak. Lembar ini ditandatangani
+           satu pendamping; kalau ada baris yang PL-nya kosong atau berbeda, nama
+           itu jadi pernyataan palsu untuk KD yang tidak ia dampingi. Cetak nama
+           HANYA bila seluruh baris sepakat pada satu nama; selain itu kosongkan
+           supaya diisi tangan. */
+        var _plK = Object.keys(e._pl);
+        var _plN = _plK.reduce(function(a,k){ return a + e._pl[k]; }, 0);
+        e.pl       = (_plK.length === 1 && _plN === e.rows.length) ? _plK[0] : '';
         e.variasi  = { keg:Object.keys(e._keg).length, hot:Object.keys(e._hot).length, pl:Object.keys(e._pl).length };
         return e;
       });
@@ -992,10 +1023,28 @@
       }else{
         rows.slice(mulai, mulai+DH_PER_HAL).forEach(function(x,j){
           var k=x.klien||{};
-          var sig = x.ttd ? '<img class="sigimg" src="'+x.ttd+'" alt="ttd">' : '<span class="zn">\u2014</span>';
-          if(tb) tb.insertAdjacentHTML('beforeend','<tr><td class="c-no">'+(mulai+j+1)+'</td><td class="c-nama">'+esc(k.nama||'')+'</td><td class="c-alamat">'+esc(k.alamat||'')+'</td><td class="c-telp">'+esc(k.telp||'')+'</td><td class="c-ttd"><div class="ttdcell">'+sig+'<span class="digi">\u2713 digital</span></div></td></tr>');
+          /* Chip "digital" HANYA untuk baris yang benar-benar punya tanda tangan
+             digital. Baris dari form kertas diberi tanda "kertas" (aslinya ada di
+             berkas fisik). Sisanya diberi garis kosong untuk diteken tangan.
+             Menulis "digital" di baris tanpa tanda tangan = keterangan palsu. */
+          var sig, tag;
+          if (x.ttd) {
+            sig = '<img class="sigimg" src="'+x.ttd+'" alt="ttd">';
+            tag = '<span class="digi">\u2713 digital</span>';
+          } else if (String(x.sumber||'') === 'form_kertas') {
+            sig = '<span class="ttdline"></span>';
+            tag = '<span class="digi kertas">\u270e kertas</span>';
+          } else {
+            sig = '<span class="ttdline"></span>';
+            tag = '';
+          }
+          if(tb) tb.insertAdjacentHTML('beforeend','<tr><td class="c-no">'+(mulai+j+1)+'</td><td class="c-nama">'+esc(k.nama||'')+'</td><td class="c-alamat">'+esc(k.alamat||'')+'</td><td class="c-telp">'+esc(k.telp||'')+'</td><td class="c-ttd"><div class="ttdcell">'+sig+tag+'</div></td></tr>');
         });
-        set('dh-sum', rows.length + (nHal>1 ? ' (hal. '+(h+1)+': '+Math.min(DH_PER_HAL, rows.length-mulai)+')' : ''));
+        /* "39 (hal. 1: 10)" membingungkan. Tulis apa adanya: berapa di halaman
+           ini, berapa totalnya. */
+        set('dh-sum', nHal>1
+          ? (Math.min(DH_PER_HAL, rows.length-mulai) + ' orang di halaman ini \u00b7 total ' + rows.length)
+          : (rows.length + ' orang'));
       }
       a4.querySelectorAll('[id]').forEach(function(e){ e.removeAttribute('id'); });
       if(h < nHal-1) a4.style.pageBreakAfter='always';
