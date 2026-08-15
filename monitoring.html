@@ -2616,7 +2616,7 @@ function updateBreadcrumb(item) {
 <!-- Log Harian: Firebase Auth + Firestore live read -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-  import { getFirestore, collection, onSnapshot, query, orderBy, limit, doc, getDoc, updateDoc, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+  import { getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, onSnapshot, query, orderBy, limit, doc, getDoc, updateDoc, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
   import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
   const firebaseConfig = {
     apiKey: "AIzaSyC7127G5fsZprEGfeiqLrRqevTg6Qs2fko",
@@ -2627,7 +2627,18 @@ function updateBreadcrumb(item) {
     appId: "1:576423718259:web:76600bbdf4f06892b36906"
   };
   const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app), auth = getAuth(app);
+  /* Cache lokal persisten (IndexedDB): pemuatan ulang halaman tidak membaca ulang
+     seluruh koleksi dari server, hanya dokumen yang berubah. Ini yang menekan
+     pemakaian kuota baca harian. Kalau IndexedDB tidak tersedia (mode samaran /
+     browser lama), otomatis balik ke mode memori biasa. */
+  let db;
+  try {
+    db = initializeFirestore(app, { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) });
+  } catch (e) {
+    console.warn('[saha-cache] cache lokal tidak aktif, pakai memori:', (e && (e.code || e.message)) || e);
+    db = getFirestore(app);
+  }
+  const auth = getAuth(app);
   const $ = id => document.getElementById(id);
   let ALL = [], unsub = null;
   function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
@@ -2783,11 +2794,31 @@ function updateBreadcrumb(item) {
       }).join('') || '<tr><td colspan="3" style="padding:12px 10px;color:#6f6660;">Belum ada akses foto KTP tercatat.</td></tr>';
     }, err=>{ tb.innerHTML='<tr><td colspan="3" style="padding:12px 10px;color:#7d2433;">Gagal baca log: '+esc(err.code||err.message)+'</td></tr>'; });
   }
+  /* Penanda data-dari-cache. Dengan cache persisten, saat server tidak bisa
+     dihubungi (kuota harian habis / sinyal mati) halaman tetap menampilkan data
+     terakhir. Itu berguna, TAPI berbahaya kalau tim mengira itu angka live.
+     Pita ini muncul selama data masih dari cache, dan hilang sendiri begitu
+     snapshot dari server masuk. */
+  window.SAHA_TANDA_CACHE = function(dariCache){
+    var el = document.getElementById('saha-cache-bar');
+    if (!dariCache) { if (el) el.remove(); return; }
+    if (el) return;
+    el = document.createElement('div');
+    el.id = 'saha-cache-bar';
+    el.setAttribute('role','status');
+    el.style.cssText = 'position:sticky;top:0;z-index:9999;background:#7a1f30;color:#fbf7f2;'
+      + 'font:600 13px/1.45 Manrope,system-ui,sans-serif;padding:9px 16px;text-align:center;'
+      + 'letter-spacing:.01em;box-shadow:0 2px 6px rgba(0,0,0,.18);';
+    el.innerHTML = '\u26A0\uFE0F <strong>Data dari simpanan lokal \u2014 belum tentu yang terbaru.</strong> '
+      + 'Server belum bisa dihubungi (kuota baca harian habis atau jaringan bermasalah). '
+      + 'Entry baru dari lapangan <em>tetap tersimpan</em>, hanya belum tampil di sini.';
+    document.body.insertBefore(el, document.body.firstChild);
+  };
   function listen(){
     if(unsub) return;
     if(!($('lh-tbody')||$('adm-k-body')||$('adm-feed'))) return; /* halaman tanpa konsumen data */
-    const qy = query(collection(db,'submissions'), orderBy('created_at','desc'));
-    unsub = onSnapshot(qy, snap=>{ ALL=[]; snap.forEach(d=>{ const x=d.data(); x.__id=d.id; if(!String(x.form||'').startsWith('__')) ALL.push(x); }); fillPL(); render(); renderAdmin(); try{renderKelola();}catch(e){} window.__SAHA_ALL=ALL; if(!window.__SAHA_PUBV){window.__SAHA_PUBV=function(){try{if(['admin','me','manager'].indexOf(window.SAHA_ROLE)<0){if(!window.__pvR){window.__pvR=1;setTimeout(function(){try{window.__SAHA_PUBV();}catch(e){}},10000);}return;}var now=Date.now();var last=+(localStorage.getItem('saha_pubviiv')||0);if(now-last<3600000)return;localStorage.setItem('saha_pubviiv',String(now));var yr=new Date().getFullYear();var agg=function(rows){var o={kontak:0,dast:0,srq:0,vct:0,konseling:0,rujukan_dast:0,cmd_srq:0,kondom:0,kie:0,jarum:0,klien_unik:0};var u={};rows.forEach(function(x){var f=x.form;if(f==='chemsex'){o.kontak++;var a=x.answers||{};o.kondom+=(+a.kondom||0);o.kie+=(+a.kie||0);o.jarum+=(+a.jarum||0);var kl=x.klien||{};if(kl.idkd)u[kl.idkd]=1;}else if(f==='dast10'){o.dast++;if(+x.skor>=3)o.rujukan_dast++;}else if(f==='srq29'){o.srq++;var s=x.subdomain||{};if((+s.neurosis||0)>=6)o.cmd_srq++;}else if(f==='vct'){o.vct++;}else if(f==='konseling'){o.konseling++;}});o.klien_unik=Object.keys(u).length;o.skrining=o.dast+o.srq;return o;};var all=window.__SAHA_ALL||[];var pay={updated_at:new Date().toISOString(),tahun:yr,total:agg(all),tahun_ini:agg(all.filter(function(x){var d=new Date(x.created_at);return !isNaN(d)&&d.getFullYear()===yr;})),_oleh:'dashboard-auto',_catatan:'agregat live 5 form - nol PII',_v:'v0.68'};setDoc(doc(db,'public_stats','viiv_me'),pay,{merge:true}).then(function(){console.log('[pubviiv] sinkron OK');}).catch(function(e){localStorage.removeItem('saha_pubviiv');console.warn('[pubviiv]',e&&e.message);});}catch(e){console.warn('[pubviiv]',e);}};}try{window.__SAHA_PUBV();}catch(e){} if(window.SAHA_RENDER_RAW) window.SAHA_RENDER_RAW(); if(window.SAHA_RENDER_HOUSES) try{window.SAHA_RENDER_HOUSES();}catch(e){} },
+    const qy = query(collection(db,'submissions'), orderBy('created_at','desc'), limit(1000));
+    unsub = onSnapshot(qy, snap=>{ try{ window.SAHA_TANDA_CACHE(snap.metadata && snap.metadata.fromCache); }catch(e){} ALL=[]; snap.forEach(d=>{ const x=d.data(); x.__id=d.id; if(!String(x.form||'').startsWith('__')) ALL.push(x); }); fillPL(); render(); renderAdmin(); try{renderKelola();}catch(e){} window.__SAHA_ALL=ALL; if(!window.__SAHA_PUBV){window.__SAHA_PUBV=function(){try{if(['admin','me','manager'].indexOf(window.SAHA_ROLE)<0){if(!window.__pvR){window.__pvR=1;setTimeout(function(){try{window.__SAHA_PUBV();}catch(e){}},10000);}return;}var now=Date.now();var last=+(localStorage.getItem('saha_pubviiv')||0);if(now-last<3600000)return;localStorage.setItem('saha_pubviiv',String(now));var yr=new Date().getFullYear();var agg=function(rows){var o={kontak:0,dast:0,srq:0,vct:0,konseling:0,rujukan_dast:0,cmd_srq:0,kondom:0,kie:0,jarum:0,klien_unik:0};var u={};rows.forEach(function(x){var f=x.form;if(f==='chemsex'){o.kontak++;var a=x.answers||{};o.kondom+=(+a.kondom||0);o.kie+=(+a.kie||0);o.jarum+=(+a.jarum||0);var kl=x.klien||{};if(kl.idkd)u[kl.idkd]=1;}else if(f==='dast10'){o.dast++;if(+x.skor>=3)o.rujukan_dast++;}else if(f==='srq29'){o.srq++;var s=x.subdomain||{};if((+s.neurosis||0)>=6)o.cmd_srq++;}else if(f==='vct'){o.vct++;}else if(f==='konseling'){o.konseling++;}});o.klien_unik=Object.keys(u).length;o.skrining=o.dast+o.srq;return o;};var all=window.__SAHA_ALL||[];var pay={updated_at:new Date().toISOString(),tahun:yr,total:agg(all),tahun_ini:agg(all.filter(function(x){var d=new Date(x.created_at);return !isNaN(d)&&d.getFullYear()===yr;})),_oleh:'dashboard-auto',_catatan:'agregat live 5 form - nol PII',_v:'v0.68'};setDoc(doc(db,'public_stats','viiv_me'),pay,{merge:true}).then(function(){console.log('[pubviiv] sinkron OK');}).catch(function(e){localStorage.removeItem('saha_pubviiv');console.warn('[pubviiv]',e&&e.message);});}catch(e){console.warn('[pubviiv]',e);}};}try{window.__SAHA_PUBV();}catch(e){} if(window.SAHA_RENDER_RAW) window.SAHA_RENDER_RAW(); if(window.SAHA_RENDER_HOUSES) try{window.SAHA_RENDER_HOUSES();}catch(e){} },
       err=>{ if($('saha-login-err')) $('saha-login-err').textContent='Gagal baca data: '+(err.code||err.message); console.error('[LogHarian]',err); });
   }
   function fillPL(){ const sel=$('lh-f-pl'); if(!sel) return; const cur=sel.value; const pls=[...new Set(ALL.map(x=>x.pl).filter(Boolean))].sort(); sel.innerHTML='<option value="">Semua PL</option>'+pls.map(p=>'<option>'+esc(p)+'</option>').join(''); sel.value=cur; }
