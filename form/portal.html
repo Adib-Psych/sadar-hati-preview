@@ -115,7 +115,7 @@
   @media print{
     body > .wrap{display:none !important;}
     #dh-sheet, #ruj-sheet{display:none !important;}
-    body.print-dh #dh-sheet{display:block !important;}
+    body.print-dh #dh-sheet{display:block !important;height:auto !important;overflow:visible !important;}
     body.print-dh #dh-sheet .a4{margin:0;width:auto;min-height:auto;padding:12mm;box-shadow:none;}
     @page{size:A4 portrait;margin:0;}
     body.print-dh #dh-sheet .a4{break-after:page;page-break-after:always;height:auto!important;transform:none!important;margin-left:0!important;}
@@ -1186,9 +1186,41 @@
   };
   window.addEventListener('resize',fit);
   document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&cur) sahaPreviewClose(); });
+
+  /* ==================================================================
+     15 Agu 2026 — PERBAIKAN CETAK: halaman tidak terpotong per lembar.
+     SEBAB: pratinjau memperkecil lembar dgn transform:scale() dan mengunci
+     tinggi kontainer lewat style inline. Saat dicetak, tinggi inline itu
+     ikut terbawa dan elemen ber-transform DIABAIKAN aturan page-break-nya,
+     sehingga isi 3 lembar mengalir jadi satu aliran panjang — kop lembar
+     berikutnya nyempil di kaki halaman sebelumnya.
+     SOLUSI: sesaat sebelum cetak semua skala & tinggi inline dilepas, lalu
+     dipulihkan sesudah dialog cetak ditutup. Tidak bergantung pada perang
+     !important melawan style inline.
+     ================================================================== */
+  var _simpanCetak=null;
+  function siapCetak(){
+    if(!cur) return;
+    var s=document.getElementById(cur); if(!s) return;
+    _simpanCetak={ h:s.style.height, a4:[] };
+    s.style.height='';
+    Array.prototype.forEach.call(s.querySelectorAll('.a4'), function(a){
+      _simpanCetak.a4.push({ el:a, t:a.style.transform, ml:a.style.marginLeft, h:a.style.height });
+      a.style.transform='none'; a.style.marginLeft='0'; a.style.height='auto';
+    });
+  }
+  function selesaiCetak(){
+    if(!_simpanCetak) return;
+    var s=cur?document.getElementById(cur):null;
+    if(s) s.style.height=_simpanCetak.h||'';
+    _simpanCetak.a4.forEach(function(x){ x.el.style.transform=x.t||''; x.el.style.marginLeft=x.ml||''; x.el.style.height=x.h||''; });
+    _simpanCetak=null; setTimeout(fit,20);
+  }
+  window.addEventListener('beforeprint', siapCetak);
+  window.addEventListener('afterprint', selesaiCetak);
   function wire(){
     var pp=document.getElementById('saha-prevprint'), pc=document.getElementById('saha-prevclose');
-    if(pp) pp.onclick=function(){ window.print(); };
+    if(pp) pp.onclick=function(){ siapCetak(); setTimeout(function(){ window.print(); setTimeout(selesaiCetak,400); },40); };
     if(pc) pc.onclick=window.sahaPreviewClose;
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',wire); else wire();
