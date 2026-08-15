@@ -39,6 +39,10 @@
   .plnum { font-size:20px; font-weight:800; color:var(--clay); line-height:1; text-align:right; }
   .plcard.top1 .plnum { color:#fff; }
   .plnum small { display:block; font-size:8.5px; font-weight:600; opacity:.7; letter-spacing:.5px; }
+  .plnums { display:flex; align-items:center; gap:14px; }
+  .plnums .plnum.org { position:relative; padding-right:14px; }
+  .plnums .plnum.org::after { content:''; position:absolute; right:0; top:2px; bottom:2px; width:1px; background:currentColor; opacity:.25; }
+  .plcard.top1 .plnums .plnum.org { color:#fff; }
   .chips { display:flex; gap:6px; flex-wrap:wrap; padding:9px 14px 2px; }
   .fc { font-size:10px; font-weight:700; border-radius:10px; padding:3px 9px; background:#f3eef7; color:var(--plum-deep); }
   .rows { padding:6px 14px 12px; }
@@ -73,7 +77,7 @@
     <h1>📊 Papan Entry Hari Ini</h1>
     <div class="tgl" id="tgl">—</div>
     <div class="live-row">
-      <span class="tot"><strong id="tot">0</strong> entry masuk</span>
+      <span class="tot"><strong id="tot-org">0</strong> KD <span style="opacity:.6;font-weight:600">·</span> <strong id="tot">0</strong> entry</span>
       <span class="pulse"><span class="dot"></span> LIVE · update sendiri</span>
     </div>
     <div class="ubar" id="ubar">
@@ -128,9 +132,19 @@
 
   $('tgl').textContent = new Date().toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
 
+  /* 15 Agu 2026 — permintaan Adib: jumlah ENTRY saja menyesatkan, karena satu KD
+     mengisi 3 form (absensi + DAST + SRQ) sehingga 72 entry sebenarnya cuma 24 orang.
+     Kini jumlah INDIVIDU ditampilkan bersebelahan, jadi tak perlu dibagi 3 di kepala. */
+  function orangUnik(rows){
+    const u = {};
+    rows.forEach(r => { const k = String(r.nm || '').trim().toLowerCase(); if (k && k !== '-') u[k] = 1; });
+    return Object.keys(u).length;
+  }
   function render(rows) {
     const board = $('board');
     $('tot').textContent = rows.length;
+    const totOrg = document.getElementById('tot-org');
+    if (totOrg) totOrg.textContent = orangUnik(rows);
     if (!rows.length) {
       board.innerHTML = '<div class="state"><div class="big">📭</div><strong>Belum ada entry dalam 24 jam terakhir.</strong><br>Begitu ada yang submit form — dari HP PL maupun HP KD lewat QR — kartunya muncul di sini otomatis.</div>';
       return;
@@ -152,7 +166,9 @@
       }).join('');
       const more = list.length > 8 ? '<div class="more">\u2195 ' + list.length + ' entry — geser untuk melihat semua</div>' : '';
       html += '<div class="plcard' + (gi === 0 ? ' top1' : '') + '">'
-        + '<div class="plhead"><span class="plname">' + (gi === 0 ? '⭐ ' : '') + esc(pl) + '</span><span class="plnum">' + list.length + '<small>ENTRY</small></span></div>'
+        + '<div class="plhead"><span class="plname">' + (gi === 0 ? '⭐ ' : '') + esc(pl) + '</span>'
+          + '<span class="plnums"><span class="plnum org">' + orangUnik(list) + '<small>KD</small></span>'
+          + '<span class="plnum">' + list.length + '<small>ENTRY</small></span></span></div>'
         + '<div class="chips">' + chips + '</div>'
         + '<div class="rows">' + items + more + '</div></div>';
     });
